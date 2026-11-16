@@ -25,10 +25,10 @@ pin sea       = rl.texture("resources/sea.png")
 pin title     = rl.texture("resources/title.png")
 pin turtle    = rl.texture("resources/turtle.png")
 pin gamera    = rl.texture("resources/gamera.png")
-val shark     = rl.texture("resources/shark.png")
-val orca      = rl.texture("resources/orca.png")
-val swhale    = rl.texture("resources/swhale.png")
-val fish      = rl.texture("resources/fish.png")
+pin shark     = rl.texture("resources/shark.png")
+pin orca      = rl.texture("resources/orca.png")
+pin swhale    = rl.texture("resources/swhale.png")
+pin fish      = rl.texture("resources/fish.png")
 pin gframe    = rl.texture("resources/gframe.png")
 pin font      = rl.font("resources/komika.png")
 pin eat       = rl.sound("resources/eat.wav")
@@ -38,8 +38,8 @@ pin music     = rl.music("resources/speeding.ogg")
 rl.play_music(music)
 
 val SIZE    = rl.font_size(font)
-val ENEMIES = [shark, orca, swhale, fish]   ;; by type: 3 is the fish
-val POINTS  = [50, 150, 300]               ;; of the bad ones, by type
+pin ENEMIES = [shark, orca, swhale, fish]   ;; by type: 3 is the fish
+pin POINTS  = [50, 150, 300]               ;; of the bad ones, by type
 
 ;; (int) of the C: towards zero
 func int (x) {
@@ -55,7 +55,7 @@ var gameraMode  = false
 var hiscore, hidistance = 0, 0
 
 ;; the state of a game, for the screens and the trace
-val game = [rail=1, score=0, distance=0, food=0, speed=10, enemies=[]]
+pin game = [rail=1, score=0, distance=0, food=0, speed=10, enemies=[]]
 
 ;; Text that blinks: off for 30 frames, on for 30, and so on.
 task Blink (s, x, y, spacing, c) {
@@ -108,8 +108,8 @@ task Title () {
 ;; A game, from the frame of ENTER to the frame of the death.
 task Gameplay () {
     set gameraMode = false
-    val es = []
-    set game.enemies = es
+    set game.enemies = []
+    val es = game.enemies
     loop i in N {
         val p = rl.random(0, 100)
         set es@i = []
