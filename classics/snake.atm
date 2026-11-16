@@ -19,8 +19,8 @@ rl.window [title="classic game: snake", width=W, height=H, fps=60]
 
 ;; What is drawn, and what the trace shows. As in the C, the fruit outlives a
 ;; game: in the frame of a restart, the last fruit is still drawn.
-var snake = []                  ;; the segments, from the head: [x=,y=]
-var fruit = [x=0, y=0]          ;; where the fruit is drawn
+pin snake = []                  ;; the segments, from the head: [x=,y=]
+pin fruit = [x=0, y=0]          ;; where the fruit is drawn
 
 ;; A random cell of the grid, as in the C: x, then y.
 func cell () {
@@ -36,7 +36,7 @@ func same (a, b) {
 ;; A fruit out of the snake: draws again while it falls on a segment.
 func place () {
     loop {
-        val p = cell()
+        pin p = cell()
         val hit = loop _,s in snake {
             until same(p, s)
         }
@@ -49,7 +49,7 @@ func place () {
 ;; The logic of one game, one step every 5 frames of play. Returns at the
 ;; end of the game: the snake hit a wall or itself.
 task Logic () {
-    var speed = [x=SQUARE, y=0]
+    pin speed = [x=SQUARE, y=0]
     par :any {
         ;; the snake: the head moves, and each segment takes the place of the
         ;; one before it
@@ -73,7 +73,8 @@ task Logic () {
         ;; eaten, the last segment comes back
         loop {
             await :rl.frame
-            set fruit = place()
+            pin p = place()
+            set fruit.x, fruit.y = p.x, p.y
             val e = await :moved until same(snake@0, fruit)
             vector.insert(snake, e.tail)
         }
@@ -88,19 +89,21 @@ task Logic () {
                 'DOWN'  => speed.y == 0
                 else    => false
             })
-            set speed = match e.name {
+            pin s = match e.name {
                 'RIGHT' => [x= SQUARE, y=0]
                 'LEFT'  => [x=-SQUARE, y=0]
                 'UP'    => [x=0, y=-SQUARE]
                 'DOWN'  => [x=0, y= SQUARE]
             }
+            set speed.x, speed.y = s.x, s.y
         }
     }
 }
 
 ;; One game: the logic and its drawing.
 task Play () {
-    set snake = [ [x=OX/2, y=OY/2] ]
+    vector.clear(snake)
+    vector.insert(snake, [x=OX/2, y=OY/2])
     spawn {
         loop on :rl.draw {
             loop i in (0, W//SQUARE) {
