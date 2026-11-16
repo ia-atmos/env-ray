@@ -239,7 +239,8 @@ This is the classic where the slots of the C decide the most:
 
 ## gorilas
 
-Same as the original on its runs `play` (648 frames, 32 screens, seed 2:
+Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, on its
+runs `play` (648 frames, 32 screens, seed 2:
 three shots on buildings and a hit, a pause in a flight, an ENTER in the
 frame of the game over, a restart in which the winner shoots first, two
 shots and a hit) and `seed3` (360 frames, 12 screens: another city).
@@ -252,13 +253,14 @@ Trace: frame, phase, turn, ball, power and angle of each player.
   `math.floor`).
 - **The unused explosions.** The ball goes through the 200 slots of
   explosions, used or not; the unused ones are at (0,0) with their radius
-  of 30, so there is a hole at the corner of the screen. The port checks
-  the impact points and (0,0).
+  of 30, so there is a hole at the corner of the screen. The faithful port
+  checked the impact points and (0,0); the relaxed one, the impact points.
 - **What outlives a game.** `playerTurn` is never reset, so the player who
   won shoots first in the next game; the players are never fully reset, so
   one whose x falls beyond the last building keeps the y of the last game
-  (0 in the first, drawn at the top). The port keeps `turn` and `players`
-  as globals.
+  (0 in the first, drawn at the top). The faithful port kept `turn` and
+  `players` as globals; the relaxed one keeps `turn`, and puts a player
+  beyond the last building on the last building.
 - **The frames of a turn**, as in the C: the click ends the aim (no
   triangle is drawn in that frame, nor the ball); the ball takes its speed
   and moves from the next frame; in the frame it lands the next player's
@@ -671,3 +673,4 @@ stored results replaced. The deliberate differences:
 | Game | What changed | What differs from the original |
 |------|--------------|--------------------------------|
 | snake | The state of a game (`snake`, `fruit`, `speed`) is made anew in each game, in `Play`, not kept at the top level and emptied; the next fruit is placed as the last one is eaten | In the frame the snake eats, the new fruit is drawn (the C draws the eaten one over the head). In the frame of a restart, the new game shows its own fruit (the C, the fruit of the last game). The trace prints only the frame and the phase out of a game. 42 lines of the trace of `play` and 26 of `self`, 3 of the 12 screens of `play` and 1 of the 4 of `self`, differ |
+| gorilas | The state of a game (buildings, explosions, ball, players) is made anew in each game, in `Play`, not kept at the top level and emptied; the hole of the unused explosions at (0,0) is gone; a player beyond the last building stands on it | The trace: the ball of a new game starts at (0,0) (the C keeps where the last one fell), and out of a game it prints only the frame, the phase and the turn. 103 lines of the trace of `play` and 40 of `seed3` differ; no screen differs |

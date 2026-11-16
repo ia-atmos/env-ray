@@ -88,7 +88,7 @@ Left in the port for the trace only: `phase`.
 | `player.position` | drawn | `player` |
 | `player.size` | constant | `80`, `20` |
 | `player.life` | data: the lives | `life` |
-| `ball.position`, `ball.speed` | drawn, and data | `ball` |
+| `ball.position`, `ball.speed` | drawn, and data | `g.ball` |
 | `ball.radius` | constant | `R` |
 
 Left in the port for the trace only: `phase`, and `bricks_left`, the number
@@ -168,14 +168,14 @@ Left in the port for the trace only: `phase`, `missiles_on`.
 | `pause` | control | `Classic` |
 | `ballOnAir` | control: aiming, or the ball in the air | two phases of each turn, in sequence: a `watching :fire` while aiming, then a `watching :landed` while the ball flies |
 | `ball.active` | control: the speed is set in the first frame of the flight | the first frame of the flight, after `await :frame` |
-| `explosion[].active` | control | gone: `explosions` holds the impact points; the unused slots, at (0,0), are one more point in the check, as in the C |
+| `explosion[].active` | control | gone: `g.explosions` holds the impact points |
 | `playerTurn` | data: whose turn; never reset, so the winner starts the next game | `turn`, also across games |
-| `player[]` | drawn, and data; never fully reset (a player beyond the last building keeps its old y) | `players`, also across games |
-| `player[].isAlive` | data: who is left | `alive` |
+| `player[]` | drawn, and data; never fully reset (a player beyond the last building keeps its old y) | `g.players`, made in each game |
+| `player[].isAlive` | data: who is left | `p.alive` |
 | `player[].isPlayer` | constant, never read | gone |
 | `player[].impactPoint` | data, only written | gone (the explosions keep the points) |
-| `building[]` | drawn | `buildings` |
-| `ball.position`, `ball.speed` | drawn, and data | `ball` |
+| `building[]` | drawn | `g.buildings` |
+| `ball.position`, `ball.speed` | drawn, and data | `g.ball` |
 | `explosionNumber` (static) | control: the next slot | gone |
 
 Left in the port for the trace only: `phase`.
