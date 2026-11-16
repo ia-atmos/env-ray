@@ -24,14 +24,14 @@ rl.window [title="classic game: missile commander", width=W, height=H, fps=60]
 ;; next slot of an interceptor and of an explosion.
 var frames = 0
 var inum, xnum = 0, 0
-val interceptors = []           ;; 30 slots: [on=, ox=,oy=, x=,y=, tx=,ty=, sx=,sy=]
+pin interceptors = []           ;; 30 slots: [on=, ox=,oy=, x=,y=, tx=,ty=, sx=,sy=]
 loop i in 30 { set interceptors@i = [on=false] }
-val stale = []                  ;; 100 slots of explosions: the last multiplier of each
+pin stale = []                  ;; 100 slots of explosions: the last multiplier of each
 loop i in 100 { set stale@i = 0 }
 
 var score = 0
-var launchers = []              ;; [x=, y=, on=]
-var buildings = []
+pin launchers = []              ;; [x=, y=, on=]
+pin buildings = []
 var missiles_on = 0             ;; for the trace
 
 ;; The speed toward a target, as the C: a module on doubles, kept in a float.
@@ -70,7 +70,7 @@ task Missile (game, booms) {
     defer {
         set missiles_on -= 1
     }
-    val boom = func () {
+    pin boom = func () {
         spawn @booms Explosion(x, y)
     }
     par :any {
@@ -121,8 +121,11 @@ task Missile (game, booms) {
 ;; explosions, the launchers and buildings, the score.
 task Play () {
     set score = 0
-    set launchers = [ [x=GAP*1, y=H-40, on=true], [x=GAP*5, y=H-40, on=true], [x=GAP*9, y=H-40, on=true] ]
-    set buildings = []
+    vector.clear(launchers)
+    loop _,x in [GAP*1, GAP*5, GAP*9] {
+        vector.insert(launchers, [x=x, y=H-40, on=true])
+    }
+    vector.clear(buildings)
     loop _,i in [2, 3, 4, 6, 7, 8] {
         vector.insert(buildings, [x=GAP*i, y=H-30, on=true])
     }
