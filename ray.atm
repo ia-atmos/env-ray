@@ -1,5 +1,10 @@
 ;; A raylib environment for Atmos.
 ;;
+;;      atmos-ray game.atm      (build/atmos-ray, of tools/setup.sh: this file is
+;;                              included before the program)
+;;
+;; or with the plain compiler:
+;;
 ;;      include "ray.atm"
 ;;      ATMOS_CFLAGS="-O2 -I<raylib>/src" ATMOS_LDFLAGS="<raylib>/libraylib.a -lm" atmos game.atm
 ;;
