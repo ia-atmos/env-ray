@@ -13,7 +13,7 @@ include "raylib.atm"
 #include <stdlib.h>
 ```
 
-val GAMES = [
+pin GAMES = [
     ["snake", "classic"], ["floppy", "classic"], ["gold_fever", "classic"],
     ["arkanoid", "classic"], ["asteroids_survival", "classic"], ["space_invaders", "classic"],
     ["missile_commander", "classic"], ["gorilas", "classic"], ["asteroids", "classic"],

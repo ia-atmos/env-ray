@@ -103,12 +103,12 @@ task Logo (next, bars, written) {
 
 ;; The fades of the transitions, as the games do them: the color, the step
 ;; and the end of the fade in, the step and the end of the fade out.
-val FADE_WHITE = [                      ;; wave_collector and others
+pin FADE_WHITE = [                      ;; wave_collector and others
     color = rl.RAYWHITE,
     inc = rl.f32(0.05), into = \{ math.floor(it) >= 1 },
     dec = rl.f32(0.05), back = \{ math.floor(it) <= 0 },  ;; (int)alpha: one frame
 ]
-val FADE_BLACK = [                      ;; repair and others
+pin FADE_BLACK = [                      ;; repair and others
     color = rl.BLACK,
     inc = rl.f32(0.05), into = \{ it > rl.f32(1.01) },
     dec = rl.f32(0.02), back = \{ it < rl.f32(-0.01) },
