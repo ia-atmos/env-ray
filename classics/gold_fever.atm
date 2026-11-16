@@ -15,25 +15,27 @@ val W, H = 800, 450
 
 rl.window [title="classic game: gold fever", width=W, height=H, fps=60]
 
-var player = [x=0, y=0]
-var enemy  = [x=0, y=0, speed=0]
-var gold   = [x=0, y=0]
-var home   = [x=0, y=0]
+pin player = [x=0, y=0]
+pin enemy  = [x=0, y=0, speed=0]
+pin gold   = [x=0, y=0]
+pin home   = [x=0, y=0]
 var score  = 0
 var hiscore = 0
 
+;; the gold, somewhere new: x, then y
 func place_gold () {
     val x = rl.random(10, W - 10)
     val y = rl.random(10, H - 10)
-    [x=x, y=y]
+    set gold.x, gold.y = x, y
 }
 
 ;; One game. Ends when the enemy catches the player out of the home.
 task Play () {
-    set player = [x=50, y=50]
-    set enemy  = [x=W-50, y=H//2, speed=3]
-    set gold   = place_gold()
-    set home   = [x=rl.random(0, W-50), y=rl.random(0, H-50)]
+    set player.x, player.y = 50, 50
+    set enemy.x, enemy.y, enemy.speed = W-50, H//2, 3
+    place_gold()
+    val hx = rl.random(0, W-50)
+    set home.x, home.y = hx, rl.random(0, H-50)
     set score  = 0
     var safe   = false          ;; the player was in the home at the end of the last frame
 
@@ -97,7 +99,7 @@ task Play () {
         ;; near, or always while the gold is out of its place, unless the
         ;; player is safe in the home
         var right = true
-        val step = func (chase) {
+        pin step = func (chase) {
             if chase {
                 if player.x > enemy.x { set enemy.x += enemy.speed }
                 if player.x < enemy.x { set enemy.x -= enemy.speed }
@@ -134,7 +136,7 @@ task Play () {
             await :touch.home
             set score += 100
             set enemy.speed += 0.5
-            set gold = place_gold()
+            place_gold()
             emit :stored
         }
     }
