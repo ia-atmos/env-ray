@@ -16,7 +16,7 @@ mkdir -p ext
 
 RAYLIB_TAG=6.2
 GAMES_REV=318688c
-ATMOS_REV=4b4012c                       # the new rules of pin (main, 2026-11-15)
+ATMOS_REV=64260c7                       # the new rules of pin (main, 2026-11-16)
 
 if [ ! -d ext/raylib ]; then
     git clone -q --depth 1 --branch $RAYLIB_TAG https://github.com/raysan5/raylib ext/raylib
