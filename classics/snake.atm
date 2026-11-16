@@ -16,11 +16,6 @@ val OX, OY = W % SQUARE, H % SQUARE     ;; the grid is centered: offset/2 at eac
 
 ray.window [title="classic game: snake", width=W, height=H, fps=60]
 
-;; What is drawn, and what the trace shows. As in the C, the fruit outlives a
-;; game: in the frame of a restart, the last fruit is still drawn.
-pin snake = []                  ;; the segments, from the head: [x=,y=]
-pin fruit = [x=0, y=0]          ;; where the fruit is drawn
-
 ;; A random cell of the grid, as in the C: x, then y.
 func cell () {
     val x = (ray.random(0, (W//SQUARE) - 1) * SQUARE) + (OX/2)
@@ -33,7 +28,7 @@ func same (a, b) {
 }
 
 ;; A fruit out of the snake: draws again while it falls on a segment.
-func place () {
+func place (snake) {
     loop {
         pin p = cell()
         val hit = loop _,s in snake {
@@ -45,17 +40,17 @@ func place () {
     }
 }
 
-;; The logic of one game, one step every 5 frames of play. Returns at the
-;; end of the game: the snake hit a wall or itself.
-task Logic () {
-    pin speed = [x=SQUARE, y=0]
+;; The logic of a game, one step every 5 frames of play. Returns at the end
+;; of the game: the snake hit a wall or itself.
+task Logic (g) {
+    val snake = g.snake
     par :any {
         ;; the snake: the head moves, and each segment takes the place of the
         ;; one before it
         await :frame
         loop {
             val head = snake@0
-            vector.insert(snake, 0, [x=head.x+speed.x, y=head.y+speed.y])
+            vector.insert(snake, 0, [x=head.x+g.speed.x, y=head.y+g.speed.y])
             val tail = vector.remove(snake)
             val h = snake@0
             val wall = (h.x > (W-OX)) || (h.y > (H-OY)) || (h.x < 0) || (h.y < 0)
@@ -67,14 +62,11 @@ task Logic () {
             await(5, :frame)
         }
     } with {
-        ;; the fruit: placed in the first frame, after the move, and in the
-        ;; frame after it is eaten (the eaten one is drawn until then); when
-        ;; eaten, the last segment comes back
+        ;; the fruit: when eaten, the last segment comes back, and the next
+        ;; fruit is placed
         loop {
-            await :frame
-            pin p = place()
-            set fruit.x, fruit.y = p.x, p.y
-            val e = await :moved until same(snake@0, fruit)
+            set g.fruit = place(snake)
+            val e = await :moved until same(snake@0, g.fruit)
             vector.insert(snake, e.tail)
         }
     } with {
@@ -82,27 +74,26 @@ task Logic () {
         loop {
             await :moved
             val e = await :key.dn until (match it.name {
-                'RIGHT' => speed.x == 0
-                'LEFT'  => speed.x == 0
-                'UP'    => speed.y == 0
-                'DOWN'  => speed.y == 0
+                'RIGHT' => g.speed.x == 0
+                'LEFT'  => g.speed.x == 0
+                'UP'    => g.speed.y == 0
+                'DOWN'  => g.speed.y == 0
                 else    => false
             })
-            pin s = match e.name {
+            set g.speed = match e.name {
                 'RIGHT' => [x= SQUARE, y=0]
                 'LEFT'  => [x=-SQUARE, y=0]
                 'UP'    => [x=0, y=-SQUARE]
                 'DOWN'  => [x=0, y= SQUARE]
             }
-            set speed.x, speed.y = s.x, s.y
         }
     }
 }
 
-;; One game: the logic and its drawing.
+;; One game: its state, its logic, and its drawing. The snake is a vector of
+;; segments from the head ([x=,y=]); the state is made anew in each game.
 task Play () {
-    vector.clear(snake)
-    vector.insert(snake, [x=OX/2, y=OY/2])
+    pin g = [snake=[[x=OX/2, y=OY/2]], fruit=nil, speed=[x=SQUARE, y=0]]
     spawn {
         loop on :draw {
             loop i in (0, W//SQUARE) {
@@ -111,22 +102,33 @@ task Play () {
             loop i in (0, H//SQUARE) {
                 ray.line_v(OX/2, (SQUARE*i)+(OY/2), W-(OX/2), (SQUARE*i)+(OY/2), ray.LIGHTGRAY)
             }
-            loop i,s in snake {
+            loop i,s in g.snake {
                 ray.rectangle_v(s.x, s.y, SQUARE, SQUARE, if i==0 => ray.DARKBLUE => ray.BLUE)
             }
-            ray.rectangle_v(fruit.x, fruit.y, SQUARE, SQUARE, ray.SKYBLUE)
+            ray.rectangle_v(g.fruit.x, g.fruit.y, SQUARE, SQUARE, ray.SKYBLUE)
         }
     }
-    await Logic()
+    ;; [trace] of the test mode: one line per frame of a game, after its logic
+    spawn {
+        if ray.frame() > 0 {
+            loop on :draw {
+                val h = g.snake@0
+                print(string.format("%d %s %d %.1f %.1f %.1f %.1f",
+                    ray.frame(), phase, #g.snake, h.x, h.y, g.fruit.x, g.fruit.y))
+            }
+        }
+    }
+    ;; [/trace]
+    await Logic(g)
 }
 
-;; [trace] of the test mode: one line per frame, after its logic
+;; [trace] of the test mode: the frames out of a game
 spawn {
     if ray.frame() > 0 {
         loop on :draw {
-            val h = snake@0
-            print(string.format("%d %s %d %.1f %.1f %.1f %.1f",
-                ray.frame(), phase, #snake, h.x, h.y, fruit.x, fruit.y))
+            if phase == :over {
+                print(string.format("%d %s", ray.frame(), phase))
+            }
         }
     }
 }

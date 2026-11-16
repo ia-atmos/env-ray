@@ -60,13 +60,15 @@ that is checked, and what differs, game by game.
 
 ## snake
 
-Same as the original on its runs `play` (760 frames, 12 screens: six fruits,
-a pause, a wall, an ENTER in the frame of the game over, two restarts) and
-`self` (460 frames, 4 screens: the snake runs into itself).
+Relaxed (see "Relaxed ports" at the end): identical up to the tag
+`faithful`, on its runs `play` (760 frames, 12 screens: six fruits, a pause,
+a wall, an ENTER in the frame of the game over, two restarts) and `self`
+(460 frames, 4 screens: the snake runs into itself).
 
-Trace: frame, phase, length, head, fruit.
+Trace: frame, phase, length, head, fruit; out of a game, frame and phase.
 
-What the port keeps on purpose, since the screens would differ otherwise:
+What the faithful port kept on purpose, since the screens would differ
+otherwise (the relaxed port drops the first two):
 
 - In the frame the snake eats, the C draws the eaten fruit over the head
   (`fruit.active` is false, but it is drawn anyway). The port draws the
@@ -657,3 +659,15 @@ shown, the color of the button, the leaves).
   (and so the fire and the ice), the gestures (no run uses the mouse in
   the gameplay). The port has their code, translated as the rest, not
   checked.
+
+## Relaxed ports
+
+The author allowed a port that was identical to its original to relax the
+exactness in favor of expressiveness, as long as the intent of the original
+author stays (2026-11-16). The tag `faithful` (e0b6a01) is the last version
+identical on all runs; each relaxation is a commit of its own, with its
+stored results replaced. The deliberate differences:
+
+| Game | What changed | What differs from the original |
+|------|--------------|--------------------------------|
+| snake | The state of a game (`snake`, `fruit`, `speed`) is made anew in each game, in `Play`, not kept at the top level and emptied; the next fruit is placed as the last one is eaten | In the frame the snake eats, the new fruit is drawn (the C draws the eaten one over the head). In the frame of a restart, the new game shows its own fruit (the C, the fruit of the last game). The trace prints only the frame and the phase out of a game. 42 lines of the trace of `play` and 26 of `self`, 3 of the 12 screens of `play` and 1 of the 4 of `self`, differ |

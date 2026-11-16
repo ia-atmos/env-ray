@@ -18,11 +18,11 @@ screen) should become an `await`, a block, or a task.
 | `gameOver` | control: tested at the top of `UpdateGame` | the task `Logic` ends, and `Play` with it; `Classic` awaits it, shows "PRESS [ENTER]", and starts another |
 | `pause` | control: tested around the logic | `toggle play(false) with :draw` between two `P`, in `Classic`; the text is a task that lives while paused |
 | `allowMove` | control: one turn per move | the task of turns awaits `:moved`, then one valid key |
-| `fruit.active` | control: a new fruit is needed | the task of the fruit: placed, then awaits being eaten, then the next frame |
-| `fruit.position` | drawn | `fruit` |
+| `fruit.active` | control: a new fruit is needed | the task of the fruit: placed, then awaits being eaten |
+| `fruit.position` | drawn | `g.fruit`, the state of the game (`Play`) |
 | `fruit.size`, `fruit.color` | constant | literals in the drawing |
-| `snake[i].position` | drawn | `snake`, a vector of positions from the head |
-| `snake[i].speed` | data: only the head's is used | `speed`, local to `Logic` |
+| `snake[i].position` | drawn | `g.snake`, a vector of positions from the head |
+| `snake[i].speed` | data: only the head's is used | `g.speed` |
 | `snake[i].size`, `snake[i].color` | constant | literals in the drawing |
 | `snakePosition[]` | data: the positions before the move, to follow and to grow | gone: the move inserts the new head and removes the last segment, which comes back when the snake eats |
 | `counterTail` | data | `#snake` |
