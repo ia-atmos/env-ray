@@ -75,14 +75,14 @@ val W, H    = 1000, 900
 val SPACING = 50
 val f32     = rl.f32
 val MAX     = do {
-    val args = [...]
+    pin args = [...]
     val n = tonumber(args@0)
     if n && (n >= 1) => n => 500
 }
 
 rl.window [title="RayLife", width=W, height=H, fps=60]
 
-val camera = [ox=f32(W/2), oy=f32(H/2), tx=f32((500*SPACING)/2), ty=f32((500*SPACING)/2), zoom=1]
+pin camera = [ox=f32(W/2), oy=f32(H/2), tx=f32((500*SPACING)/2), ty=f32((500*SPACING)/2), zoom=1]
 var alive, gens = 0, 0
 var interval = f32(0.2)
 var last = 0                    ;; the time of the last generation
