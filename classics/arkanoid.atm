@@ -20,8 +20,8 @@ val f32    = rl.f32             ;; the ball moves on floats, as in the C
 
 rl.window [title="classic game: arkanoid", width=W, height=H, fps=60]
 
-var player = [x=0, y=0]
-var ball   = [x=0, y=0, sx=0, sy=0]
+pin player = [x=0, y=0]
+pin ball   = [x=0, y=0, sx=0, sy=0]
 var life   = 0
 var bricks_left = 0             ;; for the trace
 
@@ -85,7 +85,7 @@ task Ball () {
 ;; when the ball hits it, which bounces.
 task Brick (i, j) {
     val x, y = (j*BW) + (BW/2), (i*BH) + 50
-    val near = func (a, b) { math.abs(f32(a - b)) < ((BW/2) + 4) }    ;; 4 is radius*2/3
+    pin near = func (a, b) { math.abs(f32(a - b)) < ((BW/2) + 4) }    ;; 4 is radius*2/3
     par :any {
         loop on :rl.frame {
             ifs {
@@ -118,8 +118,8 @@ task Brick (i, j) {
 
 ;; One game: ends when the bricks or the lives are over.
 task Play () {
-    set player = [x=W//2, y=(H*7)//8]
-    set ball   = [x=player.x, y=(player.y - 10) - R, sx=0, sy=0]
+    set player.x, player.y = W//2, (H*7)//8
+    set ball.x, ball.y, ball.sx, ball.sy = player.x, (player.y - 10) - R, 0, 0
     set life   = LIVES
     set bricks_left = ROWS * COLS
     spawn Player()
