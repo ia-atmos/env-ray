@@ -22,14 +22,14 @@ val GRAVITY = f32(0.25)
 
 rl.window [title="classic game: pang", width=W, height=H, fps=60]
 
-var player = [x=0, y=0]
-var shot   = nil                ;; [x=, y=, lx=, ly=]: the shot and where it was fired
+pin player = [x=0, y=0]
+pin S = [shot=nil]                ;; [x=, y=, lx=, ly=]: the shot and where it was fired
 var score, destroyed = 0, 0
 var phase  = :play              ;; :play, :pause, :won, or :over (for the trace)
 
 ;; The popups of points: 5 slots, as in the C. They rise and fade in every
 ;; frame, after its logic, even in a pause or after the game.
-val popups = []
+pin popups = []
 loop i in 5 {
     set popups@i = [x=0, y=0, value=0, alpha=0]
 }
@@ -95,18 +95,18 @@ task Ball (b, r, points, color, gravity, top) {
 ;; The logic of one game: returns :over when a ball touches the player, or
 ;; :won when the 14 balls are gone.
 task Logic (game, bigs, mediums, smalls) {
-    val touches = func (pool, c) {
+    pin touches = func (pool, c) {
         loop _,t in pool {
             until t.pub.on && rl.check_collision_circles(c.x, c.y, 12, t.pub.x, t.pub.y, t.pub.r)
         }
     }
     ;; the shot against the first ball of a pool that it touches; it splits
     ;; in two of the next pool, if any
-    val hits = func (pool, next, r, points, color, gravity, vy) {
+    pin hits = func (pool, next, r, points, color, gravity, vy) {
         loop _,t in pool {
             val b = t.pub
-            if b.on && ((b.x - b.r) <= shot.lx) && ((b.x + b.r) >= shot.lx) && ((b.y + b.r) >= shot.y) {
-                set shot = nil
+            if b.on && ((b.x - b.r) <= S.shot.lx) && ((b.x + b.r) >= S.shot.lx) && ((b.y + b.r) >= S.shot.y) {
+                set S.shot = nil
                 emit @t :hit
                 set destroyed += 1
                 set score += b.points
@@ -130,27 +130,27 @@ task Logic (game, bigs, mediums, smalls) {
             (player.x - 10) < 0 => { set player.x = 10 }
         }
         ;; the shot: fired with SPACE, if none is out; lives 120 frames
-        if rl.key_pressed('SPACE') && !shot {
-            set shot = [x=player.x, y=f32(player.y - SHIP_H), lx=player.x, ly=player.y, life=0]
+        if rl.key_pressed('SPACE') && !S.shot {
+            set S.shot = [x=player.x, y=f32(player.y - SHIP_H), lx=player.x, ly=player.y, life=0]
         }
-        if shot {
-            set shot.life += 1
-            set shot.y -= 5
-            if (shot.x > (W + 2)) || (shot.x < -2) || (shot.y > (H + 2)) || (shot.y < -2) || (shot.life >= 120) {
-                set shot = nil
+        if S.shot {
+            set S.shot.life += 1
+            set S.shot.y -= 5
+            if (S.shot.x > (W + 2)) || (S.shot.x < -2) || (S.shot.y > (H + 2)) || (S.shot.y < -2) || (S.shot.life >= 120) {
+                set S.shot = nil
             }
         }
         ;; a ball on the player ends the game
-        val c = [x=player.x, y=f32(player.y - f32(SHIP_H/2))]
+        pin c = [x=player.x, y=f32(player.y - f32(SHIP_H/2))]
         if touches(bigs, c) || touches(mediums, c) || touches(smalls, c) {
             return :over
         }
         ;; the balls move
         emit @game :move
         ;; the shot against the balls
-        if shot { hits(bigs, mediums, 20, 100, rl.GRAY, f32(GRAVITY + f32(0.12)), 2) }
-        if shot { hits(mediums, smalls, 10, 50, rl.GRAY, f32(GRAVITY + f32(0.25)), -2) }
-        if shot { hits(smalls, nil) }
+        if S.shot { hits(bigs, mediums, 20, 100, rl.GRAY, f32(GRAVITY + f32(0.12)), 2) }
+        if S.shot { hits(mediums, smalls, 10, 50, rl.GRAY, f32(GRAVITY + f32(0.25)), -2) }
+        if S.shot { hits(smalls, nil) }
         until destroyed == 14, :won
     }
 }
@@ -158,8 +158,8 @@ task Logic (game, bigs, mediums, smalls) {
 ;; One game: its logic, its looks, its pause; after a victory, the game
 ;; stays drawn with "YOU WIN!" until ENTER.
 task Play () {
-    set player = [x=W//2, y=H]
-    set shot, score, destroyed = nil, 0, 0
+    set player.x, player.y = W//2, H
+    set S.shot, score, destroyed = nil, 0, 0
     loop _,p in popups {
         set p.x, p.y, p.value, p.alpha = 0, 0, 0, 0
     }
@@ -188,8 +188,8 @@ task Play () {
     }
     spawn {
         loop on :rl.draw {
-            if shot {
-                rl.line(shot.lx, shot.ly, shot.x, shot.y, rl.RED)
+            if S.shot {
+                rl.line(S.shot.lx, S.shot.ly, S.shot.x, S.shot.y, rl.RED)
             }
             loop _,p in popups {
                 if p.alpha > 0 {
@@ -246,7 +246,7 @@ spawn {
                 print(string.format("%d %s", rl.frame(), phase))
             } else {
                 print(string.format("%d %s %.1f %d %d %s", rl.frame(), phase, player.x, score, destroyed,
-                    if shot => string.format("%.1f", shot.y) => "-"))
+                    if S.shot => string.format("%.1f", S.shot.y) => "-"))
             }
         }
     }
