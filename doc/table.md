@@ -25,7 +25,7 @@ the runs: no number here is typed by hand.
 | arkanoid | 207 | 149 | 2005 | 1314 | 4 | 0 | 2 (22977 frames, 23 screens) | yes |
 | asteroids_survival | 241 | 181 | 2262 | 1477 | 3 | 0 | 2 (4531 frames, 22 screens) | yes |
 | space_invaders | 271 | 207 | 1903 | 1271 | 9 | 1 | 2 (5477 frames, 26 screens) | yes |
-| missile_commander | 343 | 204 | 2796 | 1604 | 10 | 4 | 2 (6812 frames, 34 screens) | yes |
+| missile_commander | 343 | 162 | 2796 | 1443 | 10 | 1 | 2 (6812 frames, 34 screens) | relaxed |
 | gorilas | 351 | 174 | 2994 | 1627 | 6 | 0 | 2 (1008 frames, 44 screens) | relaxed |
 | asteroids | 402 | 261 | 3940 | 2196 | 7 | 1 | 2 (1249 frames, 25 screens) | yes |
 | pang | 446 | 209 | 4072 | 1841 | 8 | 2 | 2 (2998 frames, 38 screens) | yes |

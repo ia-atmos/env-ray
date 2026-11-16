@@ -205,7 +205,8 @@ score of that frame is left out of both traces.
 
 ## missile_commander
 
-Same as the original on its runs `play` (4112 frames, 23 screens: the
+Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, on its
+runs `play` (4112 frames, 23 screens: the
 missiles shot down for 2000 frames with a pause, then the city falls; an
 ENTER in the frame of the game over, a restart, a game with no clicks) and
 `seed3` (2700 frames, 11 screens).
@@ -214,7 +215,10 @@ Trace: frame, phase, score, frames played, missiles in flight (not in the
 game over, where the C keeps its array full until the next game, and the
 port's missiles are gone; nothing shows it).
 
-This is the classic where the slots of the C decide the most:
+This is the classic where the slots of the C decide the most. The faithful
+port kept what follows; the relaxed one keeps none of it but the end of the
+game at the end of the frame (its interceptors, missiles and explosions are
+pools of tasks, and its state is made in each game):
 
 - The first interceptor to arrive explodes and `break`s the loop: the
   interceptors in the slots after it do not move in that frame. The port
@@ -674,3 +678,4 @@ stored results replaced. The deliberate differences:
 |------|--------------|--------------------------------|
 | snake | The state of a game (`snake`, `fruit`, `speed`) is made anew in each game, in `Play`, not kept at the top level and emptied; the next fruit is placed as the last one is eaten | In the frame the snake eats, the new fruit is drawn (the C draws the eaten one over the head). In the frame of a restart, the new game shows its own fruit (the C, the fruit of the last game). The trace prints only the frame and the phase out of a game. 42 lines of the trace of `play` and 26 of `self`, 3 of the 12 screens of `play` and 1 of the 4 of `self`, differ |
 | gorilas | The state of a game (buildings, explosions, ball, players) is made anew in each game, in `Play`, not kept at the top level and emptied; the hole of the unused explosions at (0,0) is gone; a player beyond the last building stands on it | The trace: the ball of a new game starts at (0,0) (the C keeps where the last one fell), and out of a game it prints only the frame, the phase and the turn. 103 lines of the trace of `play` and 40 of `seed3` differ; no screen differs |
+| missile_commander | The state of a game (score, frames, launchers, buildings) is made anew in each game; the 30 slots of interceptors and the 100 of explosions, with their rings, are pools of tasks; a new explosion starts at 0; a missile that hits a launcher or a building no longer scores in its own explosion | The score from the first missile that hits the city on (100 less for each); the second game launches its missiles from the start of its own count. The trace from line 2491 of `play` and 1761 of `seed3`, and 4 of the 23 screens of `play` and 3 of the 11 of `seed3`, differ |

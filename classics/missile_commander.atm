@@ -5,10 +5,8 @@
 ;;
 ;; Ported to Atmos: an altered version of `classics/src/missile_commander.c`
 ;; of raysan5/raylib-games. The game is the same; `gameOver`, `pause`, and
-;; the `active` flags of the missiles and of the explosions became tasks.
-;; Where the order of the slots of the C decides what happens (the
-;; interceptors, the explosions), the port keeps the slots: see
-;; doc/fidelity.md.
+;; the `active` flags of the missiles, the interceptors and the explosions
+;; became tasks. Relaxed (doc/fidelity.md): the slots of the C are gone.
 
 include "classic.atm"
 
@@ -19,20 +17,6 @@ val EXPLOSION_COLOR = ray.color(125, 125, 125, 125)
 
 ray.window [title="classic game: missile commander", width=W, height=H, fps=60]
 
-;; As the statics of the C, these outlive a game: the frames played, and the
-;; next slot of an interceptor and of an explosion.
-var frames = 0
-var inum, xnum = 0, 0
-pin interceptors = []           ;; 30 slots: [on=, ox=,oy=, x=,y=, tx=,ty=, sx=,sy=]
-loop i in 30 { set interceptors@i = [on=false] }
-pin stale = []                  ;; 100 slots of explosions: the last multiplier of each
-loop i in 100 { set stale@i = 0 }
-
-var score = 0
-pin launchers = []              ;; [x=, y=, on=]
-pin buildings = []
-var missiles_on = 0             ;; for the trace
-
 ;; The speed toward a target, as the C: a module on doubles, kept in a float.
 func toward (ox, oy, tx, ty, speed) {
     val m = f32(math.sqrt(math.pow(f32(tx - ox), 2) + math.pow(f32(ty - oy), 2)))
@@ -40,122 +24,101 @@ func toward (ox, oy, tx, ty, speed) {
 }
 
 ;; An explosion: grows for 90 frames, shrinks until frame 210, and ends. It
-;; starts with the multiplier that its slot kept from the last explosion, as
-;; in the C, until it first grows. It grows on `:grow`, which comes after
-;; the missiles in each frame; it is drawn by `Play`.
+;; grows on `:grow`, which comes after the missiles in each frame; it is
+;; drawn by `Play`.
 task Explosion (x, y) {
-    val slot = xnum
-    set xnum = (xnum + 1) % 100
-    set pub = [x=x, y=y, mult=stale@slot]
+    set pub = [x=x, y=y, mult=0]
     loop f in (1, 210) {
         await :grow
         set pub.mult = if f <= 90 => f32(f/90) => f32(1 - f32(f32(f - 90)/210))
-        set stale@slot = pub.mult
     }
     await :grow
 }
 
+;; An interceptor: flies from its launcher to the click, and explodes there.
+task Interceptor (g, booms, l, tx, ty) {
+    val sx, sy = toward(l.x, l.y, tx, ty, 10)
+    var x, y = l.x, l.y
+    par :any {
+        loop on :frame {
+            set x, y = f32(x + sx), f32(y + sy)
+            until f32(math.sqrt(math.pow(f32(x - tx), 2) + math.pow(f32(y - ty), 2))) < 10
+        }
+    } with {
+        loop on :draw {
+            ray.line(l.x, l.y, x, y, ray.GREEN)
+            if (g.frames % 16) < 8 {
+                ray.circle(x, y, 3, ray.BLUE)
+            }
+        }
+    }
+    spawn @booms Explosion(x, y)
+}
+
 ;; A missile: falls toward its target, and ends below the screen, on a
-;; launcher or a building (which it destroys), or in an explosion. As in the
-;; C, one that hits a launcher or a building is still checked against the
-;; buildings and the explosions, and always scores in the explosion it just
-;; made.
-task Missile (game, booms) {
+;; launcher or a building (which it destroys), or in an explosion (which
+;; scores). Where it ends, it explodes.
+task Missile (g, booms) {
     val ox, oy = ray.random(20, W - 20), -10
     val tx, ty = ray.random(20, W - 20), H + 10
     val sx, sy = toward(ox, oy, tx, ty, 1)
     var x, y = ox, oy
-    set missiles_on += 1
-    defer {
-        set missiles_on -= 1
-    }
-    pin boom = func () {
-        spawn @booms Explosion(x, y)
-    }
+    var hit = false
     par :any {
         loop on :frame {
             set x, y = f32(x + sx), f32(y + sy)
             until y > H
-            var hit = false
-            loop _,l in launchers {
-                if l.on && ray.check_collision_point_rec(x, y, l.x - 40, l.y - 40, 80, 80) {
-                    set l.on, hit = false, true
-                    boom()
-                    break
-                }
+            val l = loop _,l in g.launchers {
+                if l.on && ray.check_collision_point_rec(x, y, l.x - 40, l.y - 40, 80, 80) { break l }
             }
-            loop _,b in buildings {
-                if b.on && ray.check_collision_point_rec(x, y, b.x - 30, b.y - 30, 60, 60) {
-                    set b.on, hit = false, true
-                    boom()
-                    break
-                }
+            val b = loop _,b in g.buildings {
+                if b.on && ray.check_collision_point_rec(x, y, b.x - 30, b.y - 30, 60, 60) { break b }
             }
-            loop _,e in booms {
-                if ray.check_collision_point_circle(x, y, e.pub.x, e.pub.y, f32(40*e.pub.mult)) {
-                    set score += 100
-                    set hit = true
-                    boom()
-                    break
-                }
+            val e = loop _,e in booms {
+                if ray.check_collision_point_circle(x, y, e.pub.x, e.pub.y, f32(40*e.pub.mult)) { break e }
             }
+            if l { set l.on, hit = false, true }
+            if b { set b.on, hit = false, true }
+            if e { set g.score, hit = g.score + 100, true }
             until hit
         }
     } with {
         loop on :draw {
             ray.line(ox, oy, x, y, ray.RED)
-            if (frames % 16) < 8 {
+            if (g.frames % 16) < 8 {
                 ray.circle(x, y, 3, ray.YELLOW)
             }
         }
     }
+    if hit {
+        spawn @booms Explosion(x, y)
+    }
 }
 
-;; One game: ends at the end of the frame that finds no launcher or no
-;; building, as in the C (the rest of that frame changes the next game).
+;; One game: its state is made anew, and it ends when no launcher or no
+;; building is left.
 ;;
 ;; In each frame, in the order of the C: the frames played, the
 ;; interceptors, the missiles, the explosions, the outgoing and the incoming
 ;; fire. Drawn in the order of the C: the missiles, the interceptors, the
 ;; explosions, the launchers and buildings, the score.
 task Play () {
-    set score = 0
-    vector.clear(launchers)
+    pin g = [score=0, frames=0, launchers=[], buildings=[]]
     loop _,x in [GAP*1, GAP*5, GAP*9] {
-        vector.insert(launchers, [x=x, y=H-40, on=true])
+        vector.insert(g.launchers, [x=x, y=H-40, on=true])
     }
-    vector.clear(buildings)
     loop _,i in [2, 3, 4, 6, 7, 8] {
-        vector.insert(buildings, [x=GAP*i, y=H-30, on=true])
-    }
-    loop _,c in interceptors {
-        set c.on = false
+        vector.insert(g.buildings, [x=GAP*i, y=H-30, on=true])
     }
     pin booms = tasks()
+    pin interceptors = tasks()
+    pin missiles = tasks()
 
     spawn {
         loop on :frame {
-            set frames += 1
+            set g.frames += 1
         }
     }
-    spawn {
-        ;; the interceptors, in the order of their slots: the first one to
-        ;; arrive explodes and stops the others for this frame (the `break`)
-        loop on :frame {
-            loop _,c in interceptors {
-                if c.on {
-                    set c.x, c.y = f32(c.x + c.sx), f32(c.y + c.sy)
-                    val d = f32(math.sqrt(math.pow(f32(c.x - c.tx), 2) + math.pow(f32(c.y - c.ty), 2)))
-                    if d < 10 {
-                        set c.on = false
-                        spawn @booms Explosion(c.x, c.y)
-                        break
-                    }
-                }
-            }
-        }
-    }
-    pin missiles = tasks()
     spawn {
         loop on :frame {
             emit :grow
@@ -164,59 +127,51 @@ task Play () {
             if ray.mouse_pressed(0) { set n = 1 }
             if ray.mouse_pressed(2) { set n = 2 }
             if ray.mouse_pressed(1) { set n = 3 }
-            if (n > 0) && (launchers@(n-1)).on {
-                val l = launchers@(n-1)
-                val c = interceptors@inum
-                set c.on = true
-                set c.ox, c.oy, c.x, c.y = l.x, l.y, l.x, l.y
-                set c.tx, c.ty = ray.mouse_x(), ray.mouse_y()
-                set c.sx, c.sy = toward(c.ox, c.oy, c.tx, c.ty, 10)
-                set inum = (inum + 1) % 30
+            if (n > 0) && (g.launchers@(n-1)).on {
+                spawn @interceptors Interceptor(g, booms, g.launchers@(n-1), ray.mouse_x(), ray.mouse_y())
             }
             ;; incoming fire: a missile every 80 frames played
-            if (frames % 80) == 0 {
-                spawn @missiles Missile(task, booms)
+            if (g.frames % 80) == 0 {
+                spawn @missiles Missile(g, booms)
             }
         }
     }
     spawn {
         loop on :draw {
-            loop _,c in interceptors {
-                if c.on {
-                    ray.line(c.ox, c.oy, c.x, c.y, ray.GREEN)
-                    if (frames % 16) < 8 {
-                        ray.circle(c.x, c.y, 3, ray.BLUE)
-                    }
-                }
-            }
             loop _,e in booms {
                 ray.circle(e.pub.x, e.pub.y, f32(40*e.pub.mult), EXPLOSION_COLOR)
             }
-            loop _,l in launchers {
+            loop _,l in g.launchers {
                 if l.on { ray.rectangle(l.x - 40, l.y - 40, 80, 80, ray.GRAY) }
             }
-            loop _,b in buildings {
+            loop _,b in g.buildings {
                 if b.on { ray.rectangle(b.x - 30, b.y - 30, 60, 60, ray.LIGHTGRAY) }
             }
-            ray.text(string.format("SCORE %4d", score), 20, 20, 40, ray.LIGHTGRAY)
+            ray.text(string.format("SCORE %4d", g.score), 20, 20, 40, ray.LIGHTGRAY)
         }
     }
+    ;; [trace] of the test mode: one line per frame of a game, after its logic
+    spawn {
+        if ray.frame() > 0 {
+            loop on :draw {
+                print(string.format("%d %s %d %d %d", ray.frame(), phase, g.score, g.frames, #missiles))
+            }
+        }
+    }
+    ;; [/trace]
     loop on :frame {
-        val l = loop _,x in launchers { until x.on }
-        val b = loop _,x in buildings { until x.on }
+        val l = loop _,x in g.launchers { until x.on }
+        val b = loop _,x in g.buildings { until x.on }
         until !l || !b
     }
 }
 
-;; [trace] of the test mode: one line per frame, after its logic; the
-;; missiles only while the game is on (see doc/fidelity.md)
+;; [trace] of the test mode: the frames out of a game
 spawn {
     if ray.frame() > 0 {
         loop on :draw {
             if phase == :over {
-                print(string.format("%d %s %d %d", ray.frame(), phase, score, frames))
-            } else {
-                print(string.format("%d %s %d %d %d", ray.frame(), phase, score, frames, missiles_on))
+                print(string.format("%d %s", ray.frame(), phase))
             }
         }
     }
