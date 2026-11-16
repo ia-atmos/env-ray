@@ -28,8 +28,14 @@ Seen and expected, as the manual says, listed for whoever writes a port:
   a constant first.
 - `await` takes a call that spawns; to await a task computed by an
   expression, spawn it first (`pin s = spawn (f(x))()`), then `await(s)`.
-- `pin` refuses a value that escapes into a table (`invalid escape :
-  pinned value`): a resource kept in a table is a `val`.
+- The rules of `pin` (the compiler since `98ad03a`): a dynamic value
+  (table, function, native, task, pool) is declared with `pin`; a `val`
+  or `var` only refers to a value that has an owner, and a `var` cannot
+  receive a fresh one. A record that a game resets is a `pin`, reset field
+  by field; a list is emptied with `vector.clear`; a value built for a
+  table is built in it (`set t@i = [tex=rl.texture(...)]`, then read back
+  from `t@i`). A pinned value cannot be referenced from an outer block: the
+  trace of a screen is a string that the screen writes as it draws.
 - `%` is the remainder of C (`fmod`, with the sign of the dividend), not
   the modulo of Lua; `//` floors.
 - A local declared in a task hides a parameter of the same name for the
