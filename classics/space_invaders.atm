@@ -16,8 +16,9 @@ val f32    = rl.f32
 
 rl.window [title="classic game: space invaders", width=W, height=H, fps=60]
 
-var player  = [x=0, y=0]        ;; 20x20
-var enemies = []                ;; the enemies in play, in order: [x=,y=] (10x10)
+pin player  = [x=0, y=0]        ;; 20x20
+pin all     = []                ;; the 50 enemies of a game, which its waves take in order
+pin enemies = []                ;; the enemies in play, in order: [x=,y=] (10x10)
 var score   = 0
 
 func overlap (a, aw, ah, b, bw, bh) {
@@ -52,7 +53,7 @@ task Enemy (game, i, e) {
     }
 }
 
-var fire = nil                  ;; the gun asks the first free shot, in this frame
+pin S = [fire=nil]                  ;; the gun asks the first free shot, in this frame
 
 ;; A shot: a slot that waits to be fired, flies, and is free again. The
 ;; first free slot takes the request of the gun, and moves at once, in the
@@ -62,9 +63,9 @@ task Shot (game) {
     par {
         loop {
             set pub = nil
-            await :rl.frame until fire
-            set pub = fire
-            set fire = nil
+            await :rl.frame until S.fire
+            set pub = S.fire
+            set S.fire = nil
             loop {
                 set pub.x += 7
                 var done = (pub.x + 10) >= W
@@ -99,11 +100,11 @@ task Shot (game) {
 ;; of the drawing: the waves, the player, the enemies, the player back inside
 ;; the screen, the gun, the shots, the score.
 task Play () {
-    set player  = [x=20, y=50]
-    set enemies = []
+    set player.x, player.y = 20, 50
+    vector.clear(enemies)
     set score   = 0
-    set fire    = nil
-    val all = []
+    set S.fire    = nil
+    vector.clear(all)
     loop i in 50 {
         val x = rl.random(W, W + 1000)
         val y = rl.random(0, H - 10)
@@ -180,7 +181,7 @@ task Play () {
                     loop _ in 4 {
                         await :rl.frame until rl.key_down('SPACE')
                     }
-                    set fire = [x=player.x, y=player.y + 5]
+                    set S.fire = [x=player.x, y=player.y + 5]
                 }
             }
         }
