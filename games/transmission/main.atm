@@ -10,7 +10,7 @@
 ;; images (the missions, the atlas of words, the layout of the message, the
 ;; headline) is the C of the original, in the prelude below.
 
-include "../../raylib.atm"
+include "../../ray.atm"
 include "../screens.atm"
 
 ```:prelude
@@ -195,19 +195,19 @@ static AVal tm_ending (int cur) {
 ```
 
 val W, H = 1280, 720
-val f32  = rl.f32
+val f32  = ray.f32
 
-rl.window [title="transmission mission [GGJ18]", width=W, height=H, fps=60]
-rl.audio_init()
-pin music  = rl.music("resources/audio/music_title.ogg")
-pin fxbutton = rl.sound("resources/audio/fx_newspaper.ogg")
-rl.music_volume(music, 1)
-rl.play_music(music)
-pin font_mission = rl.font_ex("resources/fonts/traveling_typewriter.ttf", 64, 250)
-pin tbutton = rl.texture("resources/textures/title_ribbon.png")
+ray.window [title="transmission mission [GGJ18]", width=W, height=H, fps=60]
+ray.audio_init()
+pin music  = ray.music("resources/audio/music_title.ogg")
+pin fxbutton = ray.sound("resources/audio/fx_newspaper.ogg")
+ray.music_volume(music, 1)
+ray.play_music(music)
+pin font_mission = ray.font_ex("resources/fonts/traveling_typewriter.ttf", 64, 250)
+pin tbutton = ray.texture("resources/textures/title_ribbon.png")
 
 ;; the button of every screen, at the bottom right
-val BW, BH = rl.texture_width(tbutton), rl.texture_height(tbutton)
+val BW, BH = ray.texture_width(tbutton), ray.texture_height(tbutton)
 val BX, BY = W - BW, (H - BH) - 50
 var button_fade = f32(0.8)
 var mission = 0                         ;; currentMission
@@ -215,10 +215,10 @@ val MISSIONS = 4
 
 ;; IsButtonPressed: the mouse over it lights it; a click (or a tap) presses it
 func button_pressed (fx) {
-    if rl.check_collision_point_rec(rl.mouse_x(), rl.mouse_y(), BX, BY, BW, BH) {
+    if ray.check_collision_point_rec(ray.mouse_x(), ray.mouse_y(), BX, BY, BW, BH) {
         set button_fade = 1
-        if rl.mouse_pressed(0) || rl.gesture_detected(rl.GESTURE_TAP) {
-            rl.play_sound(fxbutton)
+        if ray.mouse_pressed(0) || ray.gesture_detected(ray.GESTURE_TAP) {
+            ray.play_sound(fxbutton)
             return true
         }
     } else {
@@ -227,31 +227,31 @@ func button_pressed (fx) {
     false
 }
 func draw_button (text) {
-    rl.draw_texture_pro(tbutton, 0, 0, BW, BH, BX, BY, BW, BH, 0, 0, 0, rl.fade(rl.WHITE, button_fade))
-    val mx, my = rl.measure_ex(font_mission, text, 30, 0)
+    ray.draw_texture_pro(tbutton, 0, 0, BW, BH, BX, BY, BW, BH, 0, 0, 0, ray.fade(ray.WHITE, button_fade))
+    val mx, my = ray.measure_ex(font_mission, text, 30, 0)
     val cx, cy = f32(BX + f32(BW/2)), f32(BY + f32(BH/2))
-    rl.text_ex(font_mission, text, f32(f32(cx - f32(mx/2)) + 10), f32(f32(cy - f32(my/2)) - 10), 30, 0, rl.WHITE)
+    ray.text_ex(font_mission, text, f32(f32(cx - f32(mx/2)) + 10), f32(f32(cy - f32(my/2)) - 10), 30, 0, ray.WHITE)
 }
 
 ;; The logo of raylib, then the logo of the team: 200 frames in, 100 out.
 task LogoScreen () {
-    pin cw = rl.texture("resources/textures/cw_logo.png")
+    pin cw = ray.texture("resources/textures/cw_logo.png")
     do {
         pin l = spawn Logo(:title, nil)
-        await :rl.frame until l.pub
+        await :frame until l.pub
     }
     var alpha = 0
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(cw, (W//2) - (rl.texture_width(cw)//2), (H//2) - (rl.texture_height(cw)//2), rl.fade(rl.WHITE, alpha))
+        loop on :draw {
+            ray.draw_texture(cw, (W//2) - (ray.texture_width(cw)//2), (H//2) - (ray.texture_height(cw)//2), ray.fade(ray.WHITE, alpha))
         }
     }
     loop _ in 201 {
-        await :rl.frame
+        await :frame
         set alpha = math.min(f32(alpha + f32(0.02)), 1)
     }
     loop _ in 101 {
-        await :rl.frame
+        await :frame
         set alpha = f32(alpha - f32(0.02))
     }
     set pub = :title
@@ -261,36 +261,36 @@ task LogoScreen () {
 ;; The title types "transmission", then "mission", a letter every 15 frames;
 ;; the button or ENTER shows it whole and goes on.
 task Title () {
-    pin back   = rl.texture("resources/textures/title_background.png")
-    pin typing = rl.sound("resources/audio/fx_typing.ogg")
-    pin tfont  = rl.font_ex("resources/fonts/mom_typewritter.ttf", 96)
+    pin back   = ray.texture("resources/textures/title_background.png")
+    pin typing = ray.sound("resources/audio/fx_typing.ogg")
+    pin tfont  = ray.font_ex("resources/fonts/mom_typewritter.ttf", 96)
     set mission = 0
     var tl, ml = 0, 0
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, 0, 0, rl.WHITE)
-            rl.text_ex(tfont, rl.text_subtext("transmissionmission", 0, tl), 519, 221, 44, 0, rl.BLACK)
-            rl.text_ex(tfont, rl.text_subtext("transmissionmission", 12, ml), 580, 261, 44, 0, rl.BLACK)
+        loop on :draw {
+            ray.draw_texture(back, 0, 0, ray.WHITE)
+            ray.text_ex(tfont, ray.text_subtext("transmissionmission", 0, tl), 519, 221, 44, 0, ray.BLACK)
+            ray.text_ex(tfont, ray.text_subtext("transmissionmission", 12, ml), 580, 261, 44, 0, ray.BLACK)
             draw_button("start")
         }
     }
     par :any {
         loop _ in 12 {
-            await(15, :rl.frame)
+            await(15, :frame)
             set tl += 1
-            rl.play_sound(typing)
+            ray.play_sound(typing)
         }
         loop _ in 7 {
-            await(15, :rl.frame)
+            await(15, :frame)
             set ml += 1
-            rl.play_sound(typing)
+            ray.play_sound(typing)
         }
         await false
     } with {
-        await :rl.frame until button_pressed(fxbutton) || rl.key_pressed('ENTER')
+        await :frame until button_pressed(fxbutton) || ray.key_pressed('ENTER')
     }
     set tl, ml = 12, 7
-    rl.stop_music(music)
+    ray.stop_music(music)
     set pub = :mission
     await false
 }
@@ -303,28 +303,28 @@ var show_button = false
 ;; button), a wait, the brief is typed, a wait, the keyword shows and
 ;; blinks. The button (or ENTER) first skips to the end, then goes on.
 task Mission () {
-    pin back     = rl.texture("resources/textures/mission_background.png")
-    pin backline = rl.texture("resources/textures/mission_backline.png")
-    pin transmit = rl.sound("resources/audio/fx_message.ogg")
-    pin mmusic   = rl.music("resources/audio/music_mission.ogg")
+    pin back     = ray.texture("resources/textures/mission_background.png")
+    pin backline = ray.texture("resources/textures/mission_backline.png")
+    pin transmit = ray.sound("resources/audio/fx_message.ogg")
+    pin mmusic   = ray.music("resources/audio/music_mission.ogg")
     set button_fade = f32(0.8)
-    rl.play_music(mmusic)
+    ray.play_music(mmusic)
     pin m = `:value tm_mission(RL_I($mission), $font_mission)`
     val ky = f32(f32(245 + m.h) + 60)
     var fade, length, number, keyword, blink = 0, 0, false, false, true
     var done = false                    ;; writeEnd
     var c = 0                           ;; the frames of the current wait (the C keeps them after a skip)
-    rl.play_sound(transmit)
+    ray.play_sound(transmit)
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, 0, 0, rl.WHITE)
-            rl.draw_texture_pro(backline, 0, 0, W, rl.texture_height(backline), 0, 0, W, rl.texture_height(backline), 0, 0, 0, rl.fade(rl.WHITE, fade))
+        loop on :draw {
+            ray.draw_texture(back, 0, 0, ray.WHITE)
+            ray.draw_texture_pro(backline, 0, 0, W, ray.texture_height(backline), 0, 0, W, ray.texture_height(backline), 0, 0, 0, ray.fade(ray.WHITE, fade))
             if number {
-                rl.text_ex(font_mission, string.format("Filtración #%02d ", mission + 1), 150, 185, 40, 0, rl.RAYWHITE)
+                ray.text_ex(font_mission, string.format("Filtración #%02d ", mission + 1), 150, 185, 40, 0, ray.RAYWHITE)
             }
-            rl.text_ex(font_mission, rl.text_subtext(m.brief, 0, length), 150, 245, 30, 0, rl.LIGHTGRAY)
+            ray.text_ex(font_mission, ray.text_subtext(m.brief, 0, length), 150, 245, 30, 0, ray.LIGHTGRAY)
             if keyword && blink {
-                rl.text_ex(font_mission, "Keyword: " ++ m.key, 150, ky, 40, 0, rl.color(198, 49, 60, 255))
+                ray.text_ex(font_mission, "Keyword: " ++ m.key, 150, ky, 40, 0, ray.color(198, 49, 60, 255))
             }
             if show_button {
                 draw_button(if done => "codificar" => "saltar")
@@ -335,7 +335,7 @@ task Mission () {
     pin wait = task (n) {
         set c = 0
         loop {
-            await :rl.frame
+            await :frame
             set c += 1
             until (c % n) == 0
         }
@@ -345,7 +345,7 @@ task Mission () {
         await wait(60)
         set c = 0
         loop {
-            await :rl.frame
+            await :frame
             set c += 1
             set fade = f32(fade + f32(0.02))
             until (c % 30) == 0
@@ -353,7 +353,7 @@ task Mission () {
         set c, number, show_button = 0, true, true
         await wait(60)
         loop {
-            await :rl.frame
+            await :frame
             set length += 1
             set c = 0
             until length == m.max
@@ -362,7 +362,7 @@ task Mission () {
         false
     } with {
         ;; ENTER or the button, once the button shows, skips the rest
-        await :rl.frame until show_button && (rl.key_pressed('ENTER') || button_pressed(fxbutton))
+        await :frame until show_button && (ray.key_pressed('ENTER') || button_pressed(fxbutton))
         set length = m.max
         true
     }
@@ -370,7 +370,7 @@ task Mission () {
     ;; the keyword blinks every 15 frames, from where the counter was
     spawn {
         loop {
-            await :rl.frame
+            await :frame
             set c += 1
             if (c % 15) == 0 {
                 set c = 0
@@ -379,11 +379,11 @@ task Mission () {
         }
     }
     ;; (the C checks the button again in the frame the writing ends)
-    if skipped || !(show_button && (rl.key_pressed('ENTER') || button_pressed(fxbutton))) {
-        await :rl.frame until show_button && (rl.key_pressed('ENTER') || button_pressed(fxbutton))
+    if skipped || !(show_button && (ray.key_pressed('ENTER') || button_pressed(fxbutton))) {
+        await :frame until show_button && (ray.key_pressed('ENTER') || button_pressed(fxbutton))
     }
     set show_button = false
-    rl.stop_music(music)
+    ray.stop_music(music)
     set pub = :gameplay
     await false
 }
@@ -391,14 +391,14 @@ task Mission () {
 pin words = []                          ;; the twelve words to place, for the ending too
 
 task Gameplay () {
-    pin back     = rl.texture("resources/textures/message_background.png")
-    pin vignette = rl.texture("resources/textures/message_vignette.png")
-    pin fxgrab  = rl.sound("resources/audio/fx_grab.ogg")
-    pin fxplace = rl.sound("resources/audio/fx_place.ogg")
-    pin fxleave = rl.sound("resources/audio/fx_leave.ogg")
-    pin spy = rl.music("resources/audio/s_p_y.xm")
-    pin fmsg = rl.font_ex("resources/fonts/traveling_typewriter.ttf", 30, 250)
-    rl.play_music(spy)
+    pin back     = ray.texture("resources/textures/message_background.png")
+    pin vignette = ray.texture("resources/textures/message_vignette.png")
+    pin fxgrab  = ray.sound("resources/audio/fx_grab.ogg")
+    pin fxplace = ray.sound("resources/audio/fx_place.ogg")
+    pin fxleave = ray.sound("resources/audio/fx_leave.ogg")
+    pin spy = ray.music("resources/audio/s_p_y.xm")
+    pin fmsg = ray.font_ex("resources/fonts/traveling_typewriter.ttf", 30, 250)
+    ray.play_music(spy)
     pin g = `:value tm_gameplay(RL_I($mission), $fmsg)`
     val atlas = g.atlas
     val n = g.count
@@ -417,38 +417,38 @@ task Gameplay () {
     pin mw_set_hover = func (j, v) { `messageWords[RL_I($j)].hover = a_truthy($v);` }
     pin over = func (j) {
         val x, y, w, h = mw(j)
-        rl.check_collision_point_rec(rl.mouse_x(), rl.mouse_y(), x, y, w, h)
+        ray.check_collision_point_rec(ray.mouse_x(), ray.mouse_y(), x, y, w, h)
     }
     var can_send = false
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, 0, 0, rl.WHITE)
-            rl.text_ex(fmsg, g.msg, 430, 300, rl.font_size(fmsg), 0, rl.BLACK)
+        loop on :draw {
+            ray.draw_texture(back, 0, 0, ray.WHITE)
+            ray.text_ex(fmsg, g.msg, 430, 300, ray.font_size(fmsg), 0, ray.BLACK)
             loop i in n {
                 val x, y, w, h = mw(i)
-                rl.rectangle_lines(x, y, w, h, rl.fade(rl.RED, 0.35))
+                ray.rectangle_lines(x, y, w, h, ray.fade(ray.RED, 0.35))
                 if mw_hover(i) {
-                    rl.rectangle_v(x, y, w, h, rl.fade(rl.RED, 0.30))
+                    ray.rectangle_v(x, y, w, h, ray.fade(ray.RED, 0.30))
                 }
-                rl.text(string.format("%d", mw_id(i)), i*25, 0, 30, rl.RED)
+                ray.text(string.format("%d", mw_id(i)), i*25, 0, 30, ray.RED)
             }
             loop i,wd in words {
-                rl.draw_texture_rec(atlas, 0, i*35, 140, 35, wd.rec.x, wd.rec.y,
-                    if wd.picked => rl.MAROON => (if wd.hover => rl.RED => rl.WHITE))
+                ray.draw_texture_rec(atlas, 0, i*35, 140, 35, wd.rec.x, wd.rec.y,
+                    if wd.picked => ray.MAROON => (if wd.hover => ray.RED => ray.WHITE))
             }
-            rl.draw_texture_pro(vignette, 0, 0, rl.texture_width(vignette), rl.texture_height(vignette), 0, 0, W, H, 0, 0, 0, rl.WHITE)
+            ray.draw_texture_pro(vignette, 0, 0, ray.texture_width(vignette), ray.texture_height(vignette), 0, 0, W, H, 0, 0, 0, ray.WHITE)
             if can_send {
                 draw_button("enviar")
             }
         }
     }
-    loop on :rl.frame {
+    loop on :frame {
         loop i,wd in words {
-            if rl.check_collision_point_rec(rl.mouse_x(), rl.mouse_y(), wd.rec.x, wd.rec.y, wd.rec.w, wd.rec.h) {
+            if ray.check_collision_point_rec(ray.mouse_x(), ray.mouse_y(), wd.rec.x, wd.rec.y, wd.rec.w, wd.rec.h) {
                 set wd.hover = true
-                if rl.mouse_pressed(0) {
+                if ray.mouse_pressed(0) {
                     set wd.picked = true
-                    rl.play_sound(fxgrab)
+                    ray.play_sound(fxgrab)
                 }
             } else {
                 set wd.hover = false
@@ -457,12 +457,12 @@ task Gameplay () {
                 loop j in n {
                     mw_set_hover(j, over(j))
                 }
-                if rl.mouse_released(0) {
+                if ray.mouse_released(0) {
                     set wd.picked = false
                     loop j in n {
                         mw_set_hover(j, false)
                         if over(j) {
-                            rl.play_sound(fxplace)
+                            ray.play_sound(fxplace)
                             val x, y = mw(j)
                             set wd.rec.x, wd.rec.y = x, y
                             if mw_id(j) != -1 {
@@ -478,7 +478,7 @@ task Gameplay () {
                             }
                             break
                         } else {
-                            rl.play_sound(fxleave)
+                            ray.play_sound(fxleave)
                             set wd.rec = wd.ini ++ []
                             if i == mw_id(j) {
                                 mw_set_id(j, -1)
@@ -488,8 +488,8 @@ task Gameplay () {
                 }
             }
             if wd.picked {
-                set wd.rec.x = f32(rl.mouse_x() - f32(wd.rec.w/2))
-                set wd.rec.y = f32(rl.mouse_y() - f32(wd.rec.h/2))
+                set wd.rec.x = f32(ray.mouse_x() - f32(wd.rec.w/2))
+                set wd.rec.y = f32(ray.mouse_y() - f32(wd.rec.h/2))
             }
         }
         set can_send = true
@@ -499,35 +499,35 @@ task Gameplay () {
                 break
             }
         }
-        if can_send && (rl.key_pressed('ENTER') || button_pressed(fxbutton)) {
+        if can_send && (ray.key_pressed('ENTER') || button_pressed(fxbutton)) {
             set pub = :ending
         }
     }
 }
 
 task Ending () {
-    pin back     = rl.texture("resources/textures/ending_background.png")
-    pin vignette = rl.texture("resources/textures/message_vignette.png")
-    pin fxnews   = rl.sound("resources/audio/fx_batman.ogg")
+    pin back     = ray.texture("resources/textures/ending_background.png")
+    pin vignette = ray.texture("resources/textures/message_vignette.png")
+    pin fxnews   = ray.sound("resources/audio/fx_batman.ogg")
     pin e = `:value tm_ending(RL_I($mission))`
     val paper = e.paper
     val fnews = e.font
     var rotation, scale = f32(0.1), f32(0.05)
     var ready = false
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, 0, 0, rl.WHITE)
-            val pw, ph = rl.texture_width(paper), rl.texture_height(paper)
-            rl.draw_texture_pro(paper, 0, 0, pw, ph, W//2, H//2, f32(pw*scale), f32(ph*scale),
-                f32(f32(pw*scale)/2), f32(f32(ph*scale)/2), rotation, rl.WHITE)
-            rl.draw_texture_ex(vignette, 0, 0, 0, 2, rl.WHITE)
-            rl.text_ex(fnews, e.headline, 10, 10, rl.font_size(fnews), 0, rl.RAYWHITE)
+        loop on :draw {
+            ray.draw_texture(back, 0, 0, ray.WHITE)
+            val pw, ph = ray.texture_width(paper), ray.texture_height(paper)
+            ray.draw_texture_pro(paper, 0, 0, pw, ph, W//2, H//2, f32(pw*scale), f32(ph*scale),
+                f32(f32(pw*scale)/2), f32(f32(ph*scale)/2), rotation, ray.WHITE)
+            ray.draw_texture_ex(vignette, 0, 0, 0, 2, ray.WHITE)
+            ray.text_ex(fnews, e.headline, 10, 10, ray.font_size(fnews), 0, ray.RAYWHITE)
             ;; (as in the C, with the mission of now, which ENTER already moved on)
             val n = `:number tmEnding[RL_I($mission)].wordsCount`
             loop i in n {
                 val id = `:number messageWords[RL_I($i)].id`
                 val sol = `:number tmEnding[RL_I($mission)].sols[RL_I($i)]`
-                rl.text(`:string codingWords[RL_I($id)]`, 10, 60 + (30*i), 20, if id == sol => rl.GREEN => rl.RED)
+                ray.text(`:string codingWords[RL_I($id)]`, 10, 60 + (30*i), 20, if id == sol => ray.GREEN => ray.RED)
             }
             if ready {
                 draw_button("continuar")
@@ -535,11 +535,11 @@ task Ending () {
         }
     }
     spawn {
-        await(10, :rl.frame)
-        rl.play_sound(fxnews)
+        await(10, :frame)
+        ray.play_sound(fxnews)
     }
     ;; it spins and grows; once whole, the button, from that same frame
-    loop on :rl.frame {
+    loop on :frame {
         if !ready {
             set rotation = f32(rotation + 18)
             set scale = f32(scale + f32(0.0096))
@@ -547,12 +547,12 @@ task Ending () {
                 set scale, ready = 1, true
             }
         }
-        until ready && (rl.key_pressed('ENTER') || button_pressed(fxbutton))
+        until ready && (ray.key_pressed('ENTER') || button_pressed(fxbutton))
     }
     set mission += 1
     if mission >= MISSIONS {
         set mission = 0
-        rl.play_music(music)
+        ray.play_music(music)
         set pub = :title
     } else {
         set pub = :mission
@@ -561,27 +561,27 @@ task Ending () {
 }
 
 spawn {
-    loop on :rl.draw {
-        rl.clear(rl.RAYWHITE)
+    loop on :draw {
+        ray.clear(ray.RAYWHITE)
     }
 }
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
+    if ray.frame() > 0 {
+        loop on :draw {
             pin ids = []
             loop j in 8 {
                 vector.insert(ids, `:number messageWords[RL_I($j)].id`)
             }
-            print(string.format("%d %d %s", rl.frame(), mission, vector.join(ids, " ")))
+            print(string.format("%d %d %s", ray.frame(), mission, vector.join(ids, " ")))
         }
     }
 }
 ;; [/trace]
 
 pin FADE = [
-    color = rl.BLACK,
+    color = ray.BLACK,
     inc = f32(0.02), into = \{ it > f32(1.01) },
     dec = f32(0.02), back = \{ it < f32(-0.01) },
 ]

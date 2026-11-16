@@ -48,12 +48,12 @@ loop {
     ...
     until wall || self
     emit :moved [tail=tail]
-    await(5, :rl.frame)
+    await(5, :frame)
 }
 ```
 
 The counter, its reset, its modulo, and the "is it the frame" question are
-gone; what is left reads as what the game does. `await(n, :rl.frame)` awaits the
+gone; what is left reads as what the game does. `await(n, :frame)` awaits the
 nth frame of logic: a paused game (see 4) does not
 count them, with no code for it.
 
@@ -64,10 +64,10 @@ logic resets; the port has a task that is off 30 frames and on 30:
 ```
 task Blink (s, x, y, spacing, c) {
     loop {
-        await(30, :rl.frame)
-        watching 30, :rl.frame {
-            loop on :rl.draw {
-                rl.text_ex(font, s, x, y, SIZE, spacing, c)
+        await(30, :frame)
+        watching 30, :frame {
+            loop on :draw {
+                ray.text_ex(font, s, x, y, SIZE, spacing, c)
             }
         }
     }
@@ -93,7 +93,7 @@ In the port, the turns are a loop: after a move, one valid key.
 ```
 loop {
     await :moved
-    val e = await :rl.key.dn until (match it.name {
+    val e = await :key.dn until (match it.name {
         'RIGHT' => speed.x == 0
         'LEFT'  => speed.x == 0
         'UP'    => speed.y == 0
@@ -147,7 +147,7 @@ task Shot (game) {
     par {
         loop {
             set pub = nil
-            await :rl.frame until fire
+            await :frame until fire
             set pub = fire
             set fire = nil
             loop {
@@ -202,9 +202,9 @@ loop {
         pin play = spawn Play()
         spawn {
             loop {
-                await :rl.key.dn [name='P']
-                toggle play(false) with :rl.draw
-                watching :rl.key.dn [name='P'] {
+                await :key.dn [name='P']
+                toggle play(false) with :draw
+                watching :key.dn [name='P'] {
                     ... "GAME PAUSED" ...
                 }
                 toggle play(true)
@@ -212,10 +212,10 @@ loop {
         }
         await(play)
     }
-    watching :rl.key.dn [name='ENTER'] {
+    watching :key.dn [name='ENTER'] {
         ... "PRESS [ENTER] TO PLAY AGAIN" ...
     }
-    await :rl.frame         ;; the frame of ENTER only starts the next game
+    await :frame         ;; the frame of ENTER only starts the next game
 }
 ```
 
@@ -292,10 +292,10 @@ alpha goes up, the next screen starts toggled off, the alpha goes down,
 and the next screen is toggled on:
 
 ```
-toggle s(false) with :rl.draw
+toggle s(false) with :draw
 loop {
-    await :rl.frame
-    set alpha = rl.f32(alpha + f.inc)
+    await :frame
+    set alpha = ray.f32(alpha + f.inc)
     until f.into(alpha)
 }
 ... (the next screen, toggled off; the alpha goes back)
@@ -394,7 +394,7 @@ keep what the C does by accident:
   typing on one variable);
 - the drawing changing the state (koala_seasons moves the fire's
   animation while drawing it);
-- floats of 32 bits, rounded where the C rounds (`rl.f32`), against the
+- floats of 32 bits, rounded where the C rounds (`ray.f32`), against the
   doubles of Atmos; and the C's own `float`, `int` and `double` mixes.
 
 Each one is listed with its game in [fidelity.md](fidelity.md).

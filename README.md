@@ -76,7 +76,7 @@ needs the platform with no screen.
 All 23 games are ported, each identical to its original on its scripted
 runs (55 runs; see [doc/table.md](doc/table.md)).
 
-- `raylib.atm`: the environment.
+- `ray.atm`: the environment.
 - `classics/`: the 12 classics. `classics/classic.atm` is the pause and
   game over that they share.
 - `games/`: the 11 other games, with their assets. `games/screens.atm` is

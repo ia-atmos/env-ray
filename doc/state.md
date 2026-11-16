@@ -14,9 +14,9 @@ screen) should become an `await`, a block, or a task.
 | C | Kind | Port |
 |---|------|------|
 | `screenWidth`, `screenHeight` | constant | `W`, `H` |
-| `framesCounter` | control: one step every 5 frames of play | `await rl.Frames(5)` in the loop of the snake; the pause stops it with the rest of the logic |
+| `framesCounter` | control: one step every 5 frames of play | `await(5, :frame)` in the loop of the snake; the pause stops it with the rest of the logic |
 | `gameOver` | control: tested at the top of `UpdateGame` | the task `Logic` ends, and `Play` with it; `Classic` awaits it, shows "PRESS [ENTER]", and starts another |
-| `pause` | control: tested around the logic | `toggle play(false) with :rl.draw` between two `P`, in `Classic`; the text is a task that lives while paused |
+| `pause` | control: tested around the logic | `toggle play(false) with :draw` between two `P`, in `Classic`; the text is a task that lives while paused |
 | `allowMove` | control: one turn per move | the task of turns awaits `:moved`, then one valid key |
 | `fruit.active` | control: a new fruit is needed | the task of the fruit: placed, then awaits being eaten, then the next frame |
 | `fruit.position` | drawn | `fruit` |
@@ -37,14 +37,14 @@ which the game never reads.
 |---|------|------|
 | `screenWidth`, `screenHeight` | constant | `W`, `H` |
 | `gameOver` | control: tested at the top of `UpdateGame` | the task `Play` ends on `:over`; `Classic` awaits it |
-| `pause` | control | `toggle play(false) with :rl.draw`: the play stops but is still drawn |
-| `superfx` | control: a flash, set in the update, cleared in the drawing | a task: `await :scored`, then `await :rl.draw`, then one white rectangle |
+| `pause` | control | `toggle play(false) with :draw`: the play stops but is still drawn |
+| `superfx` | control: a flash, set in the update, cleared in the drawing | a task: `await :scored`, then `await :draw`, then one white rectangle |
 | `tubes[].active` | control: a pair still to score | the task `Tube`: a loop until floppy passes it, one `:scored`, then a loop behind it |
 | `tubes[].rec`, `tubesPos[]` | data: two rectangles per pair, and their position | `x`, `ytop`, `ybot`, local to each `Tube` |
-| `tubes[].color` | constant | `rl.GRAY` |
+| `tubes[].color` | constant | `ray.GRAY` |
 | `tubesSpeedX` | constant | `2` |
 | `floppy.position` | drawn | `floppy` |
-| `floppy.radius`, `floppy.color` | constant | `RADIUS`, `rl.DARKGRAY` |
+| `floppy.radius`, `floppy.color` | constant | `RADIUS`, `ray.DARKGRAY` |
 | `score`, `hiScore` | score | `score`, `hiscore` |
 
 Left in the port for the trace only: `phase`.
@@ -55,7 +55,7 @@ Left in the port for the trace only: `phase`.
 |---|------|------|
 | `screenWidth`, `screenHeight` | constant | `W`, `H` |
 | `gameOver` | control | the rules of `Play` end it (`until dead`), after the home of that frame is checked, as in the C |
-| `pause` | control | `toggle play(false) with :rl.draw` |
+| `pause` | control | `toggle play(false) with :draw` |
 | `follow` | control: the enemy chases from anywhere, and a red frame is drawn | the phase between `:picked` and `:stored`, in the enemy and in the task of the red frame |
 | `points.active` | control: the gold is out, to be picked | the task of the gold: awaits `:touch.gold`, then `:touch.home`; the gold is drawn by a task that lives until `:picked` |
 | `home.active` | control: set when the gold is picked, never read | gone |
@@ -123,7 +123,7 @@ Left in the port for the trace only: `phase`.
 | `wave` | control: an enum and a `switch` with three copies of the same case | a `loop` over the three waves |
 | `smooth` | control: the title fades in, then out | two loops in sequence: until `alpha >= 1`, then forever |
 | `victory` | control | `:victory`, emitted once by the last wave; the score task then also draws "YOU WIN" |
-| `shootRate` | control: a count of the frames with SPACE held, reset by a hit | the gun: `await :rl.frame until rl.key_down('SPACE')` four times per shot, restarted by `:rearm` |
+| `shootRate` | control: a count of the frames with SPACE held, reset by a hit | the gun: `await :frame until ray.key_down('SPACE')` four times per shot, restarted by `:rearm` |
 | `enemiesKill` | control: the kills of the wave, compared with `==` | **left**: `kills`, local to the waves, since the C compares it exactly (two kills in one frame at the end of a wave would keep the wave forever) |
 | `enemy[].active` | control: always true, never cleared | gone |
 | `shoot[].active` | control | the phase of each `Shot`: waits to be fired, then flies until it hits or leaves |
@@ -167,7 +167,7 @@ Left in the port for the trace only: `phase`, `missiles_on`.
 | `gameOver` | control | the loop of turns in `Play` ends when a team is gone |
 | `pause` | control | `Classic` |
 | `ballOnAir` | control: aiming, or the ball in the air | two phases of each turn, in sequence: a `watching :fire` while aiming, then a `watching :landed` while the ball flies |
-| `ball.active` | control: the speed is set in the first frame of the flight | the first frame of the flight, after `await :rl.frame` |
+| `ball.active` | control: the speed is set in the first frame of the flight | the first frame of the flight, after `await :frame` |
 | `explosion[].active` | control | gone: `explosions` holds the impact points; the unused slots, at (0,0), are one more point in the check, as in the C |
 | `playerTurn` | data: whose turn; never reset, so the winner starts the next game | `turn`, also across games |
 | `player[]` | drawn, and data; never fully reset (a player beyond the last building keeps its old y) | `players`, also across games |
@@ -315,7 +315,7 @@ in the C: they act while they are drawn.
 | C | Kind | Port |
 |---|------|------|
 | `doHairCut`, `doHairTint`, `doEyeLiner`, `doLipStick`, `doNose`, `doGlasses` | control: a button used once | the task `Once`: a loop until the button is pressed, its effect, then the button inert (`doGlasses` was never read) |
-| `framesCounter` (title) | control: a part of the player every 6 frames | `await rl.Frames(6)` in a loop |
+| `framesCounter` (title) | control: a part of the player every 6 frames | `await(6, :frame)` in a loop |
 | `titleCounter` | control: the button after 180 frames; never reset, so a second visit shows it at once | **left**: `title_frames`, outside the screen |
 | `titlePositionY` | drawn | `y` |
 | `framesCounter`, `state` (ending) | control: the question mark blinks for 200 frames, then the likes | an await of 201 frames with a blink of 15 and 15, then the likes in sequence |
@@ -334,7 +334,7 @@ fade (0.02 in and out).
 | `scrollPositionX` (title, ending) | drawn | `x` |
 | `framesCounter` (ending) | control: a blinking text | a blink of 30 and 30 |
 | `showObjective` | control: the objective until ENTER | `await ... until ENTER`, then the game |
-| `framesCounter`, `timeLevelSeconds`, `levelFinished` (gameplay) | control: a second every 60 frames, 180 of them | the timer: `await rl.Frames(60)` 180 times; `g.time` is drawn |
+| `framesCounter`, `timeLevelSeconds`, `levelFinished` (gameplay) | control: a second every 60 frames, 180 of them | the timer: `await(60, :frame)` 180 times; `g.time` is drawn |
 | `catShouldMove` | control: the cat walks to where it was sent | **left**: `walking`, since a click while walking changes the target and the arrival is checked in the middle of the frame |
 | `tiles[]` | drawn, and data: a level, a state, and a counter per tile | `tiles`, with the loops of the C |
 | `popup[]` | drawn: 60 slots | `popups`, 60 slots |
@@ -377,7 +377,7 @@ of raylib.
 | `blinkKeyWord` | drawn | `blink` |
 | `showButton` | control; never reset | **left**: `show_button`, outside the screen |
 | `state`, `rotation`, `scale` (ending) | control: the newspaper spins in, then the button | a loop that ends once whole and pressed; **left**: `ready` (the button is drawn from that frame) |
-| `framesCounter == 10` (ending) | control: a sound | `await rl.Frames(10)` |
+| `framesCounter == 10` (ending) | control: a sound | `await(10, :frame)` |
 | `words[]` (`picked`, `hover`, `rec`) | data: drag and drop | `words` |
 | `messageWords[]`, the missions, the atlas, the headline | data, built from files and images | the C of the original, in the prelude |
 | `currentMission`, `fadeButton` | data; never reset | `mission`, `button_fade` |
@@ -392,7 +392,7 @@ transition and no logo.
 | `screenWidth`, `screenHeight`, `MAX_ENEMIES` | constant | `W`, `H`, `N` |
 | `currentScreen` | control: TITLE, GAMEPLAY, ENDING | the tasks `Title`, `Gameplay`, `Ending`, in sequence and in a loop; the trace keeps a number, `screen` |
 | `framesCounter` (title, ending) | control: the blink of "PRESS ENTER" | the task `Blink`: 30 frames off, 30 on |
-| `framesCounter` (gameplay) | control: an enemy every 41 frames | `await rl.Frames(41)` in a loop of `Gameplay` |
+| `framesCounter` (gameplay) | control: an enemy every 41 frames | `await(41, :frame)` in a loop of `Gameplay` |
 | `gameraMode` | control: the mode, which the drawing of every screen reads | **left**: `gameraMode`; it changes in the middle of the loop over the enemies (a fish turns it on), and the slots after it see it in the same frame |
 | `enemyActive[]`, `enemyType[]`, `enemyRail[]`, `enemyBounds[]` | data: slots; an enemy takes the first free one, and its rail is never that of the slot before it | `game.enemies`, the same slots |
 | `playerRail`, `playerBounds` | drawn | `game.rail`; the rectangle is computed from it |
@@ -417,7 +417,7 @@ reset under the fade).
 | `framesCounter` (global) | unused | gone |
 | `finishScreen` (each screen) | control: the screen is over | `pub` of the screen |
 | `done`, `levelFinished` (each level) | control: the level is solved; never reset, so a level done stays done | the task `Level`: the play phase, then the wait; **left**: `L.done`, in the statics of the level, which a second visit reads to skip the play |
-| `framesCounter` (each level) | data: the time to solve (`levelTimeSec`); control: the wait of 30 or 90 frames before a click goes on (counted twice per frame but in level 00) | `L.frames` for the time (init resets it, as the C); the wait is `await rl.Frames(...)` |
+| `framesCounter` (each level) | data: the time to solve (`levelTimeSec`); control: the wait of 30 or 90 frames before a click goes on (counted twice per frame but in level 00) | `L.frames` for the time (init resets it, as the C); the wait is `await(..., :frame)` |
 | `levelTimeSec` | drawn | `L.secs` |
 | the statics of each level | data; some reset by init, some never (`innerCircleRadius`, `moveSpeed`, `resetCounter`, the hover flags) | a table per level, `L00` to `L09`, and `init00` to `init09` |
 | `resetCounter`, `enableCounter` (level 09) | control: the clock of the chain of clicks, which goes on after done | **left**: `L09.reset`, `L09.enable`; the clock is the hook `always` of the level |
@@ -434,7 +434,7 @@ goes over them, which differ from room to room).
 | C | Kind | Port |
 |---|------|------|
 | `currentScreen`, `onTransition`, `transFadeOut`, `transAlpha`, `transToScreen`, `transFromScreen` | control | `Screens`; a room is a screen through a small task that passes on its `pub` |
-| `framesCounter` (main) | control: 80 frames after the death, then the title | a task: `await :rl.frame until P.dead`, `await rl.Frames(80)`; it asks the title through `death`, which the room reads first in its frame, as the C does |
+| `framesCounter` (main) | control: 80 frames after the death, then the title | a task: `await :frame until P.dead`, `await(80, :frame)`; it asks the title through `death`, which the room reads first in its frame, as the C does |
 | `finishScreen` (each screen) | control | `pub` of the screen (the room it leads to) |
 | logo: `state`, `framesCounter`, `lettersCount`, `alpha`, `logoAlpha` | control | `Logo` of `screens.atm`, then a sequence for the logo of the team; the frames that the C counts from the letters of raylib into the logo of the team are counted once, in `count` |
 | title, ending: `framesCounter` | control: the blink after 200 frames | the task `Blink` |
@@ -459,7 +459,7 @@ the C of the original, in a prelude.
 | C | Kind | Port |
 |---|------|------|
 | `currentScreen` | control | tasks `Logo`, `Title`, `Gameplay`, `Credits`, `Ending`, each returning the next; **left**: `screen`, for the trace |
-| `framesCounter` (logo, title) | control: 300 frames of logo; 140 of title before the 3D | `await rl.Frames(301)`, `await rl.Frames(141)` |
+| `framesCounter` (logo, title) | control: 300 frames of logo; 140 of title before the 3D | `await(301, :frame)`, `await(141, :frame)` |
 | `titleState` | drawn: down, the 3D, the shadows; not reset when coming back from a game | **left**: `title`, read by the drawing and by `Title` to go on from where it was |
 | `elementPositionY`, `creditsScrollingPosY` | drawn | `y`, `credits_y` |
 | `optionSelect` | drawn; shared by the title and the pause menu | `option` |

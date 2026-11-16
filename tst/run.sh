@@ -34,7 +34,7 @@ if [ $# = 0 ]; then
         fail rlt
     fi
 
-    # the driver of raylib.atm
+    # the driver of ray.atm
     "$ROOT/tools/atmos.sh" tst/env/env.atm "$OUT/env" || fail "env (build)"
     (cd "$OUT" && RL_FRAMES=300 RL_SEED=7 \
         RL_INPUT=10:dn:RIGHT,40:up:RIGHT,50:dn:P,51:up:P,60:mv:30:40,60:md:0,61:mu:0 \

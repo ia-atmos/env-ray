@@ -3,7 +3,7 @@
 #
 #   lines and tokens   tools/count.py on the original (before the patch)
 #                      and on the port, with the files it includes (as
-#                      classics/classic.atm), but not raylib.atm
+#                      classics/classic.atm), but not ray.atm
 #   control            the rows of doc/state.md whose kind starts with
 #                      "control"; those whose port says **left** are left
 #   runs               tst/<game>/*.run: frames and screens; "yes" if every
@@ -46,7 +46,7 @@ def port(g):
     for f in list(files):
         for inc in re.findall(r'^include "([^"]+)"', open(f).read(), re.M):
             path = os.path.normpath(os.path.join(os.path.dirname(f), inc))
-            if not path.endswith('raylib.atm') and path not in files:
+            if not path.endswith('ray.atm') and path not in files:
                 files.append(path)
     return files
 

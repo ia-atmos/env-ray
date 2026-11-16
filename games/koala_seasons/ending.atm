@@ -7,8 +7,8 @@
 ;; counts are functions of it.
 
 pin E = [counter=0, frames=0, seasons=0, leaves=0, score=0, clock=0, kills_frames=0,
-         replaying=false, replay=0, play_color=rl.WHITE, shop_color=rl.WHITE,
-         trophy_color=rl.WHITE, share_color=rl.WHITE, active=[], leafs=[]]
+         replaying=false, replay=0, play_color=ray.WHITE, shop_color=ray.WHITE,
+         trophy_color=ray.WHITE, share_color=ray.WHITE, active=[], leafs=[]]
 val DELAY, SEASONS_, LEAVES, KILLS, REPLAY = 0, 1, 2, 3, 4
 loop i in 128 { set E.active@i = false }
 loop i in 20 { set E.leafs@i = [] }
@@ -26,17 +26,17 @@ func ending_init () {
     set E.replay, E.replaying = 0, false
     set E.final_years = initYears + (seasons // 4)
     set E.elapsed = seasons // 4
-    set E.play_color, E.shop_color, E.trophy_color, E.share_color = rl.WHITE, rl.WHITE, rl.WHITE, rl.WHITE
+    set E.play_color, E.shop_color, E.trophy_color, E.share_color = ray.WHITE, ray.WHITE, ray.WHITE, ray.WHITE
     set E.score, E.seasons, E.leaves = 0, 0, 0
     set E.counter = DELAY
     loop _,p in E.leafs {
         set p.active = false
-        set p.x = rl.random(-20, 20)
-        set p.y = rl.random(-20, 20)
-        set p.sx = f32(rl.random(-500, 500) / 100)
-        set p.sy = f32(rl.random(-500, 500) / 100)
-        set p.size = f32(rl.random(3, 10) / 5)
-        set p.rot = rl.random(0, 360)
+        set p.x = ray.random(-20, 20)
+        set p.y = ray.random(-20, 20)
+        set p.sx = f32(ray.random(-500, 500) / 100)
+        set p.sy = f32(ray.random(-500, 500) / 100)
+        set p.size = f32(ray.random(3, 10) / 5)
+        set p.rot = ray.random(0, 360)
         set p.alpha = 1
     }
     set E.init_text = SEASON_TEXT@initSeason
@@ -52,20 +52,20 @@ pin SHOP = [x=f32(W * 0.871), y=f32(H * 0.303), w=123, h=123]
 pin TROPHY = [x=f32(W * 0.871), y=f32(H * 0.513), w=123, h=123]
 pin SHARE = [x=f32(W * 0.871), y=f32(H * 0.719), w=123, h=123]
 func mouse_in (r) {
-    rl.check_collision_point_rec(rl.mouse_x(), rl.mouse_y(), r.x, r.y, r.w, r.h)
+    ray.check_collision_point_rec(ray.mouse_x(), ray.mouse_y(), r.x, r.y, r.w, r.h)
 }
 
 ;; The counts, one after the other. Each phase ends by itself or by ENTER;
 ;; the button of play ends them all (`Ending` races them).
 task Counts () {
     ;; the delay
-    loop on :rl.frame {
+    loop on :frame {
         set E.frames += 1
         until E.frames >= 10
     }
     set E.counter, E.frames = SEASONS_, 0
     ;; the seasons
-    loop on :rl.frame {
+    loop on :frame {
         set E.frames += 1
         var over = false
         if seasons > 0 {
@@ -77,14 +77,14 @@ task Counts () {
         } else {
             set over = true
         }
-        if rl.key_pressed('ENTER') {
+        if ray.key_pressed('ENTER') {
             set E.seasons, E.clock, E.frames, over = seasons, E.final_rot, 0, true
         }
         until over
     }
     set E.counter = LEAVES
     ;; the leaves
-    loop on :rl.frame {
+    loop on :frame {
         set E.frames += 1
         var over = false
         if currentLeaves > 0 {
@@ -107,14 +107,14 @@ task Counts () {
         } else {
             set over = true
         }
-        if rl.key_pressed('ENTER') {
+        if ray.key_pressed('ENTER') {
             set E.leaves, E.frames, over = currentLeaves, 0, true
         }
         until over
     }
     set E.counter = KILLS
     ;; the kills
-    loop on :rl.frame {
+    loop on :frame {
         set E.frames += 1
         var over = false
         if score > 0 {
@@ -134,7 +134,7 @@ task Counts () {
         } else {
             set over = true
         }
-        if rl.key_pressed('ENTER') {
+        if ray.key_pressed('ENTER') {
             set E.score, E.frames, over = score, 0, true
             loop i in 128 { set E.active@i = true }
         }
@@ -146,32 +146,32 @@ task Counts () {
 
 task Ending () {
     spawn {
-        loop on :rl.draw { ending_draw() }
+        loop on :draw { ending_draw() }
     }
     ;; the phases: the counts, or the button, then the replay
     spawn {
         par :any {
-            await :rl.frame until E.counter == REPLAY
+            await :frame until E.counter == REPLAY
         } with {
             await Counts()
         }
         loop {
             set E.frames += 1
-            if rl.key_pressed('ENTER') { set E.replaying = true }
+            if ray.key_pressed('ENTER') { set E.replaying = true }
             if E.replaying {
                 set E.replay += 1
                 if E.replay >= 30 {
                     set pub = :gameplay
-                    set initSeason = rl.random(0, 3)
+                    set initSeason = ray.random(0, 3)
                 }
-                set E.play_color = rl.GOLD
+                set E.play_color = ray.GOLD
             }
-            await :rl.frame
+            await :frame
         }
     }
     ;; after them, in every frame: the leaves fly; the buttons light, and
     ;; the one of play goes to the replay
-    loop on :rl.frame {
+    loop on :frame {
         loop _,p in E.leafs {
             if p.active {
                 set p.x = f32(p.x + p.sx)
@@ -186,21 +186,21 @@ task Ending () {
             }
         }
         if mouse_in(PLAY) {
-            set E.play_color = rl.GOLD
-            if rl.mouse_pressed(0) {
+            set E.play_color = ray.GOLD
+            if ray.mouse_pressed(0) {
                 set E.counter, E.replaying = REPLAY, true
             }
         } else {
-            set E.play_color = rl.WHITE
+            set E.play_color = ray.WHITE
         }
-        set E.shop_color = if mouse_in(SHOP) => rl.GOLD => rl.WHITE
-        set E.trophy_color = if mouse_in(TROPHY) => rl.GOLD => rl.WHITE
-        set E.share_color = if mouse_in(SHARE) => rl.GOLD => rl.WHITE
+        set E.shop_color = if mouse_in(SHOP) => ray.GOLD => ray.WHITE
+        set E.trophy_color = if mouse_in(TROPHY) => ray.GOLD => ray.WHITE
+        set E.share_color = if mouse_in(SHARE) => ray.GOLD => ray.WHITE
     }
 }
 
 func pro (r, x, y, c) {
-    rl.draw_texture_pro(atlas1, r.x, r.y, r.w, r.h, x, y, r.w, r.h, 0, 0, 0, c)
+    ray.draw_texture_pro(atlas1, r.x, r.y, r.w, r.h, x, y, r.w, r.h, 0, 0, 0, c)
 }
 pin PAINTS = [                          ;; by killer: the painting and where
     [ATLAS01.ending_paint_koalafire, 0.145, 0.171],
@@ -226,54 +226,54 @@ pin DEATHS = [
 func ending_draw () {
     val bg = ATLAS02.ending_background
     loop x in 15 {
-        rl.draw_texture_rec(atlas2, bg.x, bg.y, bg.w, bg.h, bg.w * (x % 5), bg.h * (x // 5), 0xB0A797FF)
+        ray.draw_texture_rec(atlas2, bg.x, bg.y, bg.w, bg.h, bg.w * (x % 5), bg.h * (x // 5), 0xB0A797FF)
     }
-    pro(ATLAS01.ending_plate_frame, W * 0.042, H * 0.606, rl.WHITE)
-    pro(ATLAS01.ending_paint_back, W * 0.133, H * 0.097, rl.WHITE)
+    pro(ATLAS01.ending_plate_frame, W * 0.042, H * 0.606, ray.WHITE)
+    pro(ATLAS01.ending_paint_back, W * 0.133, H * 0.097, ray.WHITE)
     val paint = PAINTS@killer
-    if paint { pro(paint@0, W * (paint@1), H * (paint@2), rl.WHITE) }
-    pro(ATLAS01.ending_paint_frame, W * 0.102, H * 0.035, rl.WHITE)
-    pro(ATLAS01.ending_score_planksmall, W * 0.521, H * 0.163, rl.WHITE)
-    pro(ATLAS01.ending_score_planklarge, W * 0.415, H * 0.303, rl.WHITE)
-    pro(ATLAS01.ending_score_planksmall, W * 0.521, H * 0.440, rl.WHITE)
-    pro(ATLAS01.ending_score_seasonicon, W * 0.529, H * 0.096, rl.WHITE)
+    if paint { pro(paint@0, W * (paint@1), H * (paint@2), ray.WHITE) }
+    pro(ATLAS01.ending_paint_frame, W * 0.102, H * 0.035, ray.WHITE)
+    pro(ATLAS01.ending_score_planksmall, W * 0.521, H * 0.163, ray.WHITE)
+    pro(ATLAS01.ending_score_planklarge, W * 0.415, H * 0.303, ray.WHITE)
+    pro(ATLAS01.ending_score_planksmall, W * 0.521, H * 0.440, ray.WHITE)
+    pro(ATLAS01.ending_score_seasonicon, W * 0.529, H * 0.096, ray.WHITE)
     val n = ATLAS01.ending_score_seasonneedle
-    rl.draw_texture_pro(atlas1, n.x, n.y, n.w, n.h, W * 0.579, H * 0.189, n.w, n.h, n.w / 2, n.h * 0.9, E.clock, rl.WHITE)
-    pro(ATLAS01.ending_score_frame, W * 0.535, H * 0.11, rl.WHITE)
-    pro(ATLAS01.ending_score_frameback, W * 0.430, H * 0.246, rl.WHITE)
-    pro(ATLAS01.ending_score_frame, W * 0.429, H * 0.244, rl.WHITE)
+    ray.draw_texture_pro(atlas1, n.x, n.y, n.w, n.h, W * 0.579, H * 0.189, n.w, n.h, n.w / 2, n.h * 0.9, E.clock, ray.WHITE)
+    pro(ATLAS01.ending_score_frame, W * 0.535, H * 0.11, ray.WHITE)
+    pro(ATLAS01.ending_score_frameback, W * 0.430, H * 0.246, ray.WHITE)
+    pro(ATLAS01.ending_score_frame, W * 0.429, H * 0.244, ray.WHITE)
     val l = ATLAS01.particle_ecualyptusleaf
     loop _,p in E.leafs {
         if p.active {
-            rl.draw_texture_pro(atlas1, l.x, l.y, l.w, l.h, p.x, p.y, l.w * p.size, l.h * p.size,
-                (l.w / 2) * p.size, (l.h / 2) * p.size, p.rot, rl.fade(rl.WHITE, p.alpha))
+            ray.draw_texture_pro(atlas1, l.x, l.y, l.w, l.h, p.x, p.y, l.w * p.size, l.h * p.size,
+                (l.w / 2) * p.size, (l.h / 2) * p.size, p.rot, ray.fade(ray.WHITE, p.alpha))
         }
     }
-    pro(ATLAS01.ending_score_leavesicon, W * 0.421, H * 0.228, rl.WHITE)
-    pro(ATLAS01.ending_score_frameback, W * 0.536, H * 0.383, rl.WHITE)
-    pro(ATLAS01.ending_score_frame, W * 0.535, H * 0.383, rl.WHITE)
-    pro(ATLAS01.ending_score_enemyicon, W * 0.538, H * 0.414, rl.WHITE)
+    pro(ATLAS01.ending_score_leavesicon, W * 0.421, H * 0.228, ray.WHITE)
+    pro(ATLAS01.ending_score_frameback, W * 0.536, H * 0.383, ray.WHITE)
+    pro(ATLAS01.ending_score_frame, W * 0.535, H * 0.383, ray.WHITE)
+    pro(ATLAS01.ending_score_enemyicon, W * 0.538, H * 0.414, ray.WHITE)
     pro(ATLAS01.ending_button_replay, W * 0.871, H * 0.096, E.play_color)
     pro(ATLAS01.ending_button_shop, W * 0.871, H * 0.303, E.shop_color)
     pro(ATLAS01.ending_button_trophy, W * 0.871, H * 0.513, E.trophy_color)
     pro(ATLAS01.ending_button_share, W * 0.871, H * 0.719, E.share_color)
-    rl.text_ex(font, string.format("%03d", E.seasons), f32(W * f32(0.73)), f32(H * f32(0.14)), SIZE, 1, rl.WHITE)
-    rl.text_ex(font, string.format("%03d", E.leaves), f32(W * f32(0.73)), f32(H * f32(0.29)), SIZE, 1, rl.WHITE)
-    rl.text_ex(font, string.format("%04d", E.score), f32(W * f32(0.715)), f32(H * f32(0.426)), SIZE, 1, rl.WHITE)
-    rl.text_ex(font, string.format("%s %d - %s %d", E.init_text, initYears, E.final_text, E.final_years),
-        f32(W * f32(0.1)), f32(H * f32(0.7)), SIZE / 2, 1, rl.WHITE)
+    ray.text_ex(font, string.format("%03d", E.seasons), f32(W * f32(0.73)), f32(H * f32(0.14)), SIZE, 1, ray.WHITE)
+    ray.text_ex(font, string.format("%03d", E.leaves), f32(W * f32(0.73)), f32(H * f32(0.29)), SIZE, 1, ray.WHITE)
+    ray.text_ex(font, string.format("%04d", E.score), f32(W * f32(0.715)), f32(H * f32(0.426)), SIZE, 1, ray.WHITE)
+    ray.text_ex(font, string.format("%s %d - %s %d", E.init_text, initYears, E.final_text, E.final_years),
+        f32(W * f32(0.1)), f32(H * f32(0.7)), SIZE / 2, 1, ray.WHITE)
     loop i in 128 {
         if E.active@i {
             val h = HEADS@(killHistory@i)
             if h {
-                rl.draw_texture_rec(atlas1, h.x, h.y, h.w, h.h, (W * 0.448) + (h.w * (i % 10)), (H * 0.682) + ((H * 0.055) * (i // 10)), rl.WHITE)
+                ray.draw_texture_rec(atlas1, h.x, h.y, h.w, h.h, (W * 0.448) + (h.w * (i % 10)), (H * 0.682) + ((H * 0.055) * (i // 10)), ray.WHITE)
             }
         }
     }
     val lines = DEATHS@killer
     if lines {
         loop k,t in lines {
-            rl.text_ex(font, t, f32(W * f32(0.13)), f32(H * f32(if k == 0 => 0.78 => 0.83)), SIZE / 2, 1, rl.WHITE)
+            ray.text_ex(font, t, f32(W * f32(0.13)), f32(H * f32(if k == 0 => 0.78 => 0.83)), SIZE / 2, 1, ray.WHITE)
         }
     }
 }

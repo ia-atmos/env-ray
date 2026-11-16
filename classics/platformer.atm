@@ -9,14 +9,14 @@
 ;; sequences: `win`, `isJumping`, and the `visible` flags of the coins of the
 ;; C became tasks and awaits.
 
-include "../raylib.atm"
+include "../ray.atm"
 
 val TILE    = 16
 val MW, MH  = 20, 12            ;; the map, in tiles
 val SCALE   = 2
-val f32     = rl.f32
+val f32     = ray.f32
 
-rl.window [title="classic game: platformer", width=TILE*MW*SCALE, height=TILE*MH*SCALE, fps=60]
+ray.window [title="classic game: platformer", width=TILE*MW*SCALE, height=TILE*MH*SCALE, fps=60]
 
 ;; The map: a border and four platforms.
 pin tiles = []
@@ -67,14 +67,14 @@ var score  = 0
 ;; where the C decides the jump, it emits `:gravity [grounded=]`.
 task Physics (game) {
     val W2, H1 = 4, 16          ;; half the width, the height
-    loop on :rl.frame {
-        val delta = rl.frame_time()
-        val right = rl.key_down('D') || rl.key_down('RIGHT')
-        val left  = rl.key_down('A') || rl.key_down('LEFT')
-        if rl.key_pressed('SPACE') {
+    loop on :frame {
+        val delta = ray.frame_time()
+        val right = ray.key_down('D') || ray.key_down('RIGHT')
+        val left  = ray.key_down('A') || ray.key_down('LEFT')
+        if ray.key_pressed('SPACE') {
             set jump = true
         } else {
-            if rl.key_released('SPACE') { set jump = false }
+            if ray.key_released('SPACE') { set jump = false }
         }
         ;; on the ground: below the center, or below one of the sides
         val x, y = math.floor(player.x), math.floor(player.y) + 1
@@ -157,9 +157,9 @@ task Jumper () {
 
 ;; A coin: taken when the player touches it.
 task Coin (x, y) {
-    watching :rl.frame until rl.check_collision_recs(f32(player.x - 4), f32((player.y - 16) + 1), 8, 16, x, y, 4, 4) {
-        loop on :rl.draw {
-            rl.rectangle(x, y, 4, 4, rl.GOLD)
+    watching :frame until ray.check_collision_recs(f32(player.x - 4), f32((player.y - 16) + 1), 8, 16, x, y, 4, 4) {
+        loop on :draw {
+            ray.rectangle(x, y, 4, 4, ray.GOLD)
         }
     }
     set score += 1
@@ -170,12 +170,12 @@ task Play () {
     set player.x, player.y, player.vx, player.vy, player.hsp, player.vsp = f32((TILE*MW)*0.5), ((MH*TILE) - 16) - 1, 0, 0, 0, 0
     set score = 0
     spawn {
-        loop on :rl.draw {
-            rl.begin_mode2d(0, 0, 0, 0, 0, SCALE)
-            rl.clear(rl.RAYWHITE)
+        loop on :draw {
+            ray.begin_mode2d(0, 0, 0, 0, 0, SCALE)
+            ray.clear(ray.RAYWHITE)
             loop i,t in tiles {
                 if t {
-                    rl.rectangle((i % MW)*TILE, (i // MW)*TILE, TILE, TILE, rl.GRAY)
+                    ray.rectangle((i % MW)*TILE, (i // MW)*TILE, TILE, TILE, ray.GRAY)
                 }
             }
         }
@@ -187,29 +187,29 @@ task Play () {
         spawn @coins Coin(((c@0)*16) + 6, ((c@1)*16) + 6)
     }
     spawn {
-        loop on :rl.draw {
-            rl.rectangle(player.x - 4, (player.y - 16) + 1, 8, 16, rl.RED)
-            rl.end_mode2d()
+        loop on :draw {
+            ray.rectangle(player.x - 4, (player.y - 16) + 1, 8, 16, ray.RED)
+            ray.end_mode2d()
             val s = string.format("SCORE: %d", score)
-            rl.text(s, (rl.width()//2) - (rl.measure(s,40)//2), 50, 40, rl.BLACK)
+            ray.text(s, (ray.width()//2) - (ray.measure(s,40)//2), 50, 40, ray.BLACK)
         }
     }
     await :all coins
     spawn {
         val s = "PRESS [ENTER] TO PLAY AGAIN"
-        loop on :rl.draw {
-            rl.text(s, (rl.width()//2) - (rl.measure(s,20)//2), (rl.height()//2) - 50, 20, rl.GRAY)
+        loop on :draw {
+            ray.text(s, (ray.width()//2) - (ray.measure(s,20)//2), (ray.height()//2) - 50, 20, ray.GRAY)
         }
     }
-    await :rl.key.dn [name='ENTER']
-    await :rl.frame         ;; the player still moves in the frame of ENTER
+    await :key.dn [name='ENTER']
+    await :frame         ;; the player still moves in the frame of ENTER
 }
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
-            print(string.format("%d %.6f %.6f %.6f %.6f %.6f %.6f %d %d", rl.frame(),
+    if ray.frame() > 0 {
+        loop on :draw {
+            print(string.format("%d %.6f %.6f %.6f %.6f %.6f %.6f %d %d", ray.frame(),
                 player.x, player.y, player.vx, player.vy, player.hsp, player.vsp, if jump => 1 => 0, score))
         }
     }

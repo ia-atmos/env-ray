@@ -10,7 +10,7 @@
 ;; (its mesh, its model, the camera, and the collisions against the pixels
 ;; of the map) is the C of the original, in the prelude below.
 
-include "../../raylib.atm"
+include "../../ray.atm"
 
 ```:prelude
 #define GB_GREEN01 (Color){ 155, 188, 15, 255 }
@@ -134,53 +134,53 @@ static void rm_gpi (bool on, int screenWidth, int screenHeight) {
 ```
 
 val W, H = 320, 240
-val f32  = rl.f32
+val f32  = ray.f32
 val GREEN1, GREEN2, GREEN3 = 0x9BBC0FFF, 0x6E961BFF, 0x306230FF
 
 `SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_TRANSPARENT);`
-rl.window [title="RETRO MAZE 3D [GGJ 2021]", width=W, height=H, fps=60]
+ray.window [title="RETRO MAZE 3D [GGJ 2021]", width=W, height=H, fps=60]
 
-pin tlogo       = rl.texture("resources/logo.png")
-pin ttitle      = rl.texture("resources/title.png")
-pin tshadow     = rl.texture("resources/title_shadow.png")
-pin t3d         = rl.texture("resources/title_3d.png")
-pin t3dshadow   = rl.texture("resources/title_3d_shadow.png")
-pin tlogo_small = rl.texture("resources/title_raylib_logo.png")
-pin tgpi        = rl.texture("resources/gpi_case_front.png")
-pin font        = rl.font("resources/alpha_beta.png")
-val SIZE = rl.font_size(font)
-rl.audio_init()
-pin fx_logo   = rl.sound("resources/audio/logo.wav")
-pin fx_move   = rl.sound("resources/audio/menu_move.wav")
-pin fx_select = rl.sound("resources/audio/menu_select.wav")
-pin fx_pause  = rl.sound("resources/audio/pause.wav")
-pin fx_rocks  = rl.sound("resources/audio/title_rocks.wav")
-pin fx_step   = rl.sound("resources/audio/step.wav")
-pin fx_ending = rl.sound("resources/audio/ending.wav")
-pin music_title    = rl.music("resources/audio/music_title.mp3")
-pin music_gameplay = rl.music("resources/audio/music_gameplay.mp3")
-pin music_credits  = rl.music("resources/audio/music_credits.mp3")
+pin tlogo       = ray.texture("resources/logo.png")
+pin ttitle      = ray.texture("resources/title.png")
+pin tshadow     = ray.texture("resources/title_shadow.png")
+pin t3d         = ray.texture("resources/title_3d.png")
+pin t3dshadow   = ray.texture("resources/title_3d_shadow.png")
+pin tlogo_small = ray.texture("resources/title_raylib_logo.png")
+pin tgpi        = ray.texture("resources/gpi_case_front.png")
+pin font        = ray.font("resources/alpha_beta.png")
+val SIZE = ray.font_size(font)
+ray.audio_init()
+pin fx_logo   = ray.sound("resources/audio/logo.wav")
+pin fx_move   = ray.sound("resources/audio/menu_move.wav")
+pin fx_select = ray.sound("resources/audio/menu_select.wav")
+pin fx_pause  = ray.sound("resources/audio/pause.wav")
+pin fx_rocks  = ray.sound("resources/audio/title_rocks.wav")
+pin fx_step   = ray.sound("resources/audio/step.wav")
+pin fx_ending = ray.sound("resources/audio/ending.wav")
+pin music_title    = ray.music("resources/audio/music_title.mp3")
+pin music_gameplay = ray.music("resources/audio/music_gameplay.mp3")
+pin music_credits  = ray.music("resources/audio/music_credits.mp3")
 `if (rl_music($music_credits)) rl_music($music_credits)->looping = false;`
 pin VOICES = [
-    rl.sound("resources/audio/voice_hello.wav"),
-    rl.sound("resources/audio/voice_im_lost.wav"),
-    rl.sound("resources/audio/voice_anyone_there.wav"),
-    rl.sound("resources/audio/voice_can_you_hear_me.wav"),
+    ray.sound("resources/audio/voice_hello.wav"),
+    ray.sound("resources/audio/voice_im_lost.wav"),
+    ray.sound("resources/audio/voice_anyone_there.wav"),
+    ray.sound("resources/audio/voice_can_you_hear_me.wav"),
 ]
 `rm_load();`
-pin target = rl.render_texture(640, 480)
-rl.texture_filter(target, rl.FILTER_BILINEAR)
+pin target = ray.render_texture(640, 480)
+ray.texture_filter(target, ray.FILTER_BILINEAR)
 `DisableCursor();`
 
 func measure (s, size) {
-    val w, _ = rl.measure_ex(font, s, size, 2)
+    val w, _ = ray.measure_ex(font, s, size, 2)
     w
 }
 func int (x) {                          ;; (int) of the C: towards zero
     if x < 0 => math.ceil(x) => math.floor(x)
 }
 func center (s, y, size, c) {
-    rl.text_ex(font, s, (W//2) - (measure(s, size) / 2), y, size, 2, c)
+    ray.text_ex(font, s, (W//2) - (measure(s, size) / 2), y, size, 2, c)
 }
 
 ;; What goes on from screen to screen, as the statics of the C: the title
@@ -202,19 +202,19 @@ var frames     = 0                      ;; the counter of the seconds of play
 
 ;; The menus: DOWN and UP move the option (0 to 2); ENTER gives it.
 func menu () {
-    if rl.key_pressed('DOWN') {
+    if ray.key_pressed('DOWN') {
         set option += 1
-        rl.play_sound(fx_move)
+        ray.play_sound(fx_move)
     } else {
-        if rl.key_pressed('UP') {
+        if ray.key_pressed('UP') {
             set option -= 1
-            rl.play_sound(fx_move)
+            ray.play_sound(fx_move)
         }
     }
     set option = math.max(0, math.min(2, option))
-    if rl.key_pressed('ENTER') {
+    if ray.key_pressed('ENTER') {
         set frames = 0
-        rl.play_sound(fx_select)
+        ray.play_sound(fx_select)
         option
     } else {
         nil
@@ -226,20 +226,20 @@ pin CHOICES = [:gameplay, :credits, :exit]
 ;; The logo goes down, with a sound when it arrives; 300 frames.
 task Logo () {
     par :any {
-        loop on :rl.frame {
+        loop on :frame {
             set y += 1
-            if y == ((H//2) - 64 - 1) { rl.play_sound(fx_logo) }
+            if y == ((H//2) - 64 - 1) { ray.play_sound(fx_logo) }
             set y = math.min(y, (H//2) - 64)
         }
     } with {
-        await(301, :rl.frame)
+        await(301, :frame)
     } with {
-        loop on :rl.draw {
-            rl.draw_texture(tlogo, (W//2) - 64, y, rl.WHITE)
+        loop on :draw {
+            ray.draw_texture(tlogo, (W//2) - 64, y, ray.WHITE)
         }
     }
-    set y = -rl.texture_width(ttitle)
-    rl.play_music(music_title)
+    set y = -ray.texture_width(ttitle)
+    ray.play_music(music_title)
     :title
 }
 
@@ -247,61 +247,61 @@ task Logo () {
 ;; C checks its counter twice); the menu all along.
 task Title () {
     par :any {
-        loop on :rl.frame { rl.update_music(music_title) }
+        loop on :frame { ray.update_music(music_title) }
     } with {
         if title == 0 {
             par :any {
-                loop on :rl.frame {
+                loop on :frame {
                     set y = math.min(y + 2, 0)
                 }
             } with {
-                await(141, :rl.frame)
+                await(141, :frame)
             }
             set title = 1
-            await :rl.frame
+            await :frame
         } else {
-            if title == 1 { await(141, :rl.frame) }
+            if title == 1 { await(141, :frame) }
         }
         if title != 2 {
             set title = 2
-            rl.play_sound(fx_rocks)
+            ray.play_sound(fx_rocks)
         }
         await false
     } with {
         var choice = nil
-        loop on :rl.frame {
+        loop on :frame {
             set choice = menu()
             until choice
         }
         if choice == 0 {
             `rm_start();`
-            rl.stop_music(music_title)
-            rl.play_music(music_gameplay)
+            ray.stop_music(music_title)
+            ray.play_music(music_gameplay)
         } else {
             if choice == 1 {
                 set credits_y = H + 20
-                rl.stop_music(music_title)
-                rl.play_music(music_credits)
+                ray.stop_music(music_title)
+                ray.play_music(music_credits)
             } else {
                 set exiting = true
-                await :rl.draw
+                await :draw
             }
         }
         CHOICES@choice
     } with {
-        loop on :rl.draw {
+        loop on :draw {
             if title == 2 {
-                rl.draw_texture(tshadow, 32, 4, rl.WHITE)
-                rl.draw_texture(t3dshadow, 32, 90 + 4, rl.WHITE)
+                ray.draw_texture(tshadow, 32, 4, ray.WHITE)
+                ray.draw_texture(t3dshadow, 32, 90 + 4, ray.WHITE)
             }
-            rl.draw_texture(ttitle, 32, y, rl.WHITE)
-            if title >= 1 { rl.draw_texture(t3d, 32, 90, rl.WHITE) }
-            rl.rectangle(95, 165 + (option * 16), 130, 16, GREEN2)
-            rl.text_ex(font, "START GAME", 120, 167, SIZE, 2, if option == 0 => GREEN3 => GREEN2)
-            rl.text_ex(font, "CREDITS", 132, 167 + 16, SIZE, 2, if option == 1 => GREEN3 => GREEN2)
-            rl.text_ex(font, "EXIT GAME", 124, 167 + 32, SIZE, 2, if option == 2 => GREEN3 => GREEN2)
-            rl.text_ex(font, "GGJ 2021", 10, 240 - 18, SIZE, 1, GREEN2)
-            rl.draw_texture(tlogo_small, 320 - rl.texture_width(tlogo_small) + 5, 240 - rl.texture_height(tlogo_small) + 3, rl.WHITE)
+            ray.draw_texture(ttitle, 32, y, ray.WHITE)
+            if title >= 1 { ray.draw_texture(t3d, 32, 90, ray.WHITE) }
+            ray.rectangle(95, 165 + (option * 16), 130, 16, GREEN2)
+            ray.text_ex(font, "START GAME", 120, 167, SIZE, 2, if option == 0 => GREEN3 => GREEN2)
+            ray.text_ex(font, "CREDITS", 132, 167 + 16, SIZE, 2, if option == 1 => GREEN3 => GREEN2)
+            ray.text_ex(font, "EXIT GAME", 124, 167 + 32, SIZE, 2, if option == 2 => GREEN3 => GREEN2)
+            ray.text_ex(font, "GGJ 2021", 10, 240 - 18, SIZE, 1, GREEN2)
+            ray.draw_texture(tlogo_small, 320 - ray.texture_width(tlogo_small) + 5, 240 - ray.texture_height(tlogo_small) + 3, ray.WHITE)
         }
     }
 }
@@ -311,21 +311,21 @@ task Title () {
 task Gameplay () {
     var next = nil
     par :any {
-        loop on :rl.frame {
-            rl.update_music(music_gameplay)
-            if rl.key_pressed('SPACE') {
+        loop on :frame {
+            ray.update_music(music_gameplay)
+            if ray.key_pressed('SPACE') {
                 set paused = !paused
-                rl.play_sound(fx_pause)
+                ray.play_sound(fx_pause)
             }
-            if rl.key_pressed('M') { set minimap = !minimap }
+            if ray.key_pressed('M') { set minimap = !minimap }
             if !paused {
-                if rl.key_pressed('V') { rl.play_sound(VOICES@(rl.random(0, 3))) }
+                if ray.key_pressed('V') { ray.play_sound(VOICES@(ray.random(0, 3))) }
                 val out = `:boolean rm_move()`
                 set moving = `:boolean rm_moving`
                 if out {
                     set next, result = :ending, 1
-                    rl.play_sound(fx_ending)
-                    rl.stop_music(music_gameplay)
+                    ray.play_sound(fx_ending)
+                    ray.stop_music(music_gameplay)
                 }
                 set frames += 1
                 if frames == 60 {
@@ -333,14 +333,14 @@ task Gameplay () {
                     set frames = 0
                     if seconds == 0 {
                         set next = :ending
-                        rl.play_sound(fx_ending)
-                        rl.stop_music(music_gameplay)
+                        ray.play_sound(fx_ending)
+                        ray.stop_music(music_gameplay)
                     }
                 }
                 if stamina < 0 {
                     set next = :ending
-                    rl.play_sound(fx_ending)
-                    rl.stop_music(music_gameplay)
+                    ray.play_sound(fx_ending)
+                    ray.stop_music(music_gameplay)
                 }
             } else {
                 val choice = menu()
@@ -348,8 +348,8 @@ task Gameplay () {
                 if choice == 1 {
                     set paused = false
                     set next = :title
-                    rl.stop_music(music_gameplay)
-                    rl.play_music(music_title)
+                    ray.stop_music(music_gameplay)
+                    ray.play_music(music_title)
                 }
                 if choice == 2 { set next = :exit }
             }
@@ -357,26 +357,26 @@ task Gameplay () {
                 set stamina = f32(stamina - f32(0.01))
                 set steps += 1
                 if (steps % 20) == 0 {
-                    rl.sound_pitch(fx_step, f32(f32(rl.random(80, 120)) / f32(100)))
-                    rl.play_sound(fx_step)
+                    ray.sound_pitch(fx_step, f32(f32(ray.random(80, 120)) / f32(100)))
+                    ray.play_sound(fx_step)
                 }
             }
             until next
         }
     } with {
-        loop on :rl.draw {
+        loop on :draw {
             `rm_draw_maze();`
-            rl.rectangle(0, H - 20, W, 20, GREEN1)
-            rl.text_ex(font, "STAMINA:", 10, H - 16, SIZE, 1, GREEN3)
-            rl.rectangle_lines(70, H - 16, 100, 13, GREEN3)
-            rl.rectangle(70 + 2, H - 16 + 2, int(stamina) - 4, 13 - 4, GREEN2)
-            rl.text_ex(font, string.format("TIME: %d:%02ds", int(seconds / 60), seconds - (int(seconds / 60) * 60)), 240, H - 16, SIZE, 1, GREEN3)
+            ray.rectangle(0, H - 20, W, 20, GREEN1)
+            ray.text_ex(font, "STAMINA:", 10, H - 16, SIZE, 1, GREEN3)
+            ray.rectangle_lines(70, H - 16, 100, 13, GREEN3)
+            ray.rectangle(70 + 2, H - 16 + 2, int(stamina) - 4, 13 - 4, GREEN2)
+            ray.text_ex(font, string.format("TIME: %d:%02ds", int(seconds / 60), seconds - (int(seconds / 60) * 60)), 240, H - 16, SIZE, 1, GREEN3)
             if minimap {
                 `rm_draw_minimap(RL_I($W), RL_I($H));`
             }
             if paused {
-                rl.rectangle(0, 80, W, 84, GREEN1)
-                rl.rectangle((W//2) - 65, 100 + (option * 16), 130, 16, GREEN2)
+                ray.rectangle(0, 80, W, 84, GREEN1)
+                ray.rectangle((W//2) - 65, 100 + (option * 16), 130, 16, GREEN2)
                 center("RESUME GAME", 102, SIZE, if option == 0 => GREEN3 => GREEN2)
                 center("BACK TO TITLE", 102 + 16, SIZE, if option == 1 => GREEN3 => GREEN2)
                 center("EXIT GAME", 102 + 32, SIZE, if option == 2 => GREEN3 => GREEN2)
@@ -385,7 +385,7 @@ task Gameplay () {
     }
     if next == :exit {
         set exiting = true
-        await :rl.draw
+        await :draw
     }
     next
 }
@@ -393,14 +393,14 @@ task Gameplay () {
 ;; The credits scroll up, until ENTER.
 task Credits () {
     par :any {
-        loop on :rl.frame {
-            rl.update_music(music_credits)
+        loop on :frame {
+            ray.update_music(music_credits)
             set credits_y = math.max(f32(credits_y - f32(0.6)), -H + 36)
-            until rl.key_pressed('ENTER')
+            until ray.key_pressed('ENTER')
         }
     } with {
         val G2, G3 = GREEN2, GREEN3
-        loop on :rl.draw {
+        loop on :draw {
             val c = credits_y
             center("GAME DESIGN", c, SIZE, G2)
             center("Ramon Santamaria (Ray)", c + 16, SIZE, G3)
@@ -409,36 +409,36 @@ task Credits () {
             center("GAME ART", c + 100, SIZE, G2)
             center("Ramon Santamaria (Ray)", c + 116, SIZE, G3)
             center("GAME AUDIO", c + 150, SIZE, G2)
-            rl.text_ex(font, "German Sartori", (W//2) - (measure("Germán Sartori", SIZE) / 2), c + 166, SIZE, 2, G3)
+            ray.text_ex(font, "German Sartori", (W//2) - (measure("Germán Sartori", SIZE) / 2), c + 166, SIZE, 2, G3)
             center("powered by", c + 240, SIZE, G2)
-            rl.draw_texture(tlogo, (W//2) - 64, c + 256, rl.WHITE)
-            rl.rectangle(W - 60, H - 24, 50, 16, G2)
-            rl.text_ex(font, "BACK", W - 50, H - 22, SIZE, 2, G3)
+            ray.draw_texture(tlogo, (W//2) - 64, c + 256, ray.WHITE)
+            ray.rectangle(W - 60, H - 24, 50, 16, G2)
+            ray.text_ex(font, "BACK", W - 50, H - 22, SIZE, 2, G3)
         }
     }
     set title, frames = 0, 0
-    set y = -rl.texture_height(ttitle)
-    rl.play_sound(fx_select)
-    rl.stop_music(music_credits)
-    rl.play_music(music_title)
+    set y = -ray.texture_height(ttitle)
+    ray.play_sound(fx_select)
+    ray.stop_music(music_credits)
+    ray.play_music(music_title)
     :title
 }
 
 ;; The end, found or lost, until ENTER.
 task Ending () {
     par :any {
-        await :rl.frame until rl.key_pressed('ENTER')
+        await :frame until ray.key_pressed('ENTER')
     } with {
-        loop on :rl.draw {
+        loop on :draw {
             center(if result == 1 => "YOU ARE FOUND!" => "YOU ARE LOST...", 100, SIZE * 2, GREEN3)
-            rl.rectangle((W//2) - 65, 170, 130, 16, GREEN2)
+            ray.rectangle((W//2) - 65, 170, 130, 16, GREEN2)
             center("CONTINUE", 172, SIZE, GREEN3)
         }
     }
     set title, frames, result = 0, 0, 0
-    rl.play_sound(fx_select)
+    ray.play_sound(fx_select)
     set credits_y = H + 20
-    rl.play_music(music_credits)
+    ray.play_music(music_credits)
     :credits
 }
 
@@ -449,14 +449,14 @@ var screen  = :logo
 ;; the frame: the key G (after the screen, as the C), into the texture of
 ;; 640x480, then to the window
 spawn {
-    loop on :rl.draw {
-        rl.begin_texture_mode(target)
-        rl.clear(GREEN1)
+    loop on :draw {
+        ray.begin_texture_mode(target)
+        ray.clear(GREEN1)
     }
 }
 spawn {
-    loop on :rl.frame {
-        if rl.key_pressed('G') {
+    loop on :frame {
+        if ray.key_pressed('G') {
             set gpi = !gpi
             `rm_gpi(a_truthy($gpi), RL_I($W), RL_I($H));`
         }
@@ -466,10 +466,10 @@ spawn {
 ;; [trace] of the test mode: one line per frame, after its logic
 func b (x) { if x => 1 => 0 }
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
+    if ray.frame() > 0 {
+        loop on :draw {
             print(string.format("%d %d %d %d %d | %.4f %.4f %.4f %.4f %.4f %.4f | %d %d %d %.4f %d %d | %d %d %.4f %d %d %d",
-                rl.frame(), NUMBER@screen, title, y, option,
+                ray.frame(), NUMBER@screen, title, y, option,
                 `:number rm_camera.position.x`, `:number rm_camera.position.y`, `:number rm_camera.position.z`,
                 `:number rm_camera.target.x`, `:number rm_camera.target.y`, `:number rm_camera.target.z`,
                 `:number rm_cell_x`, `:number rm_cell_y`, seconds, stamina, b(moving), steps,
@@ -487,17 +487,17 @@ pin main = spawn {
     }
 }
 spawn {
-    loop on :rl.draw {
-        rl.end_texture_mode()
-        rl.clear(GREEN1)
+    loop on :draw {
+        ray.end_texture_mode()
+        ray.clear(GREEN1)
         if gpi {
-            rl.clear(0x00000000)
-            rl.draw_texture(tgpi, 0, 0, rl.WHITE)
+            ray.clear(0x00000000)
+            ray.draw_texture(tgpi, 0, 0, ray.WHITE)
             `BeginScissorMode(79, 114, 320, 240);`
-            rl.draw_texture_rec(target, 0, 0, 640, -480, 79, 114, rl.WHITE)
+            ray.draw_texture_rec(target, 0, 0, 640, -480, 79, 114, ray.WHITE)
             `EndScissorMode();`
         } else {
-            rl.draw_texture_rec(target, 0, 0, 640, -480, 0, 0, rl.WHITE)
+            ray.draw_texture_rec(target, 0, 0, 640, -480, 0, 0, ray.WHITE)
         }
     }
 }

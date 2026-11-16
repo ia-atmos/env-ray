@@ -1,34 +1,34 @@
 ;; A raylib environment for Atmos.
 ;;
-;;      include "raylib.atm"
+;;      include "ray.atm"
 ;;      ATMOS_CFLAGS="-O2 -I<raylib>/src" ATMOS_LDFLAGS="<raylib>/libraylib.a -lm" atmos game.atm
 ;;
-;; The program opens the window with `rl.window [...]` and then runs inside the
+;; The program opens the window with `ray.window [...]` and then runs inside the
 ;; loop of raylib, which emits, once per frame and in this order:
 ;;
-;;      :rl.key.dn [key=262, name='RIGHT']  a key was pressed
-;;      :rl.key.up [key=262, name='RIGHT']  a key was released
-;;      :rl.mouse.dn [button=0, x=, y=]     a mouse button was pressed
-;;      :rl.mouse.up [button=0, x=, y=]     a mouse button was released
-;;      :rl.wheel [dy=1]                    the mouse wheel moved
+;;      :key.dn [key=262, name='RIGHT']  a key was pressed
+;;      :key.up [key=262, name='RIGHT']  a key was released
+;;      :mouse.dn [button=0, x=, y=]     a mouse button was pressed
+;;      :mouse.up [button=0, x=, y=]     a mouse button was released
+;;      :wheel [dy=1]                    the mouse wheel moved
 ;;      <number>                            the time passed, in microseconds,
 ;;                                          so that `await 1s` works as usual
-;;      :rl.frame                           one frame of logic
-;;      :rl.draw                            one frame of drawing, between
+;;      :frame                           one frame of logic
+;;      :draw                            one frame of drawing, between
 ;;                                          BeginDrawing and EndDrawing
-;;      :rl.quit                            the window closes (ESC, or the end
+;;      :quit                            the window closes (ESC, or the end
 ;;                                          of a test): the program terminates
 ;;
-;; Input is also available by polling (`rl.key_down`), for what is a level and
+;; Input is also available by polling (`ray.key_down`), for what is a level and
 ;; not an event, such as a key held to move.
 ;;
-;; Colors are numbers 0xRRGGBBAA, as `rl.RED`. Positions and sizes are plain
+;; Colors are numbers 0xRRGGBBAA, as `ray.RED`. Positions and sizes are plain
 ;; numbers. The wrappers follow the names of raylib, with no `Draw`: as in
-;; raylib, `rl.rectangle` takes integers and `rl.rectangle_v` takes floats.
+;; raylib, `ray.rectangle` takes integers and `ray.rectangle_v` takes floats.
 ;;
 ;; To test with no screen, build raylib for PLATFORM_MEMORY with the patch of
 ;; this repository (tools/raylib.patch), and set RL_FRAMES, RL_SEED, RL_INPUT,
-;; and RL_SHOT (see doc/fidelity.md). `rl.frame()` is the current frame.
+;; and RL_SHOT (see doc/fidelity.md). `ray.frame()` is the current frame.
 
 ```:prelude
 #include <math.h>
@@ -222,12 +222,12 @@ static const char* rl_s (AVal s) {
 // RESOURCES: textures, render textures, fonts, sounds, music, as natives
 ///////////////////////////////////////////////////////////////////////////////
 
-static const char* RL_KIND_TEX = "rl.texture";
-static const char* RL_KIND_RTX = "rl.render";
-static const char* RL_KIND_FNT = "rl.font";
-static const char* RL_KIND_SND = "rl.sound";
-static const char* RL_KIND_MUS = "rl.music";
-static const char* RL_KIND_SHD = "rl.shader";
+static const char* RL_KIND_TEX = "ray.texture";
+static const char* RL_KIND_RTX = "ray.render";
+static const char* RL_KIND_FNT = "ray.font";
+static const char* RL_KIND_SND = "ray.sound";
+static const char* RL_KIND_MUS = "ray.music";
+static const char* RL_KIND_SHD = "ray.shader";
 
 static void rl_tex_fin (void* p) { UnloadTexture(*(Texture2D*)p); free(p); }
 static void rl_rtx_fin (void* p) { UnloadRenderTexture(*(RenderTexture2D*)p); free(p); }
@@ -303,14 +303,14 @@ static AStatus rl_emit_mouse (const char* tag, int button) {
 
 // The tags of the events that the driver emits, all in one place (they
 // are to lose their prefix, see .claude/plans/TODO.md)
-static const char* RL_EV_KEY_DN   = "rl.key.dn";      // [key=, name=]
-static const char* RL_EV_KEY_UP   = "rl.key.up";      // [key=, name=]
-static const char* RL_EV_MOUSE_DN = "rl.mouse.dn";    // [button=, x=, y=]
-static const char* RL_EV_MOUSE_UP = "rl.mouse.up";    // [button=, x=, y=]
-static const char* RL_EV_WHEEL    = "rl.wheel";
-static const char* RL_EV_QUIT     = "rl.quit";
-static const char* RL_EV_FRAME    = "rl.frame";
-static const char* RL_EV_DRAW     = "rl.draw";
+static const char* RL_EV_KEY_DN   = "key.dn";      // [key=, name=]
+static const char* RL_EV_KEY_UP   = "key.up";      // [key=, name=]
+static const char* RL_EV_MOUSE_DN = "mouse.dn";    // [button=, x=, y=]
+static const char* RL_EV_MOUSE_UP = "mouse.up";    // [button=, x=, y=]
+static const char* RL_EV_WHEEL    = "wheel";
+static const char* RL_EV_QUIT     = "quit";
+static const char* RL_EV_FRAME    = "frame";
+static const char* RL_EV_DRAW     = "draw";
 
 // The input of this frame, as events: keys pressed in their order, keys
 // released, mouse buttons, wheel.
@@ -350,7 +350,7 @@ int main (int argc, char** argv) {
     atm_init(argc, argv);
     AStatus st = atm_main();
     if (st==A_OK && atm_alive() && !IsWindowReady()) {
-        st = a_error("raylib.atm : no window : call rl.window first");
+        st = a_error("ray.atm : no window : call ray.window first");
     }
 
     int64_t prv = llround(GetTime() * 1e6);
@@ -396,18 +396,18 @@ int main (int argc, char** argv) {
 }
 ```
 
-pin rl = [
-    ;; rl.window [title=, width=, height=, fps=]: opens the window
+pin ray = [
+    ;; ray.window [title=, width=, height=, fps=]: opens the window
     window = func (t) {
         `InitWindow((int)rl_fld($t,"width",800), (int)rl_fld($t,"height",450), rl_str($t,"title","Atmos"));`
         `SetTargetFPS((int)rl_fld($t,"fps",60));`
     },
 
-    ;; rl.width(), rl.height(): the size of the screen
+    ;; ray.width(), ray.height(): the size of the screen
     width  = func () { `:number GetScreenWidth()`  },
     height = func () { `:number GetScreenHeight()` },
 
-    ;; rl.frame(): the current frame in test mode (the first is 1), or -1
+    ;; ray.frame(): the current frame in test mode (the first is 1), or -1
     frame = func () {
         `:number ((RltFrame != NULL) ? RltFrame() : -1)`
     },
@@ -416,7 +416,7 @@ pin rl = [
     time       = func () { `:number GetTime()` },
     frame_time = func () { `:number GetFrameTime()` },
 
-    ;; rl.f32(x): x rounded to a float of 32 bits, as raylib keeps positions;
+    ;; ray.f32(x): x rounded to a float of 32 bits, as raylib keeps positions;
     ;; to do the arithmetic of the C on floats, round the result of each
     ;; operation that may be inexact
     f32 = func (x) {
@@ -430,7 +430,7 @@ pin rl = [
     tanf = func (x) { `:number.float (double)tanf((float)a_dbl($x))` },
     asin = func (x) { `:number.float asin(a_dbl($x))` },
 
-    ;; rl.random(min, max): GetRandomValue, both included
+    ;; ray.random(min, max): GetRandomValue, both included
     random = func (min, max) {
         `:number GetRandomValue(RL_I($min), RL_I($max))`
     },
@@ -453,7 +453,7 @@ pin rl = [
     mouse_dy     = func ()  { `:number GetMouseDelta().y` },
     wheel        = func ()  { `:number GetMouseWheelMove()` },
 
-    ;; rl.screen_to_world2d(x, y, ox, oy, tx, ty, rot, zoom): x and y
+    ;; ray.screen_to_world2d(x, y, ox, oy, tx, ty, rot, zoom): x and y
     screen_to_world2d = func (x, y, ox, oy, tx, ty, rot, zoom) {
         `Vector2 rl_w2d = GetScreenToWorld2D((Vector2){RL_F($x),RL_F($y)}, (Camera2D){ (Vector2){RL_F($ox),RL_F($oy)}, (Vector2){RL_F($tx),RL_F($ty)}, RL_F($rot), RL_F($zoom) });`
         return `:number rl_w2d.x`, `:number rl_w2d.y`
@@ -467,7 +467,7 @@ pin rl = [
         `:value rl_rgba(Fade(rl_color($c), RL_F($alpha)))`
     },
 
-    ;; Drawing (inside :rl.draw)
+    ;; Drawing (inside :draw)
     begin_mode2d = func (ox, oy, tx, ty, rot, zoom) {
         `BeginMode2D((Camera2D){ (Vector2){RL_F($ox),RL_F($oy)}, (Vector2){RL_F($tx),RL_F($ty)}, RL_F($rot), RL_F($zoom) });`
     },
@@ -518,7 +518,7 @@ pin rl = [
     text = func (s, x, y, size, c) {
         `DrawText(rl_s($s), RL_I($x), RL_I($y), RL_I($size), rl_color($c));`
     },
-    ;; rl.text_subtext(s, pos, len): TextSubtext, in bytes
+    ;; ray.text_subtext(s, pos, len): TextSubtext, in bytes
     text_subtext = func (s, pos, len) {
         `:string TextSubtext(rl_s($s), RL_I($pos), RL_I($len))`
     },
@@ -539,12 +539,12 @@ pin rl = [
     check_collision_point_circle = func (px, py, cx, cy, r) {
         `:boolean CheckCollisionPointCircle((Vector2){RL_F($px),RL_F($py)}, (Vector2){RL_F($cx),RL_F($cy)}, RL_F($r))`
     },
-    ;; rl.collision_rec(x1,y1,w1,h1, x2,y2,w2,h2): x, y, w, h of the overlap
+    ;; ray.collision_rec(x1,y1,w1,h1, x2,y2,w2,h2): x, y, w, h of the overlap
     collision_rec = func (x1, y1, w1, h1, x2, y2, w2, h2) {
         `Rectangle rl_cr = GetCollisionRec((Rectangle){RL_F($x1),RL_F($y1),RL_F($w1),RL_F($h1)}, (Rectangle){RL_F($x2),RL_F($y2),RL_F($w2),RL_F($h2)});`
         return `:number rl_cr.x`, `:number rl_cr.y`, `:number rl_cr.width`, `:number rl_cr.height`
     },
-    ;; rl.normalize(x, y): Vector2Normalize, on floats
+    ;; ray.normalize(x, y): Vector2Normalize, on floats
     normalize = func (x, y) {
         `Vector2 rl_n = Vector2Normalize((Vector2){RL_F($x),RL_F($y)});`
         return `:number rl_n.x`, `:number rl_n.y`
@@ -570,7 +570,7 @@ pin rl = [
         `Font rl_f = LoadFont(rl_s($path));`
         `:value rl_box(&rl_f, sizeof(rl_f), rl_fnt_fin, RL_KIND_FNT)`
     },
-    ;; rl.font_ex(path, size [, glyphs]): a TTF at a size (LoadFontEx)
+    ;; ray.font_ex(path, size [, glyphs]): a TTF at a size (LoadFontEx)
     font_ex = func (path, size, glyphs) {
         `Font rl_f = LoadFontEx(rl_s($path), RL_I($size), NULL, a_isnum($glyphs) ? RL_I($glyphs) : 0);`
         `:value rl_box(&rl_f, sizeof(rl_f), rl_fnt_fin, RL_KIND_FNT)`
@@ -615,11 +615,11 @@ pin rl = [
     draw_texture_pro = func (t, sx, sy, sw, sh, dx, dy, dw, dh, ox, oy, rot, c) {
         `DrawTexturePro(rl_texture($t), (Rectangle){RL_F($sx),RL_F($sy),RL_F($sw),RL_F($sh)}, (Rectangle){RL_F($dx),RL_F($dy),RL_F($dw),RL_F($dh)}, (Vector2){RL_F($ox),RL_F($oy)}, RL_F($rot), rl_color($c));`
     },
-    ;; rl.draw_texture_npatch(t, sx, sy, sw, sh, left, top, right, bottom, x, y, w, h, c)
+    ;; ray.draw_texture_npatch(t, sx, sy, sw, sh, left, top, right, bottom, x, y, w, h, c)
     draw_texture_npatch = func (t, sx, sy, sw, sh, l, tp, r, b, x, y, w, h, c) {
         `DrawTextureNPatch(rl_texture($t), (NPatchInfo){ (Rectangle){RL_F($sx),RL_F($sy),RL_F($sw),RL_F($sh)}, RL_I($l), RL_I($tp), RL_I($r), RL_I($b), NPATCH_NINE_PATCH }, (Rectangle){RL_F($x),RL_F($y),RL_F($w),RL_F($h)}, (Vector2){0,0}, 0.0f, rl_color($c));`
     },
-    ;; Shaders: rl.shader(vs, fs), paths or nil (the default one)
+    ;; Shaders: ray.shader(vs, fs), paths or nil (the default one)
     shader = func (vs, fs) {
         `Shader rl_sh = LoadShader(($vs).type==A_NIL ? NULL : rl_s($vs), ($fs).type==A_NIL ? NULL : rl_s($fs));`
         `:value rl_box(&rl_sh, sizeof(rl_sh), rl_shd_fin, RL_KIND_SHD)`
@@ -627,7 +627,7 @@ pin rl = [
     begin_shader_mode = func (s) { `if (a_nat_is($s, RL_KIND_SHD)) BeginShaderMode(*(Shader*)a_nat_ptr($s));` },
     end_shader_mode   = func ()  { `EndShaderMode();` },
 
-    ;; rl.texture_filter(t, mode): of a texture, a render texture, or a font
+    ;; ray.texture_filter(t, mode): of a texture, a render texture, or a font
     texture_filter = func (t, mode) {
         `if (a_nat_is($t, RL_KIND_FNT)) SetTextureFilter(rl_font($t).texture, RL_I($mode)); else SetTextureFilter(rl_texture($t), RL_I($mode));`
     },
@@ -648,7 +648,7 @@ pin rl = [
     },
 
     ;; Easings of reasings.h (t, b, c, d): the value at time t of d, from b to
-    ;; b+c, on floats of 32 bits, as in raylib: rl.ease_quad_in(t, 0, 1, 1)
+    ;; b+c, on floats of 32 bits, as in raylib: ray.ease_quad_in(t, 0, 1, 1)
     ease_linear_none = func (t, b, c, d) { `:number.float EaseLinearNone(RL_F($t), RL_F($b), RL_F($c), RL_F($d))` },
     ease_linear_in = func (t, b, c, d) { `:number.float EaseLinearIn(RL_F($t), RL_F($b), RL_F($c), RL_F($d))` },
     ease_linear_out = func (t, b, c, d) { `:number.float EaseLinearOut(RL_F($t), RL_F($b), RL_F($c), RL_F($d))` },
@@ -678,7 +678,7 @@ pin rl = [
     ease_elastic_out = func (t, b, c, d) { `:number.float EaseElasticOut(RL_F($t), RL_F($b), RL_F($c), RL_F($d))` },
     ease_elastic_in_out = func (t, b, c, d) { `:number.float EaseElasticInOut(RL_F($t), RL_F($b), RL_F($c), RL_F($d))` },
 
-    ;; rl.KEY.RIGHT: the codes of the keys
+    ;; ray.KEY.RIGHT: the codes of the keys
     KEY = [
         APOSTROPHE = 39,
         COMMA = 44,

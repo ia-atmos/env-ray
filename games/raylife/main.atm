@@ -9,7 +9,7 @@
 ;;
 ;;      raylife [max generations]       (500 by default)
 
-include "../../raylib.atm"
+include "../../ray.atm"
 
 ```:prelude
 #define LIFE_ROWS 500
@@ -73,14 +73,14 @@ static void life_draw (void) {
 
 val W, H    = 1000, 900
 val SPACING = 50
-val f32     = rl.f32
+val f32     = ray.f32
 val MAX     = do {
     pin args = [...]
     val n = tonumber(args@0)
     if n && (n >= 1) => n => 500
 }
 
-rl.window [title="RayLife", width=W, height=H, fps=60]
+ray.window [title="RayLife", width=W, height=H, fps=60]
 
 pin camera = [ox=f32(W/2), oy=f32(H/2), tx=f32((500*SPACING)/2), ty=f32((500*SPACING)/2), zoom=1]
 var alive, gens = 0, 0
@@ -90,7 +90,7 @@ var mode = :draw                ;; (for the trace)
 
 ;; One generation, if the interval has passed since the last one.
 func generation () {
-    val t = rl.time()
+    val t = ray.time()
     if (t - last) >= interval {
         set alive = `:number life_step()`
         set gens += 1
@@ -102,7 +102,7 @@ func generation () {
 ;; follow: :f1, the mode is decided; :f2, the camera, R, and the interval;
 ;; :f3, the mode acts.
 spawn {
-    loop on :rl.frame {
+    loop on :frame {
         emit :f1
         emit :f2
         emit :f3
@@ -112,15 +112,15 @@ spawn {
 ;; The controls, the same in both modes.
 spawn {
     loop on :f2 {
-        if rl.mouse_down(1) {
+        if ray.mouse_down(1) {
             val s = f32(-1 / camera.zoom)
-            set camera.tx = f32(camera.tx + f32(rl.mouse_dx() * s))
-            set camera.ty = f32(camera.ty + f32(rl.mouse_dy() * s))
+            set camera.tx = f32(camera.tx + f32(ray.mouse_dx() * s))
+            set camera.ty = f32(camera.ty + f32(ray.mouse_dy() * s))
         }
-        val wheel = rl.wheel()
+        val wheel = ray.wheel()
         if wheel != 0 {
-            val x, y = rl.screen_to_world2d(rl.mouse_x(), rl.mouse_y(), camera.ox, camera.oy, camera.tx, camera.ty, 0, camera.zoom)
-            set camera.ox, camera.oy = rl.mouse_x(), rl.mouse_y()
+            val x, y = ray.screen_to_world2d(ray.mouse_x(), ray.mouse_y(), camera.ox, camera.oy, camera.tx, camera.ty, 0, camera.zoom)
+            set camera.ox, camera.oy = ray.mouse_x(), ray.mouse_y()
             set camera.tx, camera.ty = x, y
             var k = f32(1 + f32(0.25 * math.abs(wheel)))
             if wheel < 0 {
@@ -128,15 +128,15 @@ spawn {
             }
             set camera.zoom = math.max(0.125, math.min(f32(camera.zoom * k), 64))
         }
-        if rl.key_pressed('R') {
+        if ray.key_pressed('R') {
             set gens, alive, interval = 0, 0, f32(0.2)
             `life_clear();`
             emit @:global :to.draw
         }
-        if rl.key_pressed('UP') {
+        if ray.key_pressed('UP') {
             set interval = math.min(f32(interval + f32(0.1)), MAX)
         }
-        if rl.key_pressed('DOWN') {
+        if ray.key_pressed('DOWN') {
             set interval = math.max(f32(interval - f32(0.1)), 0)
         }
     }
@@ -157,17 +157,17 @@ task Draw () {
             if alive == 0 {
                 set gens = 0
             }
-            if rl.key_pressed('SPACE') && (alive > 0) && (gens < MAX) {
+            if ray.key_pressed('SPACE') && (alive > 0) && (gens < MAX) {
                 emit @:global :to.play
             }
         }
     } with {
         loop on :f3 {
-            if rl.mouse_pressed(0) {
-                val x, y = rl.screen_to_world2d(rl.mouse_x(), rl.mouse_y(), camera.ox, camera.oy, camera.tx, camera.ty, 0, camera.zoom)
+            if ray.mouse_pressed(0) {
+                val x, y = ray.screen_to_world2d(ray.mouse_x(), ray.mouse_y(), camera.ox, camera.oy, camera.tx, camera.ty, 0, camera.zoom)
                 set alive += `:number life_toggle((int)(RL_F($x)/50), (int)(RL_F($y)/50))`
             }
-            if rl.key_pressed('SPACE') {
+            if ray.key_pressed('SPACE') {
                 generation()
             }
         }
@@ -182,7 +182,7 @@ task Play () {
                 set gens = 0
                 emit @:global :to.draw
             }
-            if rl.key_pressed('SPACE') && (alive > 0) && (gens < MAX) {
+            if ray.key_pressed('SPACE') && (alive > 0) && (gens < MAX) {
                 emit @:global :to.draw
             }
         }
@@ -210,28 +210,28 @@ spawn {
 }
 
 spawn {
-    loop on :rl.draw {
-        rl.clear(rl.BLACK)
-        rl.rectangle(5, 5, 300, 110, rl.fade(rl.RAYWHITE, 0.9))
-        rl.text(if mode == :play => "Play mode" => "Draw mode", 10, 10, 20, rl.BLACK)
-        rl.text(string.format("Generation: %d (Max: %d)", gens, MAX), 10, 35, 20, rl.BLACK)
-        rl.text(string.format("Cells: %d", alive), 10, 60, 20, rl.BLACK)
-        rl.text(string.format("Generation interval: %.1fs", interval), 10, 85, 20, rl.BLACK)
-        rl.begin_mode2d(camera.ox, camera.oy, camera.tx, camera.ty, 0, camera.zoom)
+    loop on :draw {
+        ray.clear(ray.BLACK)
+        ray.rectangle(5, 5, 300, 110, ray.fade(ray.RAYWHITE, 0.9))
+        ray.text(if mode == :play => "Play mode" => "Draw mode", 10, 10, 20, ray.BLACK)
+        ray.text(string.format("Generation: %d (Max: %d)", gens, MAX), 10, 35, 20, ray.BLACK)
+        ray.text(string.format("Cells: %d", alive), 10, 60, 20, ray.BLACK)
+        ray.text(string.format("Generation interval: %.1fs", interval), 10, 85, 20, ray.BLACK)
+        ray.begin_mode2d(camera.ox, camera.oy, camera.tx, camera.ty, 0, camera.zoom)
         `life_draw();`
-        rl.end_mode2d()
+        ray.end_mode2d()
     }
 }
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
-            print(string.format("%d %s %d %d %.6f %.6f %.6f %.6f %.6f %.6f", rl.frame(), mode, gens, alive, interval,
+    if ray.frame() > 0 {
+        loop on :draw {
+            print(string.format("%d %s %d %d %.6f %.6f %.6f %.6f %.6f %.6f", ray.frame(), mode, gens, alive, interval,
                 camera.zoom, camera.ox, camera.oy, camera.tx, camera.ty))
         }
     }
 }
 ;; [/trace]
 
-await :rl.quit
+await :quit

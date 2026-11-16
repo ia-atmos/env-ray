@@ -137,7 +137,7 @@ lives, bricks left.
 - **Floats.** After a bounce on the paddle, the speed of the ball is
   `(ball.x - player.x)/40*5`, in floats of 32 bits, and the position adds
   it in each frame: 2.98828, 0.04883. Atmos numbers are doubles, so the port
-  rounds the result of each such operation with `rl.f32`, as the C does,
+  rounds the result of each such operation with `ray.f32`, as the C does,
   including the sums that are only compared (`ball.x + radius >= 800`).
   The run `win` goes through hundreds of bounces with the same positions,
   to the last decimal of the trace.
@@ -160,8 +160,8 @@ rotation), time.
 
 - **Floats.** The ship mixes `sin` and `cos` on doubles with stores on
   floats, and draws with `sinf` and `cosf`; its height comes from `tanf`.
-  The port rounds as the C does (`rl.f32`) and calls the functions on
-  floats of C (`rl.sinf`, `rl.cosf`, `rl.tanf`). A first version used
+  The port rounds as the C does (`ray.f32`) and calls the functions on
+  floats of C (`ray.sinf`, `ray.cosf`, `ray.tanf`). A first version used
   `H + shipHeight` as a double where the C adds them on floats: the ship
   crossed the border at frame 756 with a y that differed in the fifth
   decimal, and the trace showed it.
@@ -246,7 +246,7 @@ Trace: frame, phase, turn, ball, power and angle of each player.
 
 - **Floats and integers.** The power and the angle of the aim are
   integers, from `sqrt` and `asin` on doubles of differences on floats; the
-  ball flies on floats. The port does the same steps (`rl.f32`, `rl.asin`,
+  ball flies on floats. The port does the same steps (`ray.f32`, `ray.asin`,
   `math.floor`).
 - **The unused explosions.** The ball goes through the 200 slots of
   explosions, used or not; the unused ones are at (0,0) with their radius
@@ -323,7 +323,7 @@ score.
   to start its test mode before `InitTimer` (see above).
 - **Floats and pixels.** Speeds are floats; the position moves by whole
   pixels, and the rest is kept for the next frame. The port does the same
-  steps (`rl.f32`, `math.floor` for the casts to `int` of positive values).
+  steps (`ray.f32`, `math.floor` for the casts to `int` of positive values).
 - **The map.** The C reads a tile past the right edge (it checks `x > 20`,
   not `x >= 20`) from the next row; the port does the same.
 - **The jump** is a sequence that reacts to `:gravity`, which the physics
@@ -419,7 +419,7 @@ are drawn.
 
 - **Buttons** act in the drawing (`GuiButton` is called by the `Draw...`
   functions of the C), so a click changes things and draws random numbers in
-  :rl.draw, and the screen notices it in the next frame. They also act
+  :draw, and the screen notices it in the next frame. They also act
   while a screen is under the fade, which only stops its update.
 - `IsGestureDetected(GESTURE_TAP)` is false in the test mode: the memory
   platform feeds no gestures. The port calls it as the C does.

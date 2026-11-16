@@ -9,7 +9,7 @@
 ;; the C became tasks, awaits, and a toggle. The functions over the grid are
 ;; the ones of the C.
 
-include "../raylib.atm"
+include "../ray.atm"
 include "classic.atm"
 
 val W, H   = 800, 450
@@ -17,7 +17,7 @@ val SQ     = 20
 val GW, GH = 12, 20             ;; the grid
 val EMPTY, MOVING, FULL, BLOCK, FADING = 0, 1, 2, 3, 4
 
-rl.window [title="classic game: tetris", width=W, height=H, fps=60]
+ray.window [title="classic game: tetris", width=W, height=H, fps=60]
 
 ;; The grid and the pieces, as in the C: grid[i][j] is at i*GH + j, so that
 ;; a read past the bottom of a column reads the top of the next one, as the
@@ -27,7 +27,7 @@ pin piece    = []               ;; 4x4: piece[i][j] at i*4 + j
 pin incoming = []
 var px, py   = 0, 0
 var lines    = 0
-var fading   = rl.GRAY
+var fading   = ray.GRAY
 var active   = false            ;; a piece falls (pieceActive)
 var fast     = 0                ;; frames of fall of this piece, for DOWN
 
@@ -35,7 +35,7 @@ func g (i, j) { grid@((i*GH) + j) }
 func setg (i, j, v) { set grid@((i*GH) + j) = v }
 
 func random_piece () {
-    val r = rl.random(0, 6)
+    val r = ray.random(0, 6)
     loop k in 16 { set incoming@k = EMPTY }
     pin cells = match r {
         0 => [[1,1],[2,1],[1,2],[2,2]]
@@ -138,7 +138,7 @@ func fall () {
 func lateral () {
     var hit = false
     ifs {
-        rl.key_down('LEFT') => {
+        ray.key_down('LEFT') => {
             cells \(i, j) {
                 if (g(i, j) == MOVING) && (((i - 1) == 0) || (g(i - 1, j) == FULL)) { set hit = true }
             }
@@ -152,7 +152,7 @@ func lateral () {
                 set px -= 1
             }
         }
-        rl.key_down('RIGHT') => {
+        ray.key_down('RIGHT') => {
             cells \(i, j) {
                 if (g(i, j) == MOVING) && (((i + 1) == (GW - 1)) || (g(i + 1, j) == FULL)) { set hit = true }
             }
@@ -175,7 +175,7 @@ func lateral () {
 
 ;; A turn, with UP held; true if UP is held (turned or not), as in the C.
 func turn () {
-    if !rl.key_down('UP') {
+    if !ray.key_down('UP') {
         return false
     }
     ;; a turn is blocked if a cell of the piece would move onto something
@@ -216,7 +216,7 @@ func turn () {
 ;; One game: piece after piece, until a landed piece reaches the two top
 ;; rows.
 task Play () {
-    set lines, fading, active, fast = 0, rl.GRAY, false, 0
+    set lines, fading, active, fast = 0, ray.GRAY, false, 0
     set px, py = 0, 0
     loop i in GW {
         loop j in GH {
@@ -234,7 +234,7 @@ task Play () {
         loop {
             loop n in (1, 30) {
                 await :fall
-                until (n == 30) || (rl.key_down('DOWN') && (fast >= 30))
+                until (n == 30) || (ray.key_down('DOWN') && (fast >= 30))
             }
             fall()
         }
@@ -245,7 +245,7 @@ task Play () {
         loop {
             loop n in (1, 10) {
                 await :fall
-                until (n == 10) || rl.key_pressed('LEFT') || rl.key_pressed('RIGHT')
+                until (n == 10) || ray.key_pressed('LEFT') || ray.key_pressed('RIGHT')
             }
             loop {
                 until !lateral()
@@ -259,7 +259,7 @@ task Play () {
         loop {
             loop n in (1, 12) {
                 await :fall
-                until (n == 12) || rl.key_pressed('UP')
+                until (n == 12) || ray.key_pressed('UP')
             }
             loop {
                 until turn()
@@ -268,21 +268,21 @@ task Play () {
         }
     }
     spawn {
-        loop on :rl.draw {
+        loop on :draw {
             var x, y = (((W//2) - ((GW*SQ)//2)) - 50), ((((H//2) - (((GH - 1)*SQ)//2)) + (SQ*2)) - 50)
             loop j in GH {
                 loop i in GW {
                     val v = g(i, j)
                     if v == EMPTY {
-                        rl.line(x, y, x + SQ, y, rl.LIGHTGRAY)
-                        rl.line(x, y, x, y + SQ, rl.LIGHTGRAY)
-                        rl.line(x + SQ, y, x + SQ, y + SQ, rl.LIGHTGRAY)
-                        rl.line(x, y + SQ, x + SQ, y + SQ, rl.LIGHTGRAY)
+                        ray.line(x, y, x + SQ, y, ray.LIGHTGRAY)
+                        ray.line(x, y, x, y + SQ, ray.LIGHTGRAY)
+                        ray.line(x + SQ, y, x + SQ, y + SQ, ray.LIGHTGRAY)
+                        ray.line(x, y + SQ, x + SQ, y + SQ, ray.LIGHTGRAY)
                     } else {
-                        rl.rectangle(x, y, SQ, SQ, match v {
-                            FULL   => rl.GRAY
-                            MOVING => rl.DARKGRAY
-                            BLOCK  => rl.LIGHTGRAY
+                        ray.rectangle(x, y, SQ, SQ, match v {
+                            FULL   => ray.GRAY
+                            MOVING => ray.DARKGRAY
+                            BLOCK  => ray.LIGHTGRAY
                             FADING => fading
                         })
                     }
@@ -296,20 +296,20 @@ task Play () {
                 loop i in 4 {
                     val v = incoming@((i*4) + j)
                     if v == EMPTY {
-                        rl.line(x, y, x + SQ, y, rl.LIGHTGRAY)
-                        rl.line(x, y, x, y + SQ, rl.LIGHTGRAY)
-                        rl.line(x + SQ, y, x + SQ, y + SQ, rl.LIGHTGRAY)
-                        rl.line(x, y + SQ, x + SQ, y + SQ, rl.LIGHTGRAY)
+                        ray.line(x, y, x + SQ, y, ray.LIGHTGRAY)
+                        ray.line(x, y, x, y + SQ, ray.LIGHTGRAY)
+                        ray.line(x + SQ, y, x + SQ, y + SQ, ray.LIGHTGRAY)
+                        ray.line(x, y + SQ, x + SQ, y + SQ, ray.LIGHTGRAY)
                     } else {
-                        rl.rectangle(x, y, SQ, SQ, rl.GRAY)
+                        ray.rectangle(x, y, SQ, SQ, ray.GRAY)
                     }
                     set x += SQ
                 }
                 set x = 500
                 set y += SQ
             }
-            rl.text("INCOMING:", x, y - 100, 10, rl.GRAY)
-            rl.text(string.format("LINES:      %04d", lines), x, y + 20, 10, rl.GRAY)
+            ray.text("INCOMING:", x, y - 100, 10, ray.GRAY)
+            ray.text(string.format("LINES:      %04d", lines), x, y + 20, 10, ray.GRAY)
         }
     }
 
@@ -324,7 +324,7 @@ task Play () {
     random_piece()                  ;; the first incoming piece (beginPlay)
     loop {
         ;; a frame: the lines of the last piece, and a new piece
-        await :rl.frame
+        await :frame
         val full = completion()
         create()
         set active, fast = true, 0
@@ -332,14 +332,14 @@ task Play () {
         ;; the full lines blink for 33 frames, and go
         if full {
             loop n in (1, 33) {
-                await :rl.frame
-                set fading = if (n % 8) < 4 => rl.MAROON => rl.GRAY
+                await :frame
+                set fading = if (n % 8) < 4 => ray.MAROON => ray.GRAY
             }
             set lines += delete()
         }
         ;; the piece falls until it lands
         loop {
-            await :rl.frame
+            await :frame
             set fast += 1
             emit :fall
             until over()
@@ -351,14 +351,14 @@ task Play () {
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
+    if ray.frame() > 0 {
+        loop on :draw {
             var nf, nm = 0, 0
             loop _,v in grid {
                 if v == FULL { set nf += 1 }
                 if v == MOVING { set nm += 1 }
             }
-            print(string.format("%d %s %d %d %d %d %d", rl.frame(), phase, px, py, lines, nf, nm))
+            print(string.format("%d %s %d %d %d %d %d", ray.frame(), phase, px, py, lines, nf, nm))
         }
     }
 }

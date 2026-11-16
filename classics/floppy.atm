@@ -8,7 +8,7 @@
 ;; sequences: `gameOver`, `pause`, `superfx`, and `tubes[].active` of the C
 ;; became tasks, awaits, and a toggle.
 
-include "../raylib.atm"
+include "../ray.atm"
 include "classic.atm"
 
 val W, H   = 800, 450
@@ -16,7 +16,7 @@ val RADIUS = 24
 val TUBE_W = 80
 val NTUBES = 100
 
-rl.window [title="classic game: floppy", width=W, height=H, fps=60]
+ray.window [title="classic game: floppy", width=W, height=H, fps=60]
 
 pin floppy = [x=0, y=0]         ;; where floppy is
 var score  = 0
@@ -30,12 +30,12 @@ task Tube (game, x0, y) {
     val ytop = y
     val ybot = (600 + y) - 255
     val func hit (yt) {
-        rl.check_collision_circle_rec(floppy.x, floppy.y, RADIUS, x, yt, TUBE_W, 255)
+        ray.check_collision_circle_rec(floppy.x, floppy.y, RADIUS, x, yt, TUBE_W, 255)
     }
     par {
         ;; ahead of floppy, then behind it
         loop {
-            await :rl.frame
+            await :frame
             set x -= 2
             if hit(ytop) { emit @game :over }
             until x < floppy.x
@@ -43,14 +43,14 @@ task Tube (game, x0, y) {
         }
         emit @game :scored
         if hit(ybot) { emit @game :over }
-        loop on :rl.frame {
+        loop on :frame {
             set x -= 2
             if hit(ytop) || hit(ybot) { emit @game :over }
         }
     } with {
-        loop on :rl.draw {
-            rl.rectangle(x, ytop, TUBE_W, 255, rl.GRAY)
-            rl.rectangle(x, ybot, TUBE_W, 255, rl.GRAY)
+        loop on :draw {
+            ray.rectangle(x, ytop, TUBE_W, 255, ray.GRAY)
+            ray.rectangle(x, ybot, TUBE_W, 255, ray.GRAY)
         }
     }
 }
@@ -61,29 +61,29 @@ task Play () {
     set score = 0
     spawn {
         par {
-            loop on :rl.frame {
-                if rl.key_down('SPACE') {
+            loop on :frame {
+                if ray.key_down('SPACE') {
                     set floppy.y -= 3
                 } else {
                     set floppy.y += 1
                 }
             }
         } with {
-            loop on :rl.draw {
-                rl.circle(floppy.x, floppy.y, RADIUS, rl.DARKGRAY)
+            loop on :draw {
+                ray.circle(floppy.x, floppy.y, RADIUS, ray.DARKGRAY)
             }
         }
     }
     pin tubes = tasks()
     loop i in NTUBES {
-        spawn @tubes Tube(task, 400 + (280*i), -rl.random(0, 120))
+        spawn @tubes Tube(task, 400 + (280*i), -ray.random(0, 120))
     }
     spawn {
         ;; the flash: one frame of white when floppy scores
         loop {
             await :scored
-            await :rl.draw
-            rl.rectangle(0, 0, W, H, rl.WHITE)
+            await :draw
+            ray.rectangle(0, 0, W, H, ray.WHITE)
         }
     }
     spawn {
@@ -93,9 +93,9 @@ task Play () {
         }
     }
     spawn {
-        loop on :rl.draw {
-            rl.text(string.format("%04d", score), 20, 20, 40, rl.GRAY)
-            rl.text(string.format("HI-SCORE: %04d", hiscore), 20, 70, 20, rl.LIGHTGRAY)
+        loop on :draw {
+            ray.text(string.format("%04d", score), 20, 20, 40, ray.GRAY)
+            ray.text(string.format("HI-SCORE: %04d", hiscore), 20, 70, 20, ray.LIGHTGRAY)
         }
     }
     await :over
@@ -103,9 +103,9 @@ task Play () {
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
-            print(string.format("%d %s %.1f %d %d", rl.frame(), phase, floppy.y, score, hiscore))
+    if ray.frame() > 0 {
+        loop on :draw {
+            print(string.format("%d %s %.1f %d %d", ray.frame(), phase, floppy.y, score, hiscore))
         }
     }
 }

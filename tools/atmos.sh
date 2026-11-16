@@ -1,5 +1,5 @@
 #!/bin/sh
-# Builds an Atmos program over raylib.atm:
+# Builds an Atmos program over ray.atm:
 #
 #   tools/atmos.sh <file.atm> <out>
 #

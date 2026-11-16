@@ -8,7 +8,7 @@
 ;; sequences: `gameOver`, `pause`, `ball.active`, and `brick[][].active` of
 ;; the C became tasks, awaits, and a toggle.
 
-include "../raylib.atm"
+include "../ray.atm"
 include "classic.atm"
 
 val W, H   = 800, 450
@@ -16,9 +16,9 @@ val LIVES  = 5
 val ROWS, COLS = 5, 20
 val BW, BH = 40, 40             ;; a brick
 val R      = 7                  ;; the ball
-val f32    = rl.f32             ;; the ball moves on floats, as in the C
+val f32    = ray.f32             ;; the ball moves on floats, as in the C
 
-rl.window [title="classic game: arkanoid", width=W, height=H, fps=60]
+ray.window [title="classic game: arkanoid", width=W, height=H, fps=60]
 
 pin player = [x=0, y=0]
 pin ball   = [x=0, y=0, sx=0, sy=0]
@@ -28,17 +28,17 @@ var bricks_left = 0             ;; for the trace
 ;; The paddle and the lives.
 task Player () {
     par {
-        loop on :rl.frame {
-            if rl.key_down('LEFT') { set player.x -= 5 }
+        loop on :frame {
+            if ray.key_down('LEFT') { set player.x -= 5 }
             if (player.x - 40) <= 0 { set player.x = 40 }
-            if rl.key_down('RIGHT') { set player.x += 5 }
+            if ray.key_down('RIGHT') { set player.x += 5 }
             if (player.x + 40) >= W { set player.x = W - 40 }
         }
     } with {
-        loop on :rl.draw {
-            rl.rectangle(player.x - 40, player.y - 10, 80, 20, rl.BLACK)
+        loop on :draw {
+            ray.rectangle(player.x - 40, player.y - 10, 80, 20, ray.BLACK)
             loop i in life {
-                rl.rectangle(20 + (40*i), H - 30, 35, 10, rl.LIGHTGRAY)
+                ray.rectangle(20 + (40*i), H - 30, 35, 10, ray.LIGHTGRAY)
             }
         }
     }
@@ -49,13 +49,13 @@ task Player () {
 task Ball () {
     par :any {
         loop {
-            watching :rl.key.dn [name='SPACE'] {
-                loop on :rl.frame {
+            watching :key.dn [name='SPACE'] {
+                loop on :frame {
                     set ball.x, ball.y = player.x, (player.y - 10) - R
                 }
             }
             set ball.sx, ball.sy = 0, -5
-            loop on :rl.frame {
+            loop on :frame {
                 set ball.x = f32(ball.x + ball.sx)
                 set ball.y = ball.y + ball.sy
                 if (f32(ball.x + R) >= W) || (f32(ball.x - R) <= 0) {
@@ -65,7 +65,7 @@ task Ball () {
                     set ball.sy = -ball.sy
                 }
                 until (ball.y + R) >= H
-                if rl.check_collision_circle_rec(ball.x, ball.y, R, player.x - 40, player.y - 10, 80, 20) && (ball.sy > 0) {
+                if ray.check_collision_circle_rec(ball.x, ball.y, R, player.x - 40, player.y - 10, 80, 20) && (ball.sy > 0) {
                     set ball.sy = -ball.sy
                     set ball.sx = f32(f32(f32(ball.x - player.x) / 40) * 5)
                 }
@@ -75,8 +75,8 @@ task Ball () {
             until life <= 0
         }
     } with {
-        loop on :rl.draw {
-            rl.circle_v(ball.x, ball.y, R, rl.MAROON)
+        loop on :draw {
+            ray.circle_v(ball.x, ball.y, R, ray.MAROON)
         }
     }
 }
@@ -87,7 +87,7 @@ task Brick (i, j) {
     val x, y = (j*BW) + (BW/2), (i*BH) + 50
     pin near = func (a, b) { math.abs(f32(a - b)) < ((BW/2) + 4) }    ;; 4 is radius*2/3
     par :any {
-        loop on :rl.frame {
+        loop on :frame {
             ifs {
                 ((ball.y - R) <= (y + (BH/2))) && ((ball.y - R) > ((y + (BH/2)) + ball.sy)) && near(ball.x, x) && (ball.sy < 0) => {
                     set ball.sy = -ball.sy
@@ -109,9 +109,9 @@ task Brick (i, j) {
         }
         set bricks_left -= 1
     } with {
-        val c = if ((i + j) % 2) == 0 => rl.GRAY => rl.DARKGRAY
-        loop on :rl.draw {
-            rl.rectangle(x - (BW/2), y - (BH/2), BW, BH, c)
+        val c = if ((i + j) % 2) == 0 => ray.GRAY => ray.DARKGRAY
+        loop on :draw {
+            ray.rectangle(x - (BW/2), y - (BH/2), BW, BH, c)
         }
     }
 }
@@ -135,9 +135,9 @@ task Play () {
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
-            print(string.format("%d %s %.1f %.5f %.1f %.5f %.1f %d %d", rl.frame(), phase,
+    if ray.frame() > 0 {
+        loop on :draw {
+            print(string.format("%d %s %.1f %.5f %.1f %.5f %.1f %d %d", ray.frame(), phase,
                 player.x, ball.x, ball.y, ball.sx, ball.sy, life, bricks_left))
         }
     }

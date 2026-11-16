@@ -7,7 +7,7 @@
 ;; A port runs as a program of its own, from the directory of its assets,
 ;; as the original does; the launcher waits for it to end.
 
-include "raylib.atm"
+include "ray.atm"
 
 ```:prelude
 #include <stdlib.h>
@@ -26,7 +26,7 @@ pin GAMES = [
 val N = #GAMES
 val W, H = 640, 40 + (N * 24) + 40
 
-rl.window [title="raylib games in Atmos", width=W, height=H, fps=60]
+ray.window [title="raylib games in Atmos", width=W, height=H, fps=60]
 
 ;; runs a port: the classics from build/port, the others from their assets
 func run (g) {
@@ -39,29 +39,29 @@ func run (g) {
 
 var sel = 0
 spawn {
-    loop on :rl.frame {
-        if rl.key_pressed('DOWN') { set sel = math.min(sel + 1, N - 1) }
-        if rl.key_pressed('UP') { set sel = math.max(sel - 1, 0) }
-        val i = (rl.mouse_y() - 40) // 24
-        if (i >= 0) && (i < N) && ((rl.mouse_dx() != 0) || (rl.mouse_dy() != 0)) { set sel = i }
-        if rl.key_pressed('ENTER') || (rl.mouse_pressed(0) && (i == sel)) {
+    loop on :frame {
+        if ray.key_pressed('DOWN') { set sel = math.min(sel + 1, N - 1) }
+        if ray.key_pressed('UP') { set sel = math.max(sel - 1, 0) }
+        val i = (ray.mouse_y() - 40) // 24
+        if (i >= 0) && (i < N) && ((ray.mouse_dx() != 0) || (ray.mouse_dy() != 0)) { set sel = i }
+        if ray.key_pressed('ENTER') || (ray.mouse_pressed(0) && (i == sel)) {
             run(GAMES@sel)
         }
     }
 }
 spawn {
-    loop on :rl.draw {
-        rl.clear(rl.RAYWHITE)
-        rl.text("raylib games, ported to Atmos", 20, 12, 20, rl.DARKGRAY)
+    loop on :draw {
+        ray.clear(ray.RAYWHITE)
+        ray.text("raylib games, ported to Atmos", 20, 12, 20, ray.DARKGRAY)
         loop i,g in GAMES {
             val y = 40 + (i * 24)
             if i == sel {
-                rl.rectangle(10, y - 2, W - 20, 24, rl.SKYBLUE)
+                ray.rectangle(10, y - 2, W - 20, 24, ray.SKYBLUE)
             }
-            rl.text(string.format("%2d  %s", i + 1, g@0), 20, y, 20, if i == sel => rl.DARKBLUE => rl.BLACK)
-            rl.text(g@1, W - 110, y, 20, rl.GRAY)
+            ray.text(string.format("%2d  %s", i + 1, g@0), 20, y, 20, if i == sel => ray.DARKBLUE => ray.BLACK)
+            ray.text(g@1, W - 110, y, 20, ray.GRAY)
         }
-        rl.text("UP/DOWN or mouse: choose    ENTER or click: play    ESC: quit", 20, H - 30, 10, rl.GRAY)
+        ray.text("UP/DOWN or mouse: choose    ENTER or click: play    ESC: quit", 20, H - 30, 10, ray.GRAY)
     }
 }
-await :rl.quit
+await :quit

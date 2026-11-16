@@ -6,7 +6,7 @@
 ;;      include "../screens.atm"
 ;;      await Screens([logo=Logo, title=Title, ...], :logo)
 ;;
-;; A screen is a task that updates in :rl.frame and draws in :rl.draw; when
+;; A screen is a task that updates in :frame and draws in :draw; when
 ;; it is done, it sets its `pub` to the name of the next screen, and goes on
 ;; being drawn while the screen fades to white. Then it is aborted (its
 ;; resources go with it), and the next screen starts, still under the white,
@@ -18,46 +18,46 @@
 ;; "powered by", and a fade; then the screen `next`. `bars` is called when
 ;; the first bars start, and `written` 20 frames after the last letter.
 task Logo (next, bars, written) {
-    val x, y = (rl.width()//2) - 128, (rl.height()//2) - 128
+    val x, y = (ray.width()//2) - 128, (ray.height()//2) - 128
     var top, left, bottom, right = 16, 16, 16, 16
     ;; the corner blinks: off in the frames 1..9, on in 10..19, and so on
     par :any {
-        await(80, :rl.frame)
+        await(80, :frame)
     } with {
-        await(10, :rl.frame)
+        await(10, :frame)
         loop {
-            watching 10, :rl.frame {
-                loop on :rl.draw {
-                    rl.rectangle(x, y, 16, 16, rl.BLACK)
+            watching 10, :frame {
+                loop on :draw {
+                    ray.rectangle(x, y, 16, 16, ray.BLACK)
                 }
             }
-            await(10, :rl.frame)
+            await(10, :frame)
         }
     }
     if bars { bars() }
     ;; the top and left bars, then the bottom and right ones
     par :any {
-        loop on :rl.frame {
+        loop on :frame {
             set top, left = top + 8, left + 8
             until top == 256
         }
     } with {
-        loop on :rl.draw {
-            rl.rectangle(x, y, top, 16, rl.BLACK)
-            rl.rectangle(x, y, 16, left, rl.BLACK)
+        loop on :draw {
+            ray.rectangle(x, y, top, 16, ray.BLACK)
+            ray.rectangle(x, y, 16, left, ray.BLACK)
         }
     }
     par :any {
-        loop on :rl.frame {
+        loop on :frame {
             set bottom, right = bottom + 8, right + 8
             until bottom == 256
         }
     } with {
-        loop on :rl.draw {
-            rl.rectangle(x, y, top, 16, rl.BLACK)
-            rl.rectangle(x, y, 16, left, rl.BLACK)
-            rl.rectangle(x + 240, y, 16, right, rl.BLACK)
-            rl.rectangle(x, y + 240, bottom, 16, rl.BLACK)
+        loop on :draw {
+            ray.rectangle(x, y, top, 16, ray.BLACK)
+            ray.rectangle(x, y, 16, left, ray.BLACK)
+            ray.rectangle(x + 240, y, 16, right, ray.BLACK)
+            ray.rectangle(x, y + 240, bottom, 16, ray.BLACK)
         }
     }
     ;; the letters, one every 12 frames; "powered by" 21 frames after them;
@@ -65,37 +65,37 @@ task Logo (next, bars, written) {
     var letters, alpha, powered = 0, 1, false
     par :any {
         loop _ in 10 {
-            await(12, :rl.frame)
+            await(12, :frame)
             set letters += 1
         }
         par :any {
-            await(20, :rl.frame)
+            await(20, :frame)
             if written { written() }
-            await :rl.frame
+            await :frame
             set powered = true
             await false
         } with {
-            await(201, :rl.frame)
+            await(201, :frame)
             loop {
-                set alpha = rl.f32(alpha - rl.f32(0.02))
+                set alpha = ray.f32(alpha - ray.f32(0.02))
                 if alpha <= 0 {
                     set alpha = 0
                     set pub = next
                     await false
                 }
-                await :rl.frame
+                await :frame
             }
         }
     } with {
-        loop on :rl.draw {
-            rl.rectangle(x, y, top, 16, rl.fade(rl.BLACK, alpha))
-            rl.rectangle(x, y + 16, 16, left - 32, rl.fade(rl.BLACK, alpha))
-            rl.rectangle(x + 240, y + 16, 16, right - 32, rl.fade(rl.BLACK, alpha))
-            rl.rectangle(x, y + 240, bottom, 16, rl.fade(rl.BLACK, alpha))
-            rl.rectangle((rl.width()//2) - 112, (rl.height()//2) - 112, 224, 224, rl.fade(rl.RAYWHITE, alpha))
-            rl.text(rl.text_subtext("raylib", 0, letters), (rl.width()//2) - 44, (rl.height()//2) + 48, 50, rl.fade(rl.BLACK, alpha))
+        loop on :draw {
+            ray.rectangle(x, y, top, 16, ray.fade(ray.BLACK, alpha))
+            ray.rectangle(x, y + 16, 16, left - 32, ray.fade(ray.BLACK, alpha))
+            ray.rectangle(x + 240, y + 16, 16, right - 32, ray.fade(ray.BLACK, alpha))
+            ray.rectangle(x, y + 240, bottom, 16, ray.fade(ray.BLACK, alpha))
+            ray.rectangle((ray.width()//2) - 112, (ray.height()//2) - 112, 224, 224, ray.fade(ray.RAYWHITE, alpha))
+            ray.text(ray.text_subtext("raylib", 0, letters), (ray.width()//2) - 44, (ray.height()//2) + 48, 50, ray.fade(ray.BLACK, alpha))
             if powered {
-                rl.text("powered by", x, y - 27, 20, rl.fade(rl.DARKGRAY, alpha))
+                ray.text("powered by", x, y - 27, 20, ray.fade(ray.DARKGRAY, alpha))
             }
         }
     }
@@ -104,14 +104,14 @@ task Logo (next, bars, written) {
 ;; The fades of the transitions, as the games do them: the color, the step
 ;; and the end of the fade in, the step and the end of the fade out.
 pin FADE_WHITE = [                      ;; wave_collector and others
-    color = rl.RAYWHITE,
-    inc = rl.f32(0.05), into = \{ math.floor(it) >= 1 },
-    dec = rl.f32(0.05), back = \{ math.floor(it) <= 0 },  ;; (int)alpha: one frame
+    color = ray.RAYWHITE,
+    inc = ray.f32(0.05), into = \{ math.floor(it) >= 1 },
+    dec = ray.f32(0.05), back = \{ math.floor(it) <= 0 },  ;; (int)alpha: one frame
 ]
 pin FADE_BLACK = [                      ;; repair and others
-    color = rl.BLACK,
-    inc = rl.f32(0.05), into = \{ it > rl.f32(1.01) },
-    dec = rl.f32(0.02), back = \{ it < rl.f32(-0.01) },
+    color = ray.BLACK,
+    inc = ray.f32(0.05), into = \{ it > ray.f32(1.01) },
+    dec = ray.f32(0.02), back = \{ it < ray.f32(-0.01) },
 ]
 
 ;; The screens, by name, from the first one, with a fade (FADE_WHITE by
@@ -129,42 +129,42 @@ task Screens (screens, first, fade) {
         if fresh {
             ;; under the fade, which goes back; the screen is drawn, and
             ;; updates from the frame after the fade is gone
-            toggle s(false) with :rl.draw
+            toggle s(false) with :draw
             var alpha = 1
             set pub.alpha = 1
             par :any {
                 loop {
-                    await :rl.frame
-                    set alpha = rl.f32(alpha - f.dec)
+                    await :frame
+                    set alpha = ray.f32(alpha - f.dec)
                     set pub.alpha = alpha
                     until f.back(alpha)
                 }
             } with {
-                loop on :rl.draw {
-                    rl.rectangle(0, 0, rl.width(), rl.height(), rl.fade(f.color, alpha))
+                loop on :draw {
+                    ray.rectangle(0, 0, ray.width(), ray.height(), ray.fade(f.color, alpha))
                 }
             }
             set pub.trans, pub.alpha = false, 0
             toggle s(true)
         }
-        await :rl.frame until s.pub
+        await :frame until s.pub
         if s.pub ?? :table {
             ;; [to=, now=true]: the next screen at once, with no fade, as the
             ;; ChangeToScreen of the C; it updates from the next frame
             set name, fresh = s.pub.to, false
         } else {
         ;; the fade, over the screen, which is drawn but no more updated
-        toggle s(false) with :rl.draw
+        toggle s(false) with :draw
         var alpha = 0
         set pub.trans = true
         spawn {
-            loop on :rl.draw {
-                rl.rectangle(0, 0, rl.width(), rl.height(), rl.fade(f.color, alpha))
+            loop on :draw {
+                ray.rectangle(0, 0, ray.width(), ray.height(), ray.fade(f.color, alpha))
             }
         }
         loop {
-            await :rl.frame
-            set alpha = rl.f32(alpha + f.inc)
+            await :frame
+            set alpha = ray.f32(alpha + f.inc)
             set pub.alpha = alpha
             until f.into(alpha)
         }

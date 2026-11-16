@@ -8,12 +8,12 @@
 ;; sequences: `gameOver`, `pause`, `follow`, `points.active`, and
 ;; `home.active` of the C became tasks, awaits, and a toggle.
 
-include "../raylib.atm"
+include "../ray.atm"
 include "classic.atm"
 
 val W, H = 800, 450
 
-rl.window [title="classic game: gold fever", width=W, height=H, fps=60]
+ray.window [title="classic game: gold fever", width=W, height=H, fps=60]
 
 pin player = [x=0, y=0]
 pin enemy  = [x=0, y=0, speed=0]
@@ -24,8 +24,8 @@ var hiscore = 0
 
 ;; the gold, somewhere new: x, then y
 func place_gold () {
-    val x = rl.random(10, W - 10)
-    val y = rl.random(10, H - 10)
+    val x = ray.random(10, W - 10)
+    val y = ray.random(10, H - 10)
     set gold.x, gold.y = x, y
 }
 
@@ -34,8 +34,8 @@ task Play () {
     set player.x, player.y = 50, 50
     set enemy.x, enemy.y, enemy.speed = W-50, H//2, 3
     place_gold()
-    val hx = rl.random(0, W-50)
-    set home.x, home.y = hx, rl.random(0, H-50)
+    val hx = ray.random(0, W-50)
+    set home.x, home.y = hx, ray.random(0, H-50)
     set score  = 0
     var safe   = false          ;; the player was in the home at the end of the last frame
 
@@ -46,36 +46,36 @@ task Play () {
         loop {
             await :picked
             watching :stored {
-                loop on :rl.draw {
-                    rl.rectangle(0, 0, W, H, rl.RED)
-                    rl.rectangle(10, 10, W-20, H-20, rl.RAYWHITE)
+                loop on :draw {
+                    ray.rectangle(0, 0, W, H, ray.RED)
+                    ray.rectangle(10, 10, W-20, H-20, ray.RAYWHITE)
                 }
             }
         }
     }
     spawn {
-        loop on :rl.draw {
-            rl.rectangle_lines(home.x, home.y, 50, 50, rl.BLUE)
-            rl.circle_lines(enemy.x, enemy.y, 150, rl.RED)
-            rl.circle_v(enemy.x, enemy.y, 20, rl.MAROON)
-            rl.circle_v(player.x, player.y, 20, rl.GRAY)
+        loop on :draw {
+            ray.rectangle_lines(home.x, home.y, 50, 50, ray.BLUE)
+            ray.circle_lines(enemy.x, enemy.y, 150, ray.RED)
+            ray.circle_v(enemy.x, enemy.y, 20, ray.MAROON)
+            ray.circle_v(player.x, player.y, 20, ray.GRAY)
         }
     }
     spawn {
         ;; the gold, until it is picked, and again once it is stored
         loop {
             watching :picked {
-                loop on :rl.draw {
-                    rl.circle_v(gold.x, gold.y, 10, rl.GOLD)
+                loop on :draw {
+                    ray.circle_v(gold.x, gold.y, 10, ray.GOLD)
                 }
             }
             await :stored
         }
     }
     spawn {
-        loop on :rl.draw {
-            rl.text(string.format("SCORE: %04d", score), 20, 15, 20, rl.GRAY)
-            rl.text(string.format("HI-SCORE: %04d", hiscore), 300, 15, 20, rl.GRAY)
+        loop on :draw {
+            ray.text(string.format("SCORE: %04d", score), 20, 15, 20, ray.GRAY)
+            ray.text(string.format("HI-SCORE: %04d", hiscore), 300, 15, 20, ray.GRAY)
         }
     }
 
@@ -83,11 +83,11 @@ task Play () {
 
     spawn {
         ;; the player, with the arrows held, inside the screen
-        loop on :rl.frame {
-            if rl.key_down('RIGHT') { set player.x += 5 }
-            if rl.key_down('LEFT')  { set player.x -= 5 }
-            if rl.key_down('UP')    { set player.y -= 5 }
-            if rl.key_down('DOWN')  { set player.y += 5 }
+        loop on :frame {
+            if ray.key_down('RIGHT') { set player.x += 5 }
+            if ray.key_down('LEFT')  { set player.x -= 5 }
+            if ray.key_down('UP')    { set player.y -= 5 }
+            if ray.key_down('DOWN')  { set player.y += 5 }
             if (player.x - 20) <= 0 { set player.x = 20 }
             if (player.x + 20) >= W { set player.x = W - 20 }
             if (player.y - 20) <= 0 { set player.y = 20 }
@@ -117,12 +117,12 @@ task Play () {
         }
         loop {
             watching :picked {
-                loop on :rl.frame {
-                    step(!safe && rl.check_collision_circles(player.x, player.y, 20, enemy.x, enemy.y, 150))
+                loop on :frame {
+                    step(!safe && ray.check_collision_circles(player.x, player.y, 20, enemy.x, enemy.y, 150))
                 }
             }
             watching :stored {
-                loop on :rl.frame {
+                loop on :frame {
                     step(!safe)
                 }
             }
@@ -143,15 +143,15 @@ task Play () {
 
     ;; The rules, after everything moved, in the order of the C: the gold,
     ;; the enemy, the home. A game that ends still checks the home.
-    loop on :rl.frame {
-        if rl.check_collision_circles(player.x, player.y, 20, gold.x, gold.y, 10) {
+    loop on :frame {
+        if ray.check_collision_circles(player.x, player.y, 20, gold.x, gold.y, 10) {
             emit :touch.gold
         }
-        val dead = !safe && rl.check_collision_circles(player.x, player.y, 20, enemy.x, enemy.y, 20)
+        val dead = !safe && ray.check_collision_circles(player.x, player.y, 20, enemy.x, enemy.y, 20)
         if dead {
             set hiscore = math.max(score, hiscore)
         }
-        set safe = rl.check_collision_circle_rec(player.x, player.y, 20, home.x, home.y, 50, 50)
+        set safe = ray.check_collision_circle_rec(player.x, player.y, 20, home.x, home.y, 50, 50)
         if safe {
             emit :touch.home
         }
@@ -161,9 +161,9 @@ task Play () {
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
-            print(string.format("%d %s %.1f %.1f %.1f %.1f %d %d", rl.frame(), phase,
+    if ray.frame() > 0 {
+        loop on :draw {
+            print(string.format("%d %s %.1f %.1f %.1f %.1f %d %d", ray.frame(), phase,
                 player.x, player.y, enemy.x, enemy.y, score, hiscore))
         }
     }

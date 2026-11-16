@@ -6,7 +6,7 @@
 ;; raysan5/raylib-games. The game is the same; the screens, the transition,
 ;; the pause, the logo, and the blinking texts are tasks and awaits.
 
-include "../../raylib.atm"
+include "../../ray.atm"
 include "../screens.atm"
 
 ;; The samples of the level come from the audio of the wave, read as the C
@@ -46,42 +46,42 @@ static AVal wc_samples (float px, int height) {
 ```
 
 val W, H = 1280, 720
-val f32  = rl.f32
+val f32  = ray.f32
 
-rl.window [title="WAVE COLLECTOR [GGJ17]", width=W, height=H, fps=60]
-rl.audio_init()
-pin font  = rl.font("resources/font.fnt")
-pin music = rl.music("resources/audio/wave.ogg")
-rl.music_volume(music, 1)
-val FS = rl.font_size(font)
+ray.window [title="WAVE COLLECTOR [GGJ17]", width=W, height=H, fps=60]
+ray.audio_init()
+pin font  = ray.font("resources/font.fnt")
+pin music = ray.music("resources/audio/wave.ogg")
+ray.music_volume(music, 1)
+val FS = ray.font_size(font)
 
 var ending = 0                  ;; 1 win, 2 lose (endingStatus)
 
 ;; the credits and the logo of raylib, at the bottom of the title and the end
 func credits (logo) {
-    rl.rectangle(0, H - 70, 560, 40, rl.fade(rl.RAYWHITE, 0.8))
-    rl.text("(c) Developed by Ramon Santamaria (@raysan5)", 36, H - 60, 20, rl.DARKBLUE)
-    rl.text("powered by", W - 162, H - 190, 20, rl.DARKGRAY)
-    rl.draw_texture(logo, (W - 128) - 34, (H - 128) - 36, rl.WHITE)
+    ray.rectangle(0, H - 70, 560, 40, ray.fade(ray.RAYWHITE, 0.8))
+    ray.text("(c) Developed by Ramon Santamaria (@raysan5)", 36, H - 60, 20, ray.DARKBLUE)
+    ray.text("powered by", W - 162, H - 190, 20, ray.DARKGRAY)
+    ray.draw_texture(logo, (W - 128) - 34, (H - 128) - 36, ray.WHITE)
 }
 
 ;; A text that blinks, 40 frames on and 40 off, from frame `from` of the
 ;; screen on.
 task Blink (from, s, x, y) {
-    await(from, :rl.frame)
+    await(from, :frame)
     loop {
-        watching 40, :rl.frame {
-            loop on :rl.draw {
-                rl.text_ex(font, s, x, y, FS, 0, rl.SKYBLUE)
+        watching 40, :frame {
+            loop on :draw {
+                ray.text_ex(font, s, x, y, FS, 0, ray.SKYBLUE)
             }
         }
-        await(40, :rl.frame)
+        await(40, :frame)
     }
 }
 
 task LogoScreen () {
-    pin l = spawn Logo(:title, \{ rl.play_music(music) })
-    await :rl.frame until l.pub
+    pin l = spawn Logo(:title, \{ ray.play_music(music) })
+    await :frame until l.pub
     set pub = l.pub
     await false
 }
@@ -91,23 +91,23 @@ task LogoScreen () {
 var title_alpha = 0
 
 task Title () {
-    pin back  = rl.texture("resources/textures/background_title.png")
-    pin title = rl.texture("resources/textures/title.png")
-    pin logo  = rl.texture("resources/textures/logo_raylib.png")
-    pin start = rl.sound("resources/audio/start.wav")
+    pin back  = ray.texture("resources/textures/background_title.png")
+    pin title = ray.texture("resources/textures/title.png")
+    pin logo  = ray.texture("resources/textures/logo_raylib.png")
+    pin start = ray.sound("resources/audio/start.wav")
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, 0, 0, rl.WHITE)
-            rl.draw_texture(title, (W//2) - (rl.texture_width(title)//2), -25, rl.fade(rl.WHITE, title_alpha))
+        loop on :draw {
+            ray.draw_texture(back, 0, 0, ray.WHITE)
+            ray.draw_texture(title, (W//2) - (ray.texture_width(title)//2), -25, ray.fade(ray.WHITE, title_alpha))
             credits(logo)
         }
     }
     spawn Blink(200, "mouse click to start", 325, 500)
-    loop on :rl.frame {
+    loop on :frame {
         set title_alpha = math.min(f32(title_alpha + f32(0.005)), 1)
-        if rl.mouse_pressed(0) {
-            rl.play_sound(start)
-            rl.stop_music(music)
+        if ray.mouse_pressed(0) {
+            ray.play_sound(start)
+            ray.stop_music(music)
             break
         }
     }
@@ -116,26 +116,26 @@ task Title () {
 }
 
 task Ending () {
-    pin back = rl.texture("resources/textures/background.png")
-    pin win  = rl.texture("resources/textures/win.png")
-    pin lose = rl.texture("resources/textures/lose.png")
-    pin logo = rl.texture("resources/textures/logo_raylib.png")
+    pin back = ray.texture("resources/textures/background.png")
+    pin win  = ray.texture("resources/textures/win.png")
+    pin lose = ray.texture("resources/textures/lose.png")
+    pin logo = ray.texture("resources/textures/logo_raylib.png")
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, 0, 0, rl.WHITE)
+        loop on :draw {
+            ray.draw_texture(back, 0, 0, ray.WHITE)
             if ending == 1 {
-                rl.draw_texture(win, (W//2) - (rl.texture_width(win)//2), 90, rl.WHITE)
-                rl.text_ex(font, "congrats, you got the wave!", 200, 335, FS, 0, rl.WHITE)
+                ray.draw_texture(win, (W//2) - (ray.texture_width(win)//2), 90, ray.WHITE)
+                ray.text_ex(font, "congrats, you got the wave!", 200, 335, FS, 0, ray.WHITE)
             }
             if ending == 2 {
-                rl.draw_texture(lose, (W//2) - (rl.texture_width(win)//2), 90, rl.WHITE)
-                rl.text_ex(font, "it seems you lose the wave...", 205, 335, FS, 0, rl.WHITE)
+                ray.draw_texture(lose, (W//2) - (ray.texture_width(win)//2), 90, ray.WHITE)
+                ray.text_ex(font, "it seems you lose the wave...", 205, 335, FS, 0, ray.WHITE)
             }
             credits(logo)
         }
     }
     spawn Blink(120, "mouse click to return", 300, 464)
-    await :rl.frame until rl.mouse_pressed(0)
+    await :frame until ray.mouse_pressed(0)
     set pub = :title
     await false
 }
@@ -143,21 +143,21 @@ task Ending () {
 var game_line = nil             ;; the part of the trace of the gameplay (a string)
 
 task Gameplay () {
-    pin back   = rl.texture("resources/textures/background_gameplay.png")
-    pin tplay  = rl.texture("resources/textures/player.png")
-    pin tsmall = rl.texture("resources/textures/sample_small.png")
-    pin tmid   = rl.texture("resources/textures/sample_mid.png")
-    pin tbig   = rl.texture("resources/textures/sample_big.png")
-    pin target = rl.render_texture(1280 - 64, 105)
-    pin son    = rl.sound("resources/audio/sample_on.wav")
-    pin soff   = rl.sound("resources/audio/sample_off.wav")
-    pin spause = rl.sound("resources/audio/pause.wav")
-    rl.sound_volume(son, 0.6)
-    rl.sound_volume(spause, 0.5)
+    pin back   = ray.texture("resources/textures/background_gameplay.png")
+    pin tplay  = ray.texture("resources/textures/player.png")
+    pin tsmall = ray.texture("resources/textures/sample_small.png")
+    pin tmid   = ray.texture("resources/textures/sample_mid.png")
+    pin tbig   = ray.texture("resources/textures/sample_big.png")
+    pin target = ray.render_texture(1280 - 64, 105)
+    pin son    = ray.sound("resources/audio/sample_on.wav")
+    pin soff   = ray.sound("resources/audio/sample_off.wav")
+    pin spause = ray.sound("resources/audio/pause.wav")
+    ray.sound_volume(son, 0.6)
+    ray.sound_volume(spause, 0.5)
     set ending = 0
     pin g = [
-        x = f32((200 + f32(80/2)) - (rl.texture_width(tplay)//2)),
-        y = f32((160 + f32(400/2)) - (rl.texture_height(tplay)//2)),
+        x = f32((200 + f32(80/2)) - (ray.texture_width(tplay)//2)),
+        y = f32((160 + f32(400/2)) - (ray.texture_height(tplay)//2)),
         warp = 395, synchro = f32(0.2), combo = 0, max = 0,
         collected = 0, current = 0, speed = 7, paused = false,
     ]
@@ -166,7 +166,7 @@ task Gameplay () {
     }
     ;; [trace]: the part of the gameplay, as it is drawn (the trace prints after it)
     spawn {
-        loop on :rl.draw {
+        loop on :draw {
             set game_line = string.format(" %.4f %d %d %d %.6f %.4f %d", g.y, g.collected, g.combo, g.current, g.synchro, g.speed, g.warp)
         }
     }
@@ -176,14 +176,14 @@ task Gameplay () {
     loop _,s in samples {
         set s.on, s.got = true, false
     }
-    rl.stop_music(music)
-    rl.play_music(music)
+    ray.stop_music(music)
+    ray.play_music(music)
 
     ;; the looks before the pause text: the wave and the player
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, 0, 0, rl.WHITE)
-            rl.rectangle(0, (H//2) - 1, W, 2, rl.fade(rl.BLUE, 0.3))
+        loop on :draw {
+            ray.draw_texture(back, 0, 0, ray.WHITE)
+            ray.rectangle(0, (H//2) - 1, W, 2, ray.fade(ray.BLUE, 0.3))
             loop i in total - 1 {
                 val s = samples@i
                 if ((s.x + 6) > -100) && ((s.x - 6) < W) {
@@ -194,24 +194,24 @@ task Gameplay () {
                             g.combo > 15 => tmid
                             else         => tbig
                         }
-                        rl.draw_texture(t, s.x - (rl.texture_width(t)//2), s.y - (rl.texture_height(t)//2),
-                            if past => rl.fade(rl.DARKGRAY, 0.5) => rl.WHITE)
+                        ray.draw_texture(t, s.x - (ray.texture_width(t)//2), s.y - (ray.texture_height(t)//2),
+                            if past => ray.fade(ray.DARKGRAY, 0.5) => ray.WHITE)
                     }
                     val n = samples@(i + 1)
-                    rl.line_ex(s.x, s.y, n.x, n.y, 3, if past => rl.fade(rl.GRAY, 0.3) => rl.fade(rl.RED, 0.5))
+                    ray.line_ex(s.x, s.y, n.x, n.y, 3, if past => ray.fade(ray.GRAY, 0.3) => ray.fade(ray.RED, 0.5))
                 }
             }
-            rl.draw_texture(tplay, g.x - 32, g.y - 24, rl.WHITE)
+            ray.draw_texture(tplay, g.x - 32, g.y - 24, ray.WHITE)
         }
     }
 
     ;; the logic, which the pause stops
     pin logic = spawn {
-        loop on :rl.frame {
-            set g.y = rl.mouse_y()
+        loop on :frame {
+            set g.y = ray.mouse_y()
             ifs {
-                rl.key_down('W') => { set g.y -= 15 }
-                rl.key_down('S') => { set g.y += 15 }
+                ray.key_down('W') => { set g.y -= 15 }
+                ray.key_down('S') => { set g.y += 15 }
             }
             ifs {
                 g.y < 160 => { set g.y = 160 }
@@ -219,15 +219,15 @@ task Gameplay () {
             }
             loop i,s in samples {
                 set s.x = f32(s.x - g.speed)
-                if !s.got && rl.check_collision_circle_rec(s.x, s.y, 6, math.floor(g.x), math.floor(g.y), 20, 60) {
+                if !s.got && ray.check_collision_circle_rec(s.x, s.y, 6, math.floor(g.x), math.floor(g.y), 20, 60) {
                     set s.got = true
                     set g.collected += 1
                     set g.synchro = f32(g.synchro + 0.02)
                     set g.combo += 1
                     set g.max = math.max(g.max, g.combo)
                     set g.synchro = math.min(g.synchro, 1)
-                    rl.sound_pitch(son, f32(f32(s.v*f32(1.4)) + f32(0.7)))
-                    rl.play_sound(son)
+                    ray.sound_pitch(son, f32(f32(s.v*f32(1.4)) + f32(0.7)))
+                    ray.play_sound(son)
                 }
                 if (s.x - 6) < g.x {
                     set g.current = i
@@ -235,20 +235,20 @@ task Gameplay () {
                         set s.on = false
                         if !s.got {
                             set g.synchro = f32(g.synchro - f32(0.05))
-                            rl.play_sound(soff)
+                            ray.play_sound(soff)
                             set g.combo = 0
                         }
                     }
                 }
             }
-            if rl.key_down('SPACE') && (g.warp > 0) {
+            if ray.key_down('SPACE') && (g.warp > 0) {
                 set g.warp = math.max(g.warp - 1, 0)
                 set g.speed = math.max(f32(g.speed - f32(0.1)), 3)
             } else {
                 set g.warp = math.min(g.warp + 1, 395)
                 set g.speed = math.min(f32(g.speed + f32(0.1)), 7)
             }
-            rl.music_pitch(music, f32(g.speed/7))
+            ray.music_pitch(music, f32(g.speed/7))
             if g.current >= (total - 1) {
                 set ending = 1
             }
@@ -263,18 +263,18 @@ task Gameplay () {
     ;; the pause: P stops the logic; "WAVE PAUSED" while it lasts
     spawn {
         loop {
-            await :rl.key.dn [name='P']
-            rl.play_sound(spause)
-            rl.pause_music(music)
+            await :key.dn [name='P']
+            ray.play_sound(spause)
+            ray.pause_music(music)
             toggle logic(false)
             set g.paused = true
-            watching :rl.key.dn [name='P'] {
-                loop on :rl.draw {
-                    rl.text_ex(font, "WAVE PAUSED", 235, 400, FS*2, 0, rl.WHITE)
+            watching :key.dn [name='P'] {
+                loop on :draw {
+                    ray.text_ex(font, "WAVE PAUSED", 235, 400, FS*2, 0, ray.WHITE)
                 }
             }
-            rl.play_sound(spause)
-            rl.resume_music(music)
+            ray.play_sound(spause)
+            ray.resume_music(music)
             toggle logic(true)
             set g.paused = false
         }
@@ -282,36 +282,36 @@ task Gameplay () {
 
     ;; the looks after the pause text
     spawn {
-        loop on :rl.draw {
-            rl.text_ex(font, string.format("%05d / %05d", g.collected, total), 810, 170, FS, -2, rl.SKYBLUE)
-            rl.text_ex(font, string.format("Combo: %02d [max: %02d]", g.combo, g.max), 200, 170, FS//2, -2, rl.SKYBLUE)
-            rl.rectangle(99, 622, 395, 32, rl.fade(rl.RAYWHITE, 0.8))
+        loop on :draw {
+            ray.text_ex(font, string.format("%05d / %05d", g.collected, total), 810, 170, FS, -2, ray.SKYBLUE)
+            ray.text_ex(font, string.format("Combo: %02d [max: %02d]", g.combo, g.max), 200, 170, FS//2, -2, ray.SKYBLUE)
+            ray.rectangle(99, 622, 395, 32, ray.fade(ray.RAYWHITE, 0.8))
             val c = ifs {
-                g.synchro <= f32(0.3) => rl.fade(rl.RED, 0.8)
-                g.synchro <= f32(0.8) => rl.fade(rl.ORANGE, 0.8)
-                g.synchro < 1         => rl.fade(rl.LIME, 0.8)
-                else                  => rl.fade(rl.GREEN, 0.9)
+                g.synchro <= f32(0.3) => ray.fade(ray.RED, 0.8)
+                g.synchro <= f32(0.8) => ray.fade(ray.ORANGE, 0.8)
+                g.synchro < 1         => ray.fade(ray.LIME, 0.8)
+                else                  => ray.fade(ray.GREEN, 0.9)
             }
-            rl.rectangle(99, 622, f32(g.synchro*395), 32, c)
-            rl.rectangle_lines(99, 622, 395, 32, rl.MAROON)
-            rl.text_ex(font, string.format("%02d%%", math.floor(f32(g.synchro*100))), 99 + 390, 600, FS, -2,
-                if g.synchro == 1 => rl.GREEN => rl.SKYBLUE)
-            rl.rectangle(754, 622, 395, 32, rl.fade(rl.RAYWHITE, 0.8))
-            rl.rectangle(754, 622, g.warp, 32, rl.fade(rl.SKYBLUE, 0.8))
-            rl.rectangle_lines(754, 622, 395, 32, rl.DARKGRAY)
-            rl.text_ex(font, string.format("%02d%%", math.floor(f32(f32(g.warp/f32(395))*100))), 754 + 390, 600, FS, -2, rl.SKYBLUE)
+            ray.rectangle(99, 622, f32(g.synchro*395), 32, c)
+            ray.rectangle_lines(99, 622, 395, 32, ray.MAROON)
+            ray.text_ex(font, string.format("%02d%%", math.floor(f32(g.synchro*100))), 99 + 390, 600, FS, -2,
+                if g.synchro == 1 => ray.GREEN => ray.SKYBLUE)
+            ray.rectangle(754, 622, 395, 32, ray.fade(ray.RAYWHITE, 0.8))
+            ray.rectangle(754, 622, g.warp, 32, ray.fade(ray.SKYBLUE, 0.8))
+            ray.rectangle_lines(754, 622, 395, 32, ray.DARKGRAY)
+            ray.text_ex(font, string.format("%02d%%", math.floor(f32(f32(g.warp/f32(395))*100))), 754 + 390, 600, FS, -2, ray.SKYBLUE)
             ;; the map of the wave, in a texture
-            rl.begin_texture_mode(target)
-            rl.clear(rl.BLANK)
+            ray.begin_texture_mode(target)
+            ray.clear(ray.BLANK)
             val inc = f32((1280 - 64) / total)
             loop i in total - 1 {
                 val a, b = samples@i, samples@(i + 1)
-                rl.line_v(f32(i*inc), f32(52.5 + f32(a.v*105)), f32((i + 1)*inc), f32(52.5 + f32(b.v*105)),
-                    if i < g.current => rl.GRAY => rl.MAROON)
+                ray.line_v(f32(i*inc), f32(52.5 + f32(a.v*105)), f32((i + 1)*inc), f32(52.5 + f32(b.v*105)),
+                    if i < g.current => ray.GRAY => ray.MAROON)
             }
-            rl.end_texture_mode()
-            rl.draw_texture_ex(target, 32, 32, 0, 1, rl.WHITE)
-            rl.rectangle(32 + ((g.current*1215)//total), 32, 2, 99, rl.DARKGRAY)
+            ray.end_texture_mode()
+            ray.draw_texture_ex(target, 32, 32, 0, 1, ray.WHITE)
+            ray.rectangle(32 + ((g.current*1215)//total), 32, 2, 99, ray.DARKGRAY)
         }
     }
 
@@ -322,8 +322,8 @@ task Gameplay () {
 
 
 spawn {
-    loop on :rl.draw {
-        rl.clear(rl.RAYWHITE)
+    loop on :draw {
+        ray.clear(ray.RAYWHITE)
     }
 }
 
@@ -331,12 +331,12 @@ pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay, en
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
+    if ray.frame() > 0 {
+        loop on :draw {
             if game_line {
-                print(string.format("%d %d", rl.frame(), ending) ++ game_line)
+                print(string.format("%d %d", ray.frame(), ending) ++ game_line)
             } else {
-                print(string.format("%d %d", rl.frame(), ending))
+                print(string.format("%d %d", ray.frame(), ending))
             }
         }
     }

@@ -27,7 +27,7 @@ def build(n):
     m = max(n, 50)
     a = a.replace('    loop i in 50 {', '    loop i in %d {' % m)
     a = a.replace('[[10,"FIRST WAVE"]', '[[%d,"FIRST WAVE"]' % n)
-    a = a.replace('include "../raylib.atm"', 'include "%s/raylib.atm"' % ROOT).replace('include "classic.atm"', 'include "%s/classics/classic.atm"' % ROOT)
+    a = a.replace('include "../ray.atm"', 'include "%s/ray.atm"' % ROOT).replace('include "classic.atm"', 'include "%s/classics/classic.atm"' % ROOT)
     open(OUT + '/si_%d.atm' % n, 'w').write(a)
     subprocess.run([ROOT + '/tools/atmos.sh', OUT + '/si_%d.atm' % n, OUT + '/a_%d' % n], check=True, capture_output=True)
 

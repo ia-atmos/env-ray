@@ -10,34 +10,34 @@
 ;; pair of awaits. The enemies keep the slots of the C: an enemy takes the
 ;; first free slot, and its rail is never that of the slot before it.
 
-include "../../raylib.atm"
+include "../../ray.atm"
 
 val W, H = 1280, 720
 val N    = 10                           ;; MAX_ENEMIES
-val f32  = rl.f32
+val f32  = ray.f32
 
-rl.window [title="Dr. Turtle & Mr. GAMERA", width=W, height=H, fps=60]
-rl.audio_init()
+ray.window [title="Dr. Turtle & Mr. GAMERA", width=W, height=H, fps=60]
+ray.audio_init()
 
-pin sky       = rl.texture("resources/sky.png")
-pin mountains = rl.texture("resources/mountains.png")
-pin sea       = rl.texture("resources/sea.png")
-pin title     = rl.texture("resources/title.png")
-pin turtle    = rl.texture("resources/turtle.png")
-pin gamera    = rl.texture("resources/gamera.png")
-pin shark     = rl.texture("resources/shark.png")
-pin orca      = rl.texture("resources/orca.png")
-pin swhale    = rl.texture("resources/swhale.png")
-pin fish      = rl.texture("resources/fish.png")
-pin gframe    = rl.texture("resources/gframe.png")
-pin font      = rl.font("resources/komika.png")
-pin eat       = rl.sound("resources/eat.wav")
-pin die       = rl.sound("resources/die.wav")
-pin growl     = rl.sound("resources/gamera.wav")
-pin music     = rl.music("resources/speeding.ogg")
-rl.play_music(music)
+pin sky       = ray.texture("resources/sky.png")
+pin mountains = ray.texture("resources/mountains.png")
+pin sea       = ray.texture("resources/sea.png")
+pin title     = ray.texture("resources/title.png")
+pin turtle    = ray.texture("resources/turtle.png")
+pin gamera    = ray.texture("resources/gamera.png")
+pin shark     = ray.texture("resources/shark.png")
+pin orca      = ray.texture("resources/orca.png")
+pin swhale    = ray.texture("resources/swhale.png")
+pin fish      = ray.texture("resources/fish.png")
+pin gframe    = ray.texture("resources/gframe.png")
+pin font      = ray.font("resources/komika.png")
+pin eat       = ray.sound("resources/eat.wav")
+pin die       = ray.sound("resources/die.wav")
+pin growl     = ray.sound("resources/gamera.wav")
+pin music     = ray.music("resources/speeding.ogg")
+ray.play_music(music)
 
-val SIZE    = rl.font_size(font)
+val SIZE    = ray.font_size(font)
 pin ENEMIES = [shark, orca, swhale, fish]   ;; by type: 3 is the fish
 pin POINTS  = [50, 150, 300]               ;; of the bad ones, by type
 
@@ -60,10 +60,10 @@ pin game = [rail=1, score=0, distance=0, food=0, speed=10, enemies=[]]
 ;; Text that blinks: off for 30 frames, on for 30, and so on.
 task Blink (s, x, y, spacing, c) {
     loop {
-        await(30, :rl.frame)
-        watching 30, :rl.frame {
-            loop on :rl.draw {
-                rl.text_ex(font, s, x, y, SIZE, spacing, c)
+        await(30, :frame)
+        watching 30, :frame {
+            loop on :draw {
+                ray.text_ex(font, s, x, y, SIZE, spacing, c)
             }
         }
     }
@@ -75,11 +75,11 @@ func reset (i, type) {
     val e = game.enemies@i
     set e.active = false
     set e.type = type
-    set e.rail = rl.random(0, 4)
+    set e.rail = ray.random(0, 4)
     if i > 0 {
         loop {
             until e.rail != game.enemies@(i - 1).rail
-            set e.rail = rl.random(0, 4)
+            set e.rail = ray.random(0, 4)
         }
     }
     set e.x = W + 14
@@ -91,16 +91,16 @@ func rail_y (rail) {
 
 task Title () {
     par :any {
-        loop on :rl.frame {
+        loop on :frame {
             set front -= 2
             if front <= -W { set front = 0 }
         }
     } with {
-        await :rl.frame until rl.key_pressed('ENTER')
+        await :frame until ray.key_pressed('ENTER')
     } with {
-        spawn Blink("PRESS ENTER", (W//2) - 150, 480, 0, rl.WHITE)
-        loop on :rl.draw {
-            rl.draw_texture(title, (W//2) - (rl.texture_width(title)//2), (H//2) - (rl.texture_height(title)//2) - 80, rl.WHITE)
+        spawn Blink("PRESS ENTER", (W//2) - 150, 480, 0, ray.WHITE)
+        loop on :draw {
+            ray.draw_texture(title, (W//2) - (ray.texture_width(title)//2), (H//2) - (ray.texture_height(title)//2) - 80, ray.WHITE)
         }
     }
 }
@@ -111,7 +111,7 @@ task Gameplay () {
     set game.enemies = []
     val es = game.enemies
     loop i in N {
-        val p = rl.random(0, 100)
+        val p = ray.random(0, 100)
         set es@i = []
         reset(i, if p < 30 => 0 => if p < 60 => 1 => if p < 90 => 2 => 3)
     }
@@ -119,7 +119,7 @@ task Gameplay () {
     par :any {
         ;; an enemy every 41 frames, in the first free slot
         loop {
-            await(41, :rl.frame)
+            await(41, :frame)
             var free = nil
             loop _,e in es {
                 if !free && !e.active { set free = e }
@@ -128,16 +128,16 @@ task Gameplay () {
         }
     } with {
         var dead = false
-        loop on :rl.frame {
+        loop on :frame {
             set back -= 1
             if back <= -W { set back = 0 }
             set front = int(f32(front - f32(game.speed - 2)))
             if front <= -W { set front = 0 }
 
-            if rl.key_pressed('DOWN') {
+            if ray.key_pressed('DOWN') {
                 set game.rail += 1
             } else {
-                if rl.key_pressed('UP') { set game.rail -= 1 }
+                if ray.key_pressed('UP') { set game.rail -= 1 }
             }
             set game.rail = math.max(0, math.min(4, game.rail))
             val py = rail_y(game.rail)
@@ -145,34 +145,34 @@ task Gameplay () {
             loop i in N {
                 val e = es@i
                 if e.active { set e.x = f32(e.x - game.speed) }
-                if e.x <= -128 { reset(i, rl.random(0, 3)) }
+                if e.x <= -128 { reset(i, ray.random(0, 3)) }
             }
             if !gameraMode { set game.speed = f32(game.speed + 0.005) }
 
             loop i in N {
                 val e = es@i
-                if e.active && rl.check_collision_recs(30 + 14, py, 100, 100, e.x, rail_y(e.rail), 100, 100) {
+                if e.active && ray.check_collision_recs(30 + 14, py, 100, 100, e.x, rail_y(e.rail), 100, 100) {
                     if e.type < 3 {             ;; the bad ones
                         if gameraMode {
                             set game.score += POINTS@(e.type)
                             set game.food += 15
-                            reset(i, rl.random(0, 3))
-                            rl.play_sound(eat)
+                            reset(i, ray.random(0, 3))
+                            ray.play_sound(eat)
                         } else {
-                            rl.play_sound(die)
+                            ray.play_sound(die)
                             set dead = true
                             set hiscore = math.max(hiscore, game.score)
                             set hidistance = math.max(hidistance, game.distance)
                         }
                     } else {                    ;; a sweet fish
-                        reset(i, rl.random(0, 3))
+                        reset(i, ray.random(0, 3))
                         set game.food += if gameraMode => 25 => 80
                         set game.score += 10
                         if game.food == 400 {
                             set gameraMode = true
-                            rl.play_sound(growl)
+                            ray.play_sound(growl)
                         }
-                        rl.play_sound(eat)
+                        ray.play_sound(eat)
                     }
                 }
             }
@@ -188,29 +188,29 @@ task Gameplay () {
             until dead
         }
     } with {
-        loop on :rl.draw {
+        loop on :draw {
             loop i in 5 {
-                rl.rectangle(0, (i * 120) + 120, W, 110, rl.fade(rl.SKYBLUE, 0.1))
+                ray.rectangle(0, (i * 120) + 120, W, 110, ray.fade(ray.SKYBLUE, 0.1))
             }
             val py = rail_y(game.rail)
             if gameraMode {
-                rl.draw_texture(gamera, 30 + 14 - 64, py - 64, rl.WHITE)
+                ray.draw_texture(gamera, 30 + 14 - 64, py - 64, ray.WHITE)
             } else {
-                rl.draw_texture(turtle, 30, py - 14, rl.WHITE)
+                ray.draw_texture(turtle, 30, py - 14, ray.WHITE)
             }
             loop _,e in es {
                 if e.active {
-                    rl.draw_texture(ENEMIES@(e.type), f32(e.x - 14), rail_y(e.rail) - 14, rl.WHITE)
+                    ray.draw_texture(ENEMIES@(e.type), f32(e.x - 14), rail_y(e.rail) - 14, ray.WHITE)
                 }
             }
-            rl.rectangle(20, 20, 400, 40, rl.fade(rl.GRAY, 0.4))
-            rl.rectangle(20, 20, game.food, 40, rl.ORANGE)
-            rl.rectangle_lines(20, 20, 400, 40, rl.BLACK)
-            rl.text_ex(font, string.format("SCORE: %04d", game.score), W - 300, 20, SIZE, -2, rl.ORANGE)
-            rl.text_ex(font, string.format("DISTANCE: %04d", int(game.distance)), 550, 20, SIZE, -2, rl.ORANGE)
+            ray.rectangle(20, 20, 400, 40, ray.fade(ray.GRAY, 0.4))
+            ray.rectangle(20, 20, game.food, 40, ray.ORANGE)
+            ray.rectangle_lines(20, 20, 400, 40, ray.BLACK)
+            ray.text_ex(font, string.format("SCORE: %04d", game.score), W - 300, 20, SIZE, -2, ray.ORANGE)
+            ray.text_ex(font, string.format("DISTANCE: %04d", int(game.distance)), 550, 20, SIZE, -2, ray.ORANGE)
             if gameraMode {
-                rl.text("GAMERA MODE", 60, 22, 40, rl.GRAY)
-                rl.draw_texture(gframe, 0, 0, rl.fade(rl.WHITE, 0.5))
+                ray.text("GAMERA MODE", 60, 22, 40, ray.GRAY)
+                ray.draw_texture(gframe, 0, 0, ray.fade(ray.WHITE, 0.5))
             }
         }
     }
@@ -219,38 +219,38 @@ task Gameplay () {
 ;; The end of a game, until ENTER.
 task Ending () {
     par :any {
-        await :rl.frame until rl.key_pressed('ENTER')
+        await :frame until ray.key_pressed('ENTER')
     } with {
-        loop on :rl.draw {
-            rl.rectangle(0, 0, W, H, rl.fade(rl.BLACK, 0.4))
-            rl.text_ex(font, "GAME OVER", 300, 160, SIZE * 3, -2, rl.MAROON)
-            rl.text_ex(font, string.format("SCORE: %04d", game.score), 680, 350, SIZE, -2, rl.GOLD)
-            rl.text_ex(font, string.format("DISTANCE: %04d", int(game.distance)), 290, 350, SIZE, -2, rl.GOLD)
-            rl.text_ex(font, string.format("HISCORE: %04d", hiscore), 665, 400, SIZE, -2, rl.ORANGE)
-            rl.text_ex(font, string.format("HIDISTANCE: %04d", int(hidistance)), 270, 400, SIZE, -2, rl.ORANGE)
+        loop on :draw {
+            ray.rectangle(0, 0, W, H, ray.fade(ray.BLACK, 0.4))
+            ray.text_ex(font, "GAME OVER", 300, 160, SIZE * 3, -2, ray.MAROON)
+            ray.text_ex(font, string.format("SCORE: %04d", game.score), 680, 350, SIZE, -2, ray.GOLD)
+            ray.text_ex(font, string.format("DISTANCE: %04d", int(game.distance)), 290, 350, SIZE, -2, ray.GOLD)
+            ray.text_ex(font, string.format("HISCORE: %04d", hiscore), 665, 400, SIZE, -2, ray.ORANGE)
+            ray.text_ex(font, string.format("HIDISTANCE: %04d", int(hidistance)), 270, 400, SIZE, -2, ray.ORANGE)
         }
     } with {
-        await Blink("PRESS ENTER to REPLAY", (W//2) - 250, 520, -2, rl.LIGHTGRAY)
+        await Blink("PRESS ENTER to REPLAY", (W//2) - 250, 520, -2, ray.LIGHTGRAY)
     }
 }
 
 ;; The music, the blue of the sea, and the background of all screens.
 spawn {
     par {
-        loop on :rl.frame {
-            rl.update_music(music)
-            set blue = math.floor(f32(210 + f32(25 * rl.sinf(time))))
+        loop on :frame {
+            ray.update_music(music)
+            set blue = math.floor(f32(210 + f32(25 * ray.sinf(time))))
             set time = f32(time + 0.01)
         }
     } with {
-        loop on :rl.draw {
-            rl.clear(rl.RAYWHITE)
-            rl.draw_texture(sky, 0, 0, rl.WHITE)
-            rl.draw_texture(mountains, back, 0, rl.WHITE)
-            rl.draw_texture(mountains, W + back, 0, rl.WHITE)
+        loop on :draw {
+            ray.clear(ray.RAYWHITE)
+            ray.draw_texture(sky, 0, 0, ray.WHITE)
+            ray.draw_texture(mountains, back, 0, ray.WHITE)
+            ray.draw_texture(mountains, W + back, 0, ray.WHITE)
             val c = if gameraMode => 0xFF7142FF => (0x10BD00FF + (blue * 256))
-            rl.draw_texture(sea, front, 0, c)
-            rl.draw_texture(sea, W + front, 0, c)
+            ray.draw_texture(sea, front, 0, c)
+            ray.draw_texture(sea, W + front, 0, c)
         }
     }
 }
@@ -259,9 +259,9 @@ var screen = 0                          ;; for the trace
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
-            var s = string.format("%d %d %d %d %.1f %d %d %.4f %d %d %d", rl.frame(), screen, game.rail, game.score,
+    if ray.frame() > 0 {
+        loop on :draw {
+            var s = string.format("%d %d %d %d %.1f %d %d %.4f %d %d %d", ray.frame(), screen, game.rail, game.score,
                 game.distance, game.food, if gameraMode => 1 => 0, game.speed, front, back, blue)
             loop i in N {
                 val e = game.enemies@i

@@ -4,7 +4,7 @@
   lines, no comments; in C, no blocks for the web or Android; in Atmos, no
   trace). The C is the original, before `tools/original.patch`. A port
   counts the files it includes, such as `classics/classic.atm` (the frame
-  that the classics share), as if they were inlined; not `raylib.atm`.
+  that the classics share), as if they were inlined; not `ray.atm`.
 - **Control**: the variables of the C that only control the flow (counters
   of frames, flags of phases, screens), and how many are left in the port.
   The list is in [state.md](state.md).

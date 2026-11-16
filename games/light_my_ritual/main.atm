@@ -8,7 +8,7 @@
 ;; and the fade of the ritual are tasks and awaits. The lights and the
 ;; enemies keep the loops of the C, which couple them in each frame.
 
-include "../../raylib.atm"
+include "../../ray.atm"
 include "../screens.atm"
 
 ;; The lights of the three levels, from the colors of a map (red, green,
@@ -44,16 +44,16 @@ static AVal lmr_lights (void) {
 ```
 
 val W, H = 1280, 720
-val f32  = rl.f32
+val f32  = ray.f32
 
-rl.window [title="LIGHT MY RITUAL! [GGJ16]", width=W, height=H, fps=60]
-rl.audio_init()
+ray.window [title="LIGHT MY RITUAL! [GGJ16]", width=W, height=H, fps=60]
+ray.audio_init()
 pin MAP = `:value lmr_lights()`
-pin font  = rl.font("resources/font_arcadian.png")
-pin music = rl.music("resources/audio/ambient.ogg")
-rl.play_music(music)
-rl.music_volume(music, 1)
-val FS = rl.font_size(font)
+pin font  = ray.font("resources/font_arcadian.png")
+pin music = ray.music("resources/audio/ambient.ogg")
+ray.play_music(music)
+ray.music_volume(music, 1)
+val FS = ray.font_size(font)
 
 ;; As in the C, never reset between games: the alpha of the title and the
 ;; light of the player.
@@ -62,40 +62,40 @@ var energy = 0
 
 task LogoScreen () {
     pin l = spawn Logo(:title, nil)
-    await :rl.frame until l.pub
+    await :frame until l.pub
     set pub = l.pub
     await false
 }
 
 task Title () {
-    pin back  = rl.texture("resources/textures/back_title.png")
-    pin title = rl.texture("resources/textures/title.png")
-    pin start = rl.sound("resources/audio/start.wav")
+    pin back  = ray.texture("resources/textures/back_title.png")
+    pin title = ray.texture("resources/textures/title.png")
+    pin start = ray.sound("resources/audio/start.wav")
     spawn {
-        loop on :rl.draw {
-            rl.rectangle(0, 0, W, H, rl.color(26, 26, 26, 255))
-            rl.draw_texture(back, (W//2) - (rl.texture_width(back)//2), 0, rl.WHITE)
-            rl.draw_texture(title, (W//2) - (rl.texture_width(title)//2), 30, rl.fade(rl.WHITE, title_alpha))
-            rl.text("(c) Developed by Ramon Santamaria (@raysan5)", 20, H - 40, 20, rl.LIGHTGRAY)
+        loop on :draw {
+            ray.rectangle(0, 0, W, H, ray.color(26, 26, 26, 255))
+            ray.draw_texture(back, (W//2) - (ray.texture_width(back)//2), 0, ray.WHITE)
+            ray.draw_texture(title, (W//2) - (ray.texture_width(title)//2), 30, ray.fade(ray.WHITE, title_alpha))
+            ray.text("(c) Developed by Ramon Santamaria (@raysan5)", 20, H - 40, 20, ray.LIGHTGRAY)
         }
     }
     spawn {
-        await(200, :rl.frame)
+        await(200, :frame)
         loop {
-            watching 40, :rl.frame {
-                loop on :rl.draw {
-                    rl.text_ex(font, "PRESS ENTER to START LIGHTING", 230, 450, FS, -2, rl.WHITE)
+            watching 40, :frame {
+                loop on :draw {
+                    ray.text_ex(font, "PRESS ENTER to START LIGHTING", 230, 450, FS, -2, ray.WHITE)
                 }
             }
-            await(40, :rl.frame)
+            await(40, :frame)
         }
     }
-    loop on :rl.frame {
+    loop on :frame {
         set title_alpha = math.min(f32(title_alpha + f32(0.005)), 1)
-        until rl.key_pressed('ENTER') || rl.mouse_pressed(0)
+        until ray.key_pressed('ENTER') || ray.mouse_pressed(0)
     }
-    rl.play_sound(start)
-    rl.stop_music(music)
+    ray.play_sound(start)
+    ray.stop_music(music)
     set pub = :gameplay
     await false
 }
@@ -106,18 +106,18 @@ var game_line = nil                          ;; for the trace
 pin ENEMY = [[15,20,90,400], [10,20,240,800], [8,18,180,1200]]
 
 task Gameplay () {
-    pin tex = func (n) { rl.texture("resources/textures/" ++ n ++ ".png") }
+    pin tex = func (n) { ray.texture("resources/textures/" ++ n ++ ".png") }
     pin background = tex("background")
     pin fore1, fore2, fore3 = tex("foreground_level_i"), tex("foreground_level_ii"), tex("foreground_level_iii")
     pin tplayer, tenemy, tlight = tex("player"), tex("enemy"), tex("light")
-    pin glow, ray, book = tex("light_glow"), tex("light_ray"), tex("book")
+    pin glow, light_ray, book = tex("light_glow"), tex("light_ray"), tex("book")
     pin tritual, ttimeover = tex("msg_ritual"), tex("time_over")
     pin c1off, c2off, c3off = tex("circle_level_i_off"), tex("circle_level_ii_off"), tex("circle_level_iii_off")
     pin c1on, c2on, c3on = tex("circle_level_i_on"), tex("circle_level_ii_on"), tex("circle_level_iii_on")
-    pin fxon  = rl.sound("resources/audio/light_on.wav")
-    pin fxoff = rl.sound("resources/audio/light_off.wav")
+    pin fxon  = ray.sound("resources/audio/light_on.wav")
+    pin fxoff = ray.sound("resources/audio/light_off.wav")
 
-    pin p = [x=W//2, y=(H//2) - 40, color=rl.WHITE]
+    pin p = [x=W//2, y=(H//2) - 40, color=ray.WHITE]
     ;; the lights of each level: position, radius, energy, on, animation
     pin lights = []
     loop l,spec in [[12,3,9], [8,3,8], [8,4,10]] {
@@ -127,29 +127,29 @@ task Gameplay () {
             vector.insert(ls, [x=m.x, y=m.y, r=spec@0, on=false, counter=0, frame=0, rx=0])
         }
         loop _,lt in ls {
-            set lt.energy = rl.random(spec@1, spec@2)
+            set lt.energy = ray.random(spec@1, spec@2)
         }
     }
     var level = 0                       ;; 0, 1, 2; 3 when all are lit
     pin enemies = []
     pin reset = func (e) {
         set e.on, e.counter, e.r = false, 0, 10
-        if rl.random(0, 1) == 1 {
-            val x = rl.random(50, 150)
-            val y = rl.random(50, H - 50)
+        if ray.random(0, 1) == 1 {
+            val x = ray.random(50, 150)
+            val y = ray.random(50, H - 50)
             set e.x, e.y = x, y
         } else {
-            val x = rl.random(W - 150, W - 50)
-            val y = rl.random(50, H - 50)
+            val x = ray.random(W - 150, W - 50)
+            val y = ray.random(50, H - 50)
             set e.x, e.y = x, y
         }
         if level < 3 {
             val spec = ENEMY@level
-            set e.target = rl.random(0, #(lights@level) - 1)
+            set e.target = ray.random(0, #(lights@level) - 1)
             val t = lights@level@(e.target)
             set e.tx, e.ty = t.x, t.y
-            set e.speed = f32(rl.random(spec@0, spec@1) / f32(10))
-            set e.delay = rl.random(spec@2, spec@3)
+            set e.speed = f32(ray.random(spec@0, spec@1) / f32(10))
+            set e.delay = ray.random(spec@2, spec@3)
         }
     }
     loop i in 8 {
@@ -163,52 +163,52 @@ task Gameplay () {
     var lit = 0                         ;; the energy of the lights on
     var frames = 0
     var ritual_time = 0
-    val stars = rl.random(500, 1000)
+    val stars = ray.random(500, 1000)
     var stopped = false
-    pin tmusic = rl.music("resources/audio/ritual.ogg")
-    rl.play_music(tmusic)
+    pin tmusic = ray.music("resources/audio/ritual.ogg")
+    ray.play_music(tmusic)
     var shown = level                   ;; the level of the trace, as the C prints it
     defer {
         set game_line = nil
     }
     ;; [trace]: the part of the game, as it is drawn (the trace prints after it)
     spawn {
-        loop on :rl.draw {
+        loop on :draw {
             set game_line = string.format(" %d %d %.6f %d", p.x, p.y, energy, shown)
         }
     }
 
     ;; the game, until the lights are lit or the time is over
     pin play = spawn {
-        loop on :rl.frame {
+        loop on :frame {
             set frames += 1
             ifs {
-                rl.key_down('RIGHT') => { set p.x += 5 }
-                rl.key_down('LEFT')  => { set p.x -= 5 }
+                ray.key_down('RIGHT') => { set p.x += 5 }
+                ray.key_down('LEFT')  => { set p.x -= 5 }
             }
             ifs {
-                rl.key_down('UP')   => { set p.y -= 5 }
-                rl.key_down('DOWN') => { set p.y += 5 }
+                ray.key_down('UP')   => { set p.y -= 5 }
+                ray.key_down('DOWN') => { set p.y += 5 }
             }
-            if rl.key_pressed('S') {
+            if ray.key_pressed('S') {
                 set stopped = !stopped
             }
-            if rl.check_collision_circles(p.x, p.y, 20, W//2, H//2, 50) {
+            if ray.check_collision_circles(p.x, p.y, 20, W//2, H//2, 50) {
                 set energy = f32(energy + f32(0.2))
-                set p.color = rl.color(255, 255, 100, 255)
+                set p.color = ray.color(255, 255, 100, 255)
             } else {
-                set p.color = rl.WHITE
+                set p.color = ray.WHITE
             }
             set energy = math.min(energy, 40)
             if level < 3 {
                 loop _,lt in lights@level {
-                    if rl.check_collision_circles(p.x, p.y, 20, lt.x, lt.y, lt.r) && !lt.on && (energy >= lt.energy) {
+                    if ray.check_collision_circles(p.x, p.y, 20, lt.x, lt.y, lt.r) && !lt.on && (energy >= lt.energy) {
                         set lt.on = true
                         if level == 0 {
                             set lt.frame = 1
                         }
                         set energy = f32(energy - lt.energy)
-                        rl.play_sound(fxon)
+                        ray.play_sound(fxon)
                     }
                 }
             }
@@ -222,7 +222,7 @@ task Gameplay () {
                             set lt.counter = 0
                         }
                     }
-                    set lt.rx = (lt.frame*rl.texture_width(tlight)) // 7
+                    set lt.rx = (lt.frame*ray.texture_width(tlight)) // 7
                 }
             }
             if !stopped {
@@ -239,10 +239,10 @@ task Gameplay () {
                         set e.y = f32(e.y + f32(dy*e.speed))
                         if level < 3 {
                             val lt = lights@level@(e.target)
-                            if rl.check_collision_circles(e.x, e.y, e.r, e.tx, e.ty, lt.r) {
+                            if ray.check_collision_circles(e.x, e.y, e.r, e.tx, e.ty, lt.r) {
                                 set lt.on, lt.counter, lt.frame, lt.rx = false, 0, 0, 0
                                 reset(e)
-                                rl.play_sound(fxoff)
+                                ray.play_sound(fxoff)
                             }
                         }
                     }
@@ -282,24 +282,24 @@ task Gameplay () {
     var paused = false
     spawn {
         loop {
-            await :rl.key.dn [name='P']
+            await :key.dn [name='P']
             set paused = true
             toggle play(false)
-            await :rl.key.dn [name='P']
+            await :key.dn [name='P']
             set paused = false
             toggle play(true)
         }
     }
 
     ;; the looks
-    pin center = func (t, y) { rl.draw_texture(t, (W//2) - (rl.texture_width(t)//2), y, rl.WHITE) }
+    pin center = func (t, y) { ray.draw_texture(t, (W//2) - (ray.texture_width(t)//2), y, ray.WHITE) }
     var ritual = nil                    ;; the alpha of the fade of the ritual
     var over = nil                      ;; :lit or :time, once the game is over
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(background, 0, 0, rl.WHITE)
-            rl.draw_texture(if level >= 2 => fore3 => (if level == 1 => fore2 => fore1), 0, 0, rl.WHITE)
-            pin cy = func (t) { (H//2) - (rl.texture_height(t)//2) }
+        loop on :draw {
+            ray.draw_texture(background, 0, 0, ray.WHITE)
+            ray.draw_texture(if level >= 2 => fore3 => (if level == 1 => fore2 => fore1), 0, 0, ray.WHITE)
+            pin cy = func (t) { (H//2) - (ray.texture_height(t)//2) }
             match level {
                 3 => { center(c3on, cy(c3on)) ; center(c2on, cy(c2on)) ; center(c1on, cy(c1on)) }
                 2 => { center(c3off, cy(c3off)) ; center(c2on, cy(c2on)) ; center(c1on, cy(c1on)) }
@@ -309,71 +309,71 @@ task Gameplay () {
             loop k in (0, math.min(level, 2)) {
                 val ls = lights@(math.min(level, 2) - k)
                 loop _,lt in ls {
-                    rl.draw_texture_rec(tlight, lt.rx, 0, 64, 64, lt.x - 32, lt.y - 32, rl.WHITE)
+                    ray.draw_texture_rec(tlight, lt.rx, 0, 64, 64, lt.x - 32, lt.y - 32, ray.WHITE)
                 }
                 loop _,lt in ls {
                     if lt.on {
-                        rl.draw_texture(glow, lt.x - (rl.texture_width(glow)//2), lt.y - (rl.texture_height(glow)//2), rl.fade(rl.WHITE, 0.3))
+                        ray.draw_texture(glow, lt.x - (ray.texture_width(glow)//2), lt.y - (ray.texture_height(glow)//2), ray.fade(ray.WHITE, 0.3))
                     }
                 }
                 loop _,lt in ls {
-                    rl.text(string.format("%02d", lt.energy), lt.x - 10, lt.y + 14, 20, if lt.on => rl.GRAY => rl.YELLOW)
+                    ray.text(string.format("%02d", lt.energy), lt.x - 10, lt.y + 14, 20, if lt.on => ray.GRAY => ray.YELLOW)
                 }
             }
-            rl.draw_texture(book, (W//2) - (rl.texture_width(book)//2), H//2, rl.WHITE)
-            rl.draw_texture(ray, (W//2) - (rl.texture_width(ray)//2), 0, rl.fade(rl.WHITE, 0.5))
-            rl.draw_texture(tplayer, p.x - 32, p.y - 32, p.color)
+            ray.draw_texture(book, (W//2) - (ray.texture_width(book)//2), H//2, ray.WHITE)
+            ray.draw_texture(light_ray, (W//2) - (ray.texture_width(light_ray)//2), 0, ray.fade(ray.WHITE, 0.5))
+            ray.draw_texture(tplayer, p.x - 32, p.y - 32, p.color)
             if level != 3 {
                 loop _,e in enemies {
                     if e.on {
-                        rl.draw_texture_rec(tenemy, 0, 0, 64, 64, e.x - 32, e.y - 32, rl.WHITE)
+                        ray.draw_texture_rec(tenemy, 0, 0, 64, 64, e.x - 32, e.y - 32, ray.WHITE)
                     }
                 }
-                rl.text_ex(font, string.format("%02.2f", f32(99 - ritual_time)), 560, 20, FS, 0, rl.WHITE)
-                rl.rectangle(20, 30, 400, 20, rl.GRAY)
-                rl.rectangle(20, 30, f32(f32(400*energy) / 40), 20, rl.GOLD)
-                rl.rectangle_lines(20, 30, 400, 20, rl.LIGHTGRAY)
-                rl.text(string.format("%03.0f", energy), 430, 30, 20, rl.WHITE)
-                rl.rectangle(W - 40, 30, 20, 660, rl.GRAY)
-                rl.rectangle(W - 40, (30 + 660) - ((660*lit)//total), 20, (660*lit)//total, rl.YELLOW)
-                rl.rectangle_lines(W - 40, 30, 20, 660, rl.LIGHTGRAY)
+                ray.text_ex(font, string.format("%02.2f", f32(99 - ritual_time)), 560, 20, FS, 0, ray.WHITE)
+                ray.rectangle(20, 30, 400, 20, ray.GRAY)
+                ray.rectangle(20, 30, f32(f32(400*energy) / 40), 20, ray.GOLD)
+                ray.rectangle_lines(20, 30, 400, 20, ray.LIGHTGRAY)
+                ray.text(string.format("%03.0f", energy), 430, 30, 20, ray.WHITE)
+                ray.rectangle(W - 40, 30, 20, 660, ray.GRAY)
+                ray.rectangle(W - 40, (30 + 660) - ((660*lit)//total), 20, (660*lit)//total, ray.YELLOW)
+                ray.rectangle_lines(W - 40, 30, 20, 660, ray.LIGHTGRAY)
                 if (energy < 2) && (((frames//20) % 2) == 1) {
-                    rl.text_ex(font, "YOU'RE RUNNING OUT OF LIGHT!", 20, 60, FS//2, 0, rl.WHITE)
+                    ray.text_ex(font, "YOU'RE RUNNING OUT OF LIGHT!", 20, 60, FS//2, 0, ray.WHITE)
                 }
             } else {
                 if over != :time {
-                    rl.rectangle(0, 0, W, H, rl.fade(rl.BLACK, 0.4))
+                    ray.rectangle(0, 0, W, H, ray.fade(ray.BLACK, 0.4))
                     center(tritual, 100)
-                    rl.text_ex(font, string.format("BEST LIGHTING TIME: %02.2f", ritual_time), 320, 340, 50, 0, rl.WHITE)
-                    rl.text_ex(font, "PRESS ENTER to START the RITUAL", 160, 480, 60, 0, rl.WHITE)
-                    if rl.key_pressed('ENTER') && !ritual {
+                    ray.text_ex(font, string.format("BEST LIGHTING TIME: %02.2f", ritual_time), 320, 340, 50, 0, ray.WHITE)
+                    ray.text_ex(font, "PRESS ENTER to START the RITUAL", 160, 480, 60, 0, ray.WHITE)
+                    if ray.key_pressed('ENTER') && !ritual {
                         set ritual = 0
                     }
                 }
             }
             if over == :time {
-                rl.rectangle(0, 0, W, H, rl.fade(rl.BLACK, 0.4))
+                ray.rectangle(0, 0, W, H, ray.fade(ray.BLACK, 0.4))
                 center(ttimeover, 140)
-                rl.text_ex(font, string.format("NEXT STARS ALIGNMENT IN %d YEARS", stars), 200, 360, 50, 0, rl.WHITE)
-                rl.text_ex(font, "PRESS ENTER to GO HOME...", 260, 480, 60, 0, rl.WHITE)
-                if rl.key_pressed('ENTER') {
+                ray.text_ex(font, string.format("NEXT STARS ALIGNMENT IN %d YEARS", stars), 200, 360, 50, 0, ray.WHITE)
+                ray.text_ex(font, "PRESS ENTER to GO HOME...", 260, 480, 60, 0, ray.WHITE)
+                if ray.key_pressed('ENTER') {
                     set pub = :title
                 }
             }
             if ritual {
-                rl.rectangle(0, 0, W, H, rl.fade(rl.RAYWHITE, ritual))
+                ray.rectangle(0, 0, W, H, ray.fade(ray.RAYWHITE, ritual))
             }
             if paused {
-                rl.text_ex(font, "RITUAL PAUSED", (W//2) - (rl.measure("RITUAL PAUSED", 40)//2), 110, 50, 0, rl.WHITE)
+                ray.text_ex(font, "RITUAL PAUSED", (W//2) - (ray.measure("RITUAL PAUSED", 40)//2), 110, 50, 0, ray.WHITE)
             }
         }
     }
     ;; the fade of the ritual, after ENTER (which the C reads in the drawing)
     spawn {
-        loop on :rl.frame {
+        loop on :frame {
             if ritual {
                 set ritual = f32(ritual + f32(0.02))
-                rl.music_volume(tmusic, f32(1 - ritual))
+                ray.music_volume(tmusic, f32(1 - ritual))
                 if ritual > 1 {
                     set pub = [to=:logo, now=true]
                 }
@@ -385,14 +385,14 @@ task Gameplay () {
 }
 
 spawn {
-    loop on :rl.draw {
-        rl.clear(rl.RAYWHITE)
+    loop on :draw {
+        ray.clear(ray.RAYWHITE)
     }
 }
 
 
 pin FADE = [
-    color = rl.BLACK,
+    color = ray.BLACK,
     inc = f32(0.05), into = \{ it >= 1 },
     dec = f32(0.05), back = \{ it <= 0 },
 ]
@@ -400,12 +400,12 @@ pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay], :
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
+    if ray.frame() > 0 {
+        loop on :draw {
             if game_line {
-                print(string.format("%d", rl.frame()) ++ game_line)
+                print(string.format("%d", ray.frame()) ++ game_line)
             } else {
-                print(string.format("%d", rl.frame()))
+                print(string.format("%d", ray.frame()))
             }
         }
     }

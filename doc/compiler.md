@@ -33,7 +33,7 @@ Seen and expected, as the manual says, listed for whoever writes a port:
   or `var` only refers to a value that has an owner, and a `var` cannot
   receive a fresh one. A record that a game resets is a `pin`, reset field
   by field; a list is emptied with `vector.clear`; a value built for a
-  table is built in it (`set t@i = [tex=rl.texture(...)]`, then read back
+  table is built in it (`set t@i = [tex=ray.texture(...)]`, then read back
   from `t@i`). A pinned value cannot be referenced from an outer block: the
   trace of a screen is a string that the screen writes as it draws.
 - `%` is the remainder of C (`fmod`, with the sign of the dividend), not
@@ -44,4 +44,4 @@ Seen and expected, as the manual says, listed for whoever writes a port:
 
 To watch, as the plan asks: the cost of a native call per shape drawn, the
 cost of small records passed to C, an environment that ticks in frames as
-well as in time, and what `lib/sdl.atm` and `raylib.atm` have in common.
+well as in time, and what `lib/sdl.atm` and `ray.atm` have in common.

@@ -10,35 +10,35 @@
 ;; asked, under the old one, which goes on being drawn (the ending loses
 ;; its kills under the fade, as the gameplay resets them).
 
-include "../../raylib.atm"
+include "../../ray.atm"
 include "../screens.atm"
 include "atlas.atm"
 
 val W, H = 1280, 720
-val f32  = rl.f32
+val f32  = ray.f32
 
 func int (x) {                          ;; (int) of the C: towards zero
     if x < 0 => math.ceil(x) => math.floor(x)
 }
 
-rl.window [title="KOALA SEASONS", width=W, height=H, fps=60]
-pin font   = rl.font("resources/graphics/mainfont.png")
-val SIZE   = rl.font_size(font)
-pin atlas1 = rl.texture("resources/graphics/atlas01.png")
-pin atlas2 = rl.texture("resources/graphics/atlas02.png")
-pin blend  = rl.shader(nil, "resources/shaders/glsl330/blend_color.fs")
-rl.audio_init()
-pin fx_jump   = rl.sound("resources/audio/jump.ogg")
-pin fx_dash   = rl.sound("resources/audio/dash.ogg")
-pin fx_eat    = rl.sound("resources/audio/eat_leaves.ogg")
-pin fx_resin  = rl.sound("resources/audio/resin_hit.ogg")
-pin fx_wind   = rl.sound("resources/audio/wind_sound.ogg")
-pin fx_snake  = rl.sound("resources/audio/snake_die.ogg")
-pin fx_dingo  = rl.sound("resources/audio/dingo_die.ogg")
-pin fx_owl    = rl.sound("resources/audio/owl_die.ogg")
-pin music     = rl.music("resources/audio/jngl.xm")
-rl.play_music(music)
-rl.music_volume(music, 2)
+ray.window [title="KOALA SEASONS", width=W, height=H, fps=60]
+pin font   = ray.font("resources/graphics/mainfont.png")
+val SIZE   = ray.font_size(font)
+pin atlas1 = ray.texture("resources/graphics/atlas01.png")
+pin atlas2 = ray.texture("resources/graphics/atlas02.png")
+pin blend  = ray.shader(nil, "resources/shaders/glsl330/blend_color.fs")
+ray.audio_init()
+pin fx_jump   = ray.sound("resources/audio/jump.ogg")
+pin fx_dash   = ray.sound("resources/audio/dash.ogg")
+pin fx_eat    = ray.sound("resources/audio/eat_leaves.ogg")
+pin fx_resin  = ray.sound("resources/audio/resin_hit.ogg")
+pin fx_wind   = ray.sound("resources/audio/wind_sound.ogg")
+pin fx_snake  = ray.sound("resources/audio/snake_die.ogg")
+pin fx_dingo  = ray.sound("resources/audio/dingo_die.ogg")
+pin fx_owl    = ray.sound("resources/audio/owl_die.ogg")
+pin music     = ray.music("resources/audio/jngl.xm")
+ray.play_music(music)
+ray.music_volume(music, 2)
 
 ;; The globals of the C, shared by the screens
 var score, hiscore, killer, seasons, years = 0, 0, 0, 0, 0
@@ -58,7 +58,7 @@ include "ending.atm"
 var current, trans, alpha, to = 0, false, 0, -1
 task LogoScreen () {
     pin l = spawn Logo(true, nil, nil)
-    await :rl.frame until l.pub
+    await :frame until l.pub
     set pub = true
     await false
 }
@@ -75,16 +75,16 @@ func screen_init (n) {
 }
 
 spawn {
-    loop on :rl.draw {
-        rl.clear(rl.WHITE)
+    loop on :draw {
+        ray.clear(ray.WHITE)
     }
 }
 
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
-            var s = string.format("%d %d %d %.4f %d |", rl.frame(), current, if trans => 1 => 0, alpha, to)
+    if ray.frame() > 0 {
+        loop on :draw {
+            var s = string.format("%d %d %d %.4f %d |", ray.frame(), current, if trans => 1 => 0, alpha, to)
             if current == 1 { set s = s ++ title_trace() }
             if current == 3 { set s = s ++ gameplay_trace() }
             if current == 4 { set s = s ++ ending_trace() }
@@ -98,24 +98,24 @@ pin screens = spawn {
     loop {
         pin s = spawn (screen_task(current))()
         spawn {
-            loop on :rl.draw {
+            loop on :draw {
                 if trans {
-                    rl.rectangle(0, 0, W, H, rl.fade(rl.BLACK, alpha))
+                    ray.rectangle(0, 0, W, H, ray.fade(ray.BLACK, alpha))
                 }
             }
         }
         if trans {
             ;; the fade out, over the new screen, drawn but not updated
-            toggle s(false) with :rl.draw
+            toggle s(false) with :draw
             loop {
-                await :rl.frame
+                await :frame
                 set alpha = f32(alpha - f32(0.05))
                 until alpha <= 0
             }
             set alpha, trans, to = 0, false, -1
             toggle s(true)
         }
-        await :rl.frame until s.pub
+        await :frame until s.pub
         if current == 0 {
             set current = 1                 ;; ChangeToScreen(TITLE): at once
         } else {
@@ -123,9 +123,9 @@ pin screens = spawn {
             screen_init(to)
             set trans = true
             ;; the fade in, over the old screen, drawn but not updated
-            toggle s(false) with :rl.draw
+            toggle s(false) with :draw
             loop {
-                await :rl.frame
+                await :frame
                 set alpha = f32(alpha + f32(0.05))
                 until alpha >= 1
             }
@@ -135,15 +135,15 @@ pin screens = spawn {
 }
 
 spawn {
-    loop on :rl.frame {
-        rl.update_music(music)
+    loop on :frame {
+        ray.update_music(music)
     }
 }
 ;; the label of the C, over all
 spawn {
-    loop on :rl.draw {
-        rl.rectangle(W - 200, H - 50, 200, 40, rl.fade(rl.WHITE, 0.6))
-        rl.text("ALPHA VERSION", W - 180, H - 40, 20, rl.DARKGRAY)
+    loop on :draw {
+        ray.rectangle(W - 200, H - 50, 200, 40, ray.fade(ray.WHITE, 0.6))
+        ray.text("ALPHA VERSION", W - 180, H - 40, 20, ray.DARKGRAY)
     }
 }
 await false

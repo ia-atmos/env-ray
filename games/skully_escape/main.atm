@@ -14,22 +14,22 @@
 ;; and awaits. The player is the module of the C (`player.c`): the rooms
 ;; call its update in their play only.
 
-include "../../raylib.atm"
+include "../../ray.atm"
 include "../screens.atm"
 
 val W, H = 1280, 720
-val f32  = rl.f32
+val f32  = ray.f32
 
-rl.window [title="SKULLY ESCAPE [KING GAMEJAM 2015]", width=W, height=H, fps=60]
-rl.audio_init()
+ray.window [title="SKULLY ESCAPE [KING GAMEJAM 2015]", width=W, height=H, fps=60]
+ray.audio_init()
 
-pin music  = rl.music("resources/audio/come_play_with_me.ogg")
-rl.play_music(music)
-pin font   = rl.font("resources/textures/alagard.png")
-pin doors  = rl.texture("resources/textures/doors.png")
-pin door   = rl.sound("resources/audio/door.ogg")
-pin scream = rl.sound("resources/audio/scream.ogg")
-val SIZE   = rl.font_size(font)
+pin music  = ray.music("resources/audio/come_play_with_me.ogg")
+ray.play_music(music)
+pin font   = ray.font("resources/textures/alagard.png")
+pin doors  = ray.texture("resources/textures/doors.png")
+pin door   = ray.sound("resources/audio/door.ogg")
+pin scream = ray.sound("resources/audio/scream.ogg")
+val SIZE   = ray.font_size(font)
 
 func b (x) { if x => 1 => 0 }      ;; a flag, as 0 or 1 (for the trace)
 
@@ -37,19 +37,19 @@ func int (x) {
     if x < 0 => math.ceil(x) => math.floor(x)
 }
 func recs (a, b) {
-    rl.check_collision_recs(a.x, a.y, a.w, a.h, b.x, b.y, b.w, b.h)
+    ray.check_collision_recs(a.x, a.y, a.w, a.h, b.x, b.y, b.w, b.h)
 }
 func mouse_in (r) {
-    rl.check_collision_point_rec(rl.mouse_x(), rl.mouse_y(), r.x, r.y, r.w, r.h)
+    ray.check_collision_point_rec(ray.mouse_x(), ray.mouse_y(), r.x, r.y, r.w, r.h)
 }
 
 ;; ---------------------------------------------------------------------------
 ;; The player: `player.c`, its functions over its state.
 
 val WALK_RIGHT, WALK_LEFT, SCARE_RIGHT, SCARE_LEFT, SEARCH, FIND_KEY = 1, 2, 3, 4, 5, 6
-pin skully = rl.texture("resources/textures/skully.png")
-pin life   = rl.texture("resources/textures/skully_icon.png")
-val FW, FH = rl.texture_width(skully) // 4, rl.texture_height(skully) // 6
+pin skully = ray.texture("resources/textures/skully.png")
+pin life   = ray.texture("resources/textures/skully_icon.png")
+val FW, FH = ray.texture_width(skully) // 4, ray.texture_height(skully) // 6
 
 pin P = [
     x=350, y=400, seq=WALK_RIGHT, cf=0, fx=0, fy=0, key=false, lifes=4, dead=false,
@@ -78,15 +78,15 @@ func player_step () {                   ;; the frames of a walk
 
 func player_update () {
     if !P.out {
-        if rl.key_down('LEFT') || rl.key_down('RIGHT') {
+        if ray.key_down('LEFT') || ray.key_down('RIGHT') {
             set P.dir, P.moving = -1, false
         }
-        if rl.key_down('RIGHT') || (P.dir == 0) {
+        if ray.key_down('RIGHT') || (P.dir == 0) {
             set P.seq = WALK_RIGHT
             player_step()
             set P.x += 4
         } else {
-            if rl.key_down('LEFT') || (P.dir == 1) {
+            if ray.key_down('LEFT') || (P.dir == 1) {
                 set P.seq = WALK_LEFT
                 player_step()
                 set P.x -= 4
@@ -113,8 +113,8 @@ func player_update () {
     } else {
         if P.x > (W - 200) { set P.x = W - 200 }
     }
-    if rl.mouse_pressed(0) {
-        set P.px, P.py = rl.mouse_x(), rl.mouse_y()
+    if ray.mouse_pressed(0) {
+        set P.px, P.py = ray.mouse_x(), ray.mouse_y()
         set P.pointer, P.palpha = true, 1
         set P.next = int(P.px)
         set P.moving = true
@@ -130,8 +130,8 @@ func player_update () {
             }
         }
     }
-    set P.fx = (P.cf * rl.texture_width(skully)) // 4
-    set P.fy = ((P.seq - 1) * rl.texture_height(skully)) // 6
+    set P.fx = (P.cf * ray.texture_width(skully)) // 4
+    set P.fy = ((P.seq - 1) * ray.texture_height(skully)) // 6
     set P.bounds = [x=P.x + 50, y=P.y - 60, w=100, h=300]
     if P.pointer {
         set P.palpha = f32(P.palpha - f32(0.1))
@@ -156,12 +156,12 @@ func player_find () {
 }
 
 func player_draw () {
-    rl.draw_texture_rec(skully, P.fx, P.fy, FW, FH, P.x, P.y, rl.WHITE)
+    ray.draw_texture_rec(skully, P.fx, P.fy, FW, FH, P.x, P.y, ray.WHITE)
     if P.pointer {
-        rl.circle_v(P.px, P.py, 20, rl.fade(rl.RED, P.palpha))
+        ray.circle_v(P.px, P.py, 20, ray.fade(ray.RED, P.palpha))
     }
     loop i in P.lifes {
-        rl.draw_texture(life, 20 + (i * rl.texture_width(life)), H - rl.texture_height(life) - 20, rl.fade(rl.RAYWHITE, 0.7))
+        ray.draw_texture(life, 20 + (i * ray.texture_width(life)), H - ray.texture_height(life) - 20, ray.fade(ray.RAYWHITE, 0.7))
     }
 }
 
@@ -173,7 +173,7 @@ func player_draw () {
 ;; the monsters (`monsters`, the order of the search; `hover`, those that
 ;; show the text; `draw`; `choose`, those shown with "CHOOSE WISELY!").
 
-val DW, DH = rl.texture_width(doors) // 3, rl.texture_height(doors) // 2
+val DW, DH = ray.texture_width(doors) // 3, ray.texture_height(doors) // 2
 
 pin ROOMS = [
     attic = [
@@ -281,7 +281,7 @@ var room_line = nil                     ;; the part of the trace of the room sho
 ;; after the last).
 task Spooky (m) {
     loop {
-        await(8, :rl.frame)
+        await(8, :frame)
         set m.cf += 1
         if m.cf > 3 { set m.cf = 1 }
     }
@@ -292,7 +292,7 @@ task Room (name) {
     player_reset()
     pin R = [frames=0, letters=0, mc=0, check=-1, hover=false, buffer="", playing=false, scroll=0, phase=0]
     if spec.scroll { set R.scroll = P.x - 200 }
-    pin back = rl.texture("resources/textures/" ++ spec.back ++ ".png")
+    pin back = ray.texture("resources/textures/" ++ spec.back ++ ".png")
     pin ds = []
     loop i,d in spec.doors {
         set ds@i = [x=d.x, y=d.y, fx=DW * d.facing, fy=DH, locked=true, selected=false, to=d.to,
@@ -300,18 +300,18 @@ task Room (name) {
     }
     pin ms = []
     loop i,m in spec.monsters {
-        set ms@i = [tex=rl.texture("resources/textures/" ++ m.tex ++ ".png"), x=m.x, y=m.y, spooky=m.spooky,
+        set ms@i = [tex=ray.texture("resources/textures/" ++ m.tex ++ ".png"), x=m.x, y=m.y, spooky=m.spooky,
                     active=false, selected=false, cf=0, ox=m.b@0,
                     bounds=[x=m.x + (m.b@0), y=m.y + (m.b@1), w=m.b@2, h=m.b@3]]
         val tex = (ms@i).tex
-        set (ms@i).fw, (ms@i).fh = rl.texture_width(tex) // 4, rl.texture_height(tex)
+        set (ms@i).fw, (ms@i).fh = ray.texture_width(tex) // 4, ray.texture_height(tex)
     }
     defer {
         set room_line = nil
     }
     ;; [trace]: the part of the room, as it is drawn (the trace prints after it)
     spawn {
-        loop on :rl.draw {
+        loop on :draw {
             var s = string.format(" %d %d %d %d %d %d %d", R.phase, R.mc, R.letters, R.frames,
                 b(spec.searching), R.check, b(R.hover))
             loop _,d in ds {
@@ -330,7 +330,7 @@ task Room (name) {
 
     ;; the room, in the order of the C, but the message
     spawn {
-        loop on :rl.frame {
+        loop on :frame {
             if death {
                 set death = false
                 set pub = :title
@@ -342,10 +342,10 @@ task Room (name) {
                 loop _,d in ds {
                     set d.selected = mouse_in(d.bound) || recs(P.bounds, d.bound)
                     if d.selected && recs(P.bounds, d.bound) {
-                        if (rl.mouse_pressed(0) && mouse_in(d.bound)) || rl.key_pressed('SPACE') {
+                        if (ray.mouse_pressed(0) && mouse_in(d.bound)) || ray.key_pressed('SPACE') {
                             if d.locked {
                                 set d.fy, d.locked = 0, false
-                                rl.play_sound(door)
+                                ray.play_sound(door)
                             } else {
                                 set pub = d.to
                             }
@@ -356,7 +356,7 @@ task Room (name) {
             if R.playing {
                 player_update()
                 loop _,m in ms {
-                    set m.fx = (m.cf * rl.texture_width(m.tex)) // 4
+                    set m.fx = (m.cf * ray.texture_width(m.tex)) // 4
                 }
             }
             if spec.scroll {
@@ -370,7 +370,7 @@ task Room (name) {
             loop i,m in ms {
                 if recs(P.bounds, m.bounds) && !m.active {
                     set m.selected = true
-                    if rl.key_pressed('SPACE') || (rl.mouse_pressed(0) && mouse_in(m.bounds)) {
+                    if ray.key_pressed('SPACE') || (ray.mouse_pressed(0) && mouse_in(m.bounds)) {
                         player_search()
                         set spec.searching, R.frames, R.check = true, 0, i + 1
                     }
@@ -385,7 +385,7 @@ task Room (name) {
                     if m {
                         if m.spooky {
                             player_scare()
-                            rl.play_sound(scream)
+                            ray.play_sound(scream)
                             spawn @animations Spooky(m)
                         } else {
                             player_find()
@@ -402,15 +402,15 @@ task Room (name) {
 
     ;; the background, the monsters, the doors
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(back, -R.scroll, 0, rl.WHITE)
+        loop on :draw {
+            ray.draw_texture(back, -R.scroll, 0, ray.WHITE)
             loop _,i in spec.draw {
                 val m = ms@i
-                rl.draw_texture_rec(m.tex, m.fx, 0, m.fw, m.fh, m.x - R.scroll, m.y, if m.selected => rl.RED => rl.WHITE)
+                ray.draw_texture_rec(m.tex, m.fx, 0, m.fw, m.fh, m.x - R.scroll, m.y, if m.selected => ray.RED => ray.WHITE)
             }
             loop _,i in spec.draw_doors {
                 val d = ds@i
-                rl.draw_texture_rec(doors, d.fx, d.fy, DW, DH, d.x - R.scroll, d.y, if d.selected => rl.GREEN => rl.WHITE)
+                ray.draw_texture_rec(doors, d.fx, d.fy, DW, DH, d.x - R.scroll, d.y, if d.selected => ray.GREEN => ray.WHITE)
             }
         }
     }
@@ -419,64 +419,64 @@ task Room (name) {
     spawn {
         val msg = spec.msg
         par :any {
-            loop on :rl.frame {
+            loop on :frame {
                 var over = false
                 if R.letters <= #msg {
-                    set R.buffer = rl.text_subtext(msg, 0, R.letters)
+                    set R.buffer = ray.text_subtext(msg, 0, R.letters)
                 } else {
                     set R.buffer, R.letters, over = "", 0, true
                 }
-                until over || rl.key_pressed('ENTER')
+                until over || ray.key_pressed('ENTER')
             }
         } with {
-            loop on :rl.draw {
-                rl.rectangle(0, 40, W, 200, rl.fade(rl.LIGHTGRAY, 0.5))
-                rl.text_ex(font, R.buffer, 100, 80, SIZE, 2, rl.WHITE)
+            loop on :draw {
+                ray.rectangle(0, 40, W, 200, ray.fade(ray.LIGHTGRAY, 0.5))
+                ray.text_ex(font, R.buffer, 100, 80, SIZE, 2, ray.WHITE)
             }
         }
         set R.phase = 1
         par :any {
-            loop on :rl.frame {
+            loop on :frame {
                 set R.mc += 1
-                until rl.key_pressed('ENTER') || rl.mouse_pressed(0)
+                until ray.key_pressed('ENTER') || ray.mouse_pressed(0)
             }
         } with {
-            loop on :rl.draw {
-                rl.rectangle(0, 40, W, 200, rl.fade(rl.LIGHTGRAY, 0.5))
-                rl.text_ex(font, msg, 100, 80, SIZE, 2, rl.WHITE)
+            loop on :draw {
+                ray.rectangle(0, 40, W, 200, ray.fade(ray.LIGHTGRAY, 0.5))
+                ray.text_ex(font, msg, 100, 80, SIZE, 2, ray.WHITE)
                 if ((R.mc // 30) % 2) == 1 {
-                    rl.text("PRESS ENTER or CLICK", W - 280, 200, 20, rl.BLACK)
+                    ray.text("PRESS ENTER or CLICK", W - 280, 200, 20, ray.BLACK)
                 }
             }
         }
         set R.mc, R.phase = 0, 2
         par :any {
-            loop on :rl.frame {
+            loop on :frame {
                 set R.mc += 1
                 until R.mc > 180
             }
         } with {
-            loop on :rl.draw {
-                rl.rectangle(0, 80, W, 100, rl.fade(rl.LIGHTGRAY, 0.5))
+            loop on :draw {
+                ray.rectangle(0, 80, W, 100, ray.fade(ray.LIGHTGRAY, 0.5))
                 if ((R.mc // 30) % 2) == 1 {
-                    rl.text_ex(font, "CHOOSE WISELY!", 300, 95, SIZE * 2, 2, rl.WHITE)
+                    ray.text_ex(font, "CHOOSE WISELY!", 300, 95, SIZE * 2, 2, ray.WHITE)
                     loop _,i in spec.choose {
                         val b = (ms@i).bounds
-                        rl.rectangle_v(b.x, b.y, b.w, b.h, rl.fade(rl.RED, 0.6))
+                        ray.rectangle_v(b.x, b.y, b.w, b.h, ray.fade(ray.RED, 0.6))
                     }
                 }
             }
         }
         set R.playing, R.phase = true, 3
         par {
-            loop on :rl.frame {
+            loop on :frame {
                 set R.mc += 1
             }
         } with {
-            loop on :rl.draw {
+            loop on :draw {
                 if R.hover && (((R.mc // 30) % 2) == 1) {
-                    rl.rectangle(0, 0, W, 50, rl.fade(rl.LIGHTGRAY, 0.5))
-                    rl.text("PRESS SPACE or CLICK to INTERACT", 420, 15, 20, rl.BLACK)
+                    ray.rectangle(0, 0, W, 50, ray.fade(ray.LIGHTGRAY, 0.5))
+                    ray.text("PRESS SPACE or CLICK to INTERACT", 420, 15, 20, ray.BLACK)
                 }
             }
         }
@@ -484,8 +484,8 @@ task Room (name) {
 
     ;; the key M of the attic; the scroll
     spawn {
-        loop on :rl.frame {
-            if spec.cheat && rl.key_pressed('M') {
+        loop on :frame {
+            if spec.cheat && ray.key_pressed('M') {
                 set pub = spec.cheat
             }
             if spec.scroll && (P.x > 200) {
@@ -495,7 +495,7 @@ task Room (name) {
     }
 
     spawn {
-        loop on :rl.draw {
+        loop on :draw {
             player_draw()
         }
     }
@@ -506,10 +506,10 @@ task Room (name) {
 ;; The logo of raylib, then the logo of the team.
 
 task LogoScreen () {
-    pin gray = rl.texture("resources/textures/skully_logo.png")
+    pin gray = ray.texture("resources/textures/skully_logo.png")
     do {
         pin l = spawn Logo(true, nil, nil)
-        await :rl.frame until l.pub
+        await :frame until l.pub
     }
     ;; the frames the C counted since the last letter of "raylib"
     var count, a = 200, 1
@@ -520,54 +520,54 @@ task LogoScreen () {
     }
     var alpha = 0
     spawn {
-        loop on :rl.draw {
-            rl.draw_texture(gray, (W//2) - (rl.texture_width(gray)//2), 130, rl.fade(rl.WHITE, alpha))
-            rl.text("GRAY TEAM", 340, 450, 100, rl.fade(rl.DARKGRAY, alpha))
+        loop on :draw {
+            ray.draw_texture(gray, (W//2) - (ray.texture_width(gray)//2), 130, ray.fade(ray.WHITE, alpha))
+            ray.text("GRAY TEAM", 340, 450, 100, ray.fade(ray.DARKGRAY, alpha))
         }
     }
     loop {
-        await :rl.frame
+        await :frame
         set alpha = f32(alpha + f32(0.02))
         until alpha >= 1
     }
-    await(361 - count, :rl.frame)        ;; until the count of the C is over 360
+    await(361 - count, :frame)        ;; until the count of the C is over 360
     loop {
-        await :rl.frame
+        await :frame
         set alpha = f32(alpha - f32(0.02))
         until alpha <= 0
     }
-    await :rl.frame
+    await :frame
     set pub = [to=:title, now=true]
     await false
 }
 
 ;; "PRESS ... " blinks after 200 frames: 40 on, 40 off.
 task Blink (s) {
-    await(200, :rl.frame)
+    await(200, :frame)
     loop {
-        watching 40, :rl.frame {
-            loop on :rl.draw {
-                rl.text(s, 380, 545, 40, rl.BLACK)
+        watching 40, :frame {
+            loop on :draw {
+                ray.text(s, 380, 545, 40, ray.BLACK)
             }
         }
-        await(40, :rl.frame)
+        await(40, :frame)
     }
 }
 
 var title_alpha = 0                     ;; static, never reset
 
 task Title () {
-    pin title = rl.texture("resources/textures/title.png")
+    pin title = ray.texture("resources/textures/title.png")
     spawn {
-        loop on :rl.draw {
-            rl.rectangle(0, 0, W, H, rl.DARKGRAY)
-            rl.draw_texture(title, (W//2) - (rl.texture_width(title)//2), 20, rl.fade(rl.WHITE, title_alpha))
+        loop on :draw {
+            ray.rectangle(0, 0, W, H, ray.DARKGRAY)
+            ray.draw_texture(title, (W//2) - (ray.texture_width(title)//2), 20, ray.fade(ray.WHITE, title_alpha))
         }
     }
     spawn Blink("PRESS ENTER to START")
-    loop on :rl.frame {
+    loop on :frame {
         set title_alpha = math.min(f32(title_alpha + f32(0.005)), 1)
-        until rl.key_pressed('ENTER') || rl.mouse_pressed(0)
+        until ray.key_pressed('ENTER') || ray.mouse_pressed(0)
     }
     set pub = :attic
     await false
@@ -578,16 +578,16 @@ var ending_alpha = 0                    ;; for the trace
 task Ending () {
     set ending_alpha = 0
     spawn {
-        loop on :rl.draw {
-            rl.rectangle(0, 0, W, H, rl.DARKGRAY)
-            rl.text_ex(font, "CONGRATULATIONS!", 50, 160, SIZE * 3, 2, rl.fade(rl.WHITE, ending_alpha))
-            rl.text_ex(font, "SKULLY ESCAPED!", 100, 300, SIZE * 3, 2, rl.fade(rl.WHITE, ending_alpha))
+        loop on :draw {
+            ray.rectangle(0, 0, W, H, ray.DARKGRAY)
+            ray.text_ex(font, "CONGRATULATIONS!", 50, 160, SIZE * 3, 2, ray.fade(ray.WHITE, ending_alpha))
+            ray.text_ex(font, "SKULLY ESCAPED!", 100, 300, SIZE * 3, 2, ray.fade(ray.WHITE, ending_alpha))
         }
     }
     spawn Blink("PRESS ENTER or CLICK")
-    loop on :rl.frame {
+    loop on :frame {
         set ending_alpha = math.min(f32(ending_alpha + f32(0.005)), 1)
-        until rl.key_pressed('ENTER') || rl.mouse_pressed(0)
+        until ray.key_pressed('ENTER') || ray.mouse_pressed(0)
     }
     set pub = :title
     await false
@@ -595,19 +595,19 @@ task Ending () {
 
 ;; the rooms as screens: a room, until it asks another screen (the C asks
 ;; it at once, and the room goes on being drawn)
-task Attic () { pin r = spawn Room(:attic) ; await :rl.frame until r.pub ; set pub = r.pub ; await false }
-task Aisle01 () { pin r = spawn Room(:aisle01) ; await :rl.frame until r.pub ; set pub = r.pub ; await false }
-task Aisle02 () { pin r = spawn Room(:aisle02) ; await :rl.frame until r.pub ; set pub = r.pub ; await false }
-task Bathroom () { pin r = spawn Room(:bathroom) ; await :rl.frame until r.pub ; set pub = r.pub ; await false }
-task Livingroom () { pin r = spawn Room(:livingroom) ; await :rl.frame until r.pub ; set pub = r.pub ; await false }
-task Kitchen () { pin r = spawn Room(:kitchen) ; await :rl.frame until r.pub ; set pub = r.pub ; await false }
-task Armory () { pin r = spawn Room(:armory) ; await :rl.frame until r.pub ; set pub = r.pub ; await false }
+task Attic () { pin r = spawn Room(:attic) ; await :frame until r.pub ; set pub = r.pub ; await false }
+task Aisle01 () { pin r = spawn Room(:aisle01) ; await :frame until r.pub ; set pub = r.pub ; await false }
+task Aisle02 () { pin r = spawn Room(:aisle02) ; await :frame until r.pub ; set pub = r.pub ; await false }
+task Bathroom () { pin r = spawn Room(:bathroom) ; await :frame until r.pub ; set pub = r.pub ; await false }
+task Livingroom () { pin r = spawn Room(:livingroom) ; await :frame until r.pub ; set pub = r.pub ; await false }
+task Kitchen () { pin r = spawn Room(:kitchen) ; await :frame until r.pub ; set pub = r.pub ; await false }
+task Armory () { pin r = spawn Room(:armory) ; await :frame until r.pub ; set pub = r.pub ; await false }
 
 ;; ---------------------------------------------------------------------------
 
 spawn {
-    loop on :rl.draw {
-        rl.clear(rl.RAYWHITE)
+    loop on :draw {
+        ray.clear(ray.RAYWHITE)
     }
 }
 
@@ -615,15 +615,15 @@ spawn {
 ;; four lives again
 spawn {
     loop {
-        await :rl.frame until P.dead
-        await(80, :rl.frame)
+        await :frame until P.dead
+        await(80, :frame)
         set P.dead, P.lifes = false, 4
         set death = true
     }
 }
 
 pin FADE = [
-    color = rl.BLACK,
+    color = ray.BLACK,
     inc = f32(0.05), into = \{ it >= 1 },
     dec = f32(0.05), back = \{ it <= 0 },
 ]
@@ -633,18 +633,18 @@ pin screens = spawn Screens([
 ], :logo, FADE)
 
 spawn {
-    loop on :rl.frame {
-        rl.update_music(music)
+    loop on :frame {
+        ray.update_music(music)
     }
 }
 
 ;; [trace] of the test mode: one line per frame, after its logic
 pin NUMBER = [logo=0, title=1, attic=2, aisle01=3, aisle02=4, bathroom=5, livingroom=6, kitchen=7, armory=8, ending=9]
 spawn {
-    if rl.frame() > 0 {
-        loop on :rl.draw {
+    if ray.frame() > 0 {
+        loop on :draw {
             val sc = screens.pub
-            var s = string.format("%d %d %d %.4f | %.0f %d %d %d %d %d %d |", rl.frame(), NUMBER@(sc.name), b(sc.trans), sc.alpha,
+            var s = string.format("%d %d %d %.4f | %.0f %d %d %d %d %d %d |", ray.frame(), NUMBER@(sc.name), b(sc.trans), sc.alpha,
                 P.x, P.seq, P.cf, P.fx, b(P.key), P.lifes, b(P.dead))
             if sc.name == :title {
                 set s = s ++ string.format(" %.4f", title_alpha)

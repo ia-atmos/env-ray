@@ -6,19 +6,19 @@
 ;; of the C, which draws from the random generator particle by particle.
 
 func particle (size, rot, alpha) {
-    [x=0, y=0, rot=rot, size=size, alpha=alpha, phy=0, active=false, color=rl.WHITE]
+    [x=0, y=0, rot=rot, size=size, alpha=alpha, phy=0, active=false, color=ray.WHITE]
 }
 func system (n) {
     pin ps = []
     loop i in n { set ps@i = particle(0, 0, 1) }
     [active=false, spawn=0, max=0, ps=ps]
 }
-func ray () {
+func new_ray () {
     [x=0, y=0, color=0xFFFFB6FF, alpha=0, size=0, rot=0, active=false, fading=false, delay=0]
 }
 func rays (n) {
     pin ps = []
-    loop i in n { set ps@i = ray() }
+    loop i in n { set ps@i = new_ray() }
     [active=false, spawn=0, max=0, ps=ps]
 }
 
@@ -32,41 +32,41 @@ pin T = [
 ]
 
 ;; (float)GetRandomValue(a, b)/10
-func rnd10 (a, b) { f32(rl.random(a, b) / 10) }
+func rnd10 (a, b) { f32(ray.random(a, b) / 10) }
 
 func title_init () {
     set T.frames = 0
-    set initSeason = rl.random(0, 3)
-    set T.back_offset = rl.random(10, 100)
-    set T.front_offset = rl.random(100, 200)
-    set rainChance = rl.random(0, 100)
+    set initSeason = ray.random(0, 3)
+    set T.back_offset = ray.random(10, 100)
+    set T.front_offset = ray.random(100, 200)
+    set rainChance = ray.random(0, 100)
     loop _,k in [:snow, :back_snow, :planetree, :back_planetree, :dandelion, :flower, :back_flower, :rain_storm, :snow_storm, :rays, :back_rays] {
         set (T@k).active = false
     }
     loop j in 128 {
         val sn, bs, pt, bp = T.snow.ps@j, T.back_snow.ps@j, T.planetree.ps@j, T.back_planetree.ps@j
-        set sn.active, sn.x, sn.y, sn.size, sn.rot, sn.color, sn.alpha = false, 0, 0, rnd10(3, 9), rl.random(0, 360), rl.WHITE, 1
-        set bs.active, bs.x, bs.y, bs.size, bs.rot, bs.color, bs.alpha = false, 0, 0, rnd10(2, 8), rl.random(0, 360), rl.WHITE, f32(0.7)
-        set pt.active, pt.x, pt.y, pt.size, pt.rot, pt.color, pt.alpha = false, 0, 0, rnd10(3, 9), rl.random(0, 360), rl.WHITE, 1
-        set bp.active, bp.x, bp.y, bp.size, bp.rot, bp.color, bp.alpha = false, 0, 0, rnd10(2, 8), rl.random(0, 360), rl.WHITE, f32(0.7)
+        set sn.active, sn.x, sn.y, sn.size, sn.rot, sn.color, sn.alpha = false, 0, 0, rnd10(3, 9), ray.random(0, 360), ray.WHITE, 1
+        set bs.active, bs.x, bs.y, bs.size, bs.rot, bs.color, bs.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, f32(0.7)
+        set pt.active, pt.x, pt.y, pt.size, pt.rot, pt.color, pt.alpha = false, 0, 0, rnd10(3, 9), ray.random(0, 360), ray.WHITE, 1
+        set bp.active, bp.x, bp.y, bp.size, bp.rot, bp.color, bp.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, f32(0.7)
         val dn, db = T.dandelion.ps@j, T.dandelion_back.ps@j
-        set dn.active, dn.x, dn.y, dn.size, dn.rot, dn.color, dn.alpha = false, 0, 0, rnd10(3, 9), 0, rl.WHITE, 1
-        set dn.phy = rl.random(0, 180)
-        set db.active, db.x, db.y, db.size, db.rot, db.color, db.alpha = false, 0, 0, rnd10(2, 8), 0, rl.WHITE, f32(0.7)
-        set db.phy = rl.random(0, 180)
+        set dn.active, dn.x, dn.y, dn.size, dn.rot, dn.color, dn.alpha = false, 0, 0, rnd10(3, 9), 0, ray.WHITE, 1
+        set dn.phy = ray.random(0, 180)
+        set db.active, db.x, db.y, db.size, db.rot, db.color, db.alpha = false, 0, 0, rnd10(2, 8), 0, ray.WHITE, f32(0.7)
+        set db.phy = ray.random(0, 180)
         val fl, bf, rn, br = T.flower.ps@j, T.back_flower.ps@j, T.rain.ps@j, T.back_rain.ps@j
-        set fl.active, fl.x, fl.y, fl.size, fl.rot, fl.color, fl.alpha = false, 0, 0, rnd10(3, 9), rl.random(0, 360), rl.WHITE, 1
-        set bf.active, bf.x, bf.y, bf.size, bf.rot, bf.color, bf.alpha = false, 0, 0, rnd10(2, 8), rl.random(0, 360), rl.WHITE, f32(0.7)
-        set rn.active, rn.x, rn.y, rn.size, rn.rot, rn.color, rn.alpha = false, 0, 0, rnd10(3, 9), -20, rl.WHITE, 1
-        set br.active, br.x, br.y, br.size, br.rot, br.color, br.alpha = false, 0, 0, rnd10(2, 8), -20, rl.WHITE, f32(0.7)
+        set fl.active, fl.x, fl.y, fl.size, fl.rot, fl.color, fl.alpha = false, 0, 0, rnd10(3, 9), ray.random(0, 360), ray.WHITE, 1
+        set bf.active, bf.x, bf.y, bf.size, bf.rot, bf.color, bf.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, f32(0.7)
+        set rn.active, rn.x, rn.y, rn.size, rn.rot, rn.color, rn.alpha = false, 0, 0, rnd10(3, 9), -20, ray.WHITE, 1
+        set br.active, br.x, br.y, br.size, br.rot, br.color, br.alpha = false, 0, 0, rnd10(2, 8), -20, ray.WHITE, f32(0.7)
     }
     loop j in 1024 {
         val p = T.rain_storm.ps@j
-        set p.active, p.x, p.y, p.size, p.rot, p.color, p.alpha = false, 0, 0, rnd10(3, 9), -40, rl.WHITE, 1
+        set p.active, p.x, p.y, p.size, p.rot, p.color, p.alpha = false, 0, 0, rnd10(3, 9), -40, ray.WHITE, 1
     }
     loop j in 256 {
         val p = T.snow_storm.ps@j
-        set p.active, p.x, p.y, p.size, p.rot, p.color, p.alpha = false, 0, 0, rnd10(4, 8), 40, rl.WHITE, 1
+        set p.active, p.x, p.y, p.size, p.rot, p.color, p.alpha = false, 0, 0, rnd10(4, 8), 40, ray.WHITE, 1
     }
     loop i in 20 {
         val r, b = T.rays.ps@i, T.back_rays.ps@i
@@ -75,7 +75,7 @@ func title_init () {
     }
     val km = ATLAS01.gameplay_koala_menu
     set T.menu = [x=km.x, y=km.y, w=km.w / 2, h=km.h]
-    val w, h = rl.measure_ex(font, "PRESS TO PLAY", SIZE, 2)
+    val w, h = ray.measure_ex(font, "PRESS TO PLAY", SIZE, 2)
     set T.text_w, T.text_h = w, h
 }
 
@@ -105,20 +105,20 @@ func bounce (t, b, c, d) {
 func spawn_one (s, p, lo, hi) {
     if !p.active && (s.spawn >= s.max) {
         set p.active = true
-        set p.x, p.y = rl.random(0, W + 200), -10
+        set p.x, p.y = ray.random(0, W + 200), -10
         set s.spawn = 0
-        set s.max = rl.random(lo, hi)
+        set s.max = ray.random(lo, hi)
     }
 }
 func spawn_ray (s, r, lo, hi) {
     if !r.active && (s.spawn >= s.max) {
         set r.active, r.alpha = true, 0
-        set r.size = rl.random(lo, hi) // 10
-        set r.x, r.y = rl.random(300, W + 200), 0
+        set r.size = ray.random(lo, hi) // 10
+        set r.x, r.y = ray.random(300, W + 200), 0
         set r.rot = -35
         set s.spawn = 0
         set r.delay = 0
-        set s.max = rl.random(20, 50)
+        set s.max = ray.random(20, 50)
     }
 }
 func fall (s, n, dy, dx, drot) {
@@ -242,8 +242,8 @@ func title_update () {
                 loop j in 16 {
                     val p = rs.ps@(i + j)
                     set p.active = true
-                    set p.x = rl.random(100, W + 1000)
-                    set p.y = rl.random(-10, -20)
+                    set p.x = ray.random(100, W + 1000)
+                    set p.y = ray.random(-10, -20)
                 }
                 set rs.spawn, rs.max = 0, 4
             }
@@ -256,9 +256,9 @@ func title_update () {
             val p = ss.ps@i
             if !p.active && (ss.spawn >= ss.max) {
                 set p.active = true
-                set p.x, p.y = rl.random(100, W + 800), -10
+                set p.x, p.y = ray.random(100, W + 800), -10
                 set ss.spawn = 0
-                set ss.max = rl.random(1, 2)
+                set ss.max = ray.random(1, 2)
             }
         }
     }
@@ -320,10 +320,10 @@ func title_update () {
 ;; A particle drawn as the C: centered, scaled, rotated, faded.
 func draw_particle (atlas, r, p, c) {
     val w, h = r.w * p.size, r.h * p.size
-    rl.draw_texture_pro(atlas, r.x, r.y, r.w, r.h, p.x, p.y, w, h, w / 2, h / 2, p.rot, rl.fade(c, p.alpha))
+    ray.draw_texture_pro(atlas, r.x, r.y, r.w, r.h, p.x, p.y, w, h, w / 2, h / 2, p.rot, ray.fade(c, p.alpha))
 }
 func draw_rect (atlas, r, x, y, w, h, c) {
-    rl.draw_texture_pro(atlas, r.x, r.y, r.w, r.h, x, y, w, h, 0, 0, 0, c)
+    ray.draw_texture_pro(atlas, r.x, r.y, r.w, r.h, x, y, w, h, 0, 0, 0, c)
 }
 
 ;; The parallax of the title and of the gameplay: three layers of trees
@@ -340,7 +340,7 @@ func parallax_front (offset, scroll, c1, c2, again) {
             draw_rect(atlas2, t, dx + offset + (140 * i), YS@i, size.w * 2, size.h * 2, c2)
         }
         draw_rect(atlas2, g, dx, 559, g.w * 2, g.h * 2, c1)
-        rl.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx, -33, g.w * 2, g.h * 2, 0, 0, 0, c1)
+        ray.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx, -33, g.w * 2, g.h * 2, 0, 0, 0, c1)
     }
 }
 func parallax_middle (scroll, c1, c2, again) {
@@ -351,7 +351,7 @@ func parallax_middle (scroll, c1, c2, again) {
         draw_rect(atlas2, t, dx + (140 * i), 67, t.w * 2, t.h * 2, c2)
     }
     draw_rect(atlas2, g, dx, 509, g.w * 2, g.h * 2, c1)
-    rl.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx, 19, g.w * 2, g.h * 2, 0, 0, 0, c1)
+    ray.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx, 19, g.w * 2, g.h * 2, 0, 0, 0, c1)
     if again {
         loop i in 7 {
             val t = ATLAS02@(string.format("gameplay_back_tree%02d_layer02", i + 2))
@@ -360,7 +360,7 @@ func parallax_middle (scroll, c1, c2, again) {
         val t = ATLAS02.gameplay_back_tree01_layer02
         draw_rect(atlas2, t, dx + W, 67, t.w * 2, t.h * 2, c2)
         draw_rect(atlas2, g, dx + W, 509, g.w * 2, g.h * 2, c1)
-        rl.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx + W, 19, g.w * 2, g.h * 2, 0, 0, 0, c1)
+        ray.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx + W, 19, g.w * 2, g.h * 2, 0, 0, 0, c1)
     }
 }
 func parallax_back (offset, scroll, c1, c2, again) {
@@ -372,12 +372,12 @@ func parallax_back (offset, scroll, c1, c2, again) {
             draw_rect(atlas2, t, dx + offset + (140 * i), 67, t.w * 2, t.h * 2, c2)
         }
         draw_rect(atlas2, g, dx, 469, g.w * 2, g.h * 2, c1)
-        rl.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx, 67, g.w * 2, g.h * 2, 0, 0, 0, c1)
+        ray.draw_texture_pro(atlas2, g.x, g.y + g.h, g.w, -g.h, dx, 67, g.w * 2, g.h * 2, 0, 0, 0, c1)
     }
 }
 
 func title_draw () {
-    rl.begin_shader_mode(blend)
+    ray.begin_shader_mode(blend)
     val bg = ATLAS02.gameplay_background
     draw_rect(atlas2, bg, 0, 0, bg.w * 2, bg.h * 2, T.c2)
     parallax_back(T.back_offset, 0, T.c1, T.c2, false)
@@ -391,24 +391,24 @@ func title_draw () {
         if p5.active { draw_particle(atlas2, ATLAS02.particle_waterdrop_bw, p5, 0x90B7BBFF) }
     }
     loop _,r in T.back_rays.ps {
-        if r.active { draw_particle(atlas2, ATLAS02.gameplay_back_fx_lightraymid, r, rl.GOLD) }
+        if r.active { draw_particle(atlas2, ATLAS02.gameplay_back_fx_lightraymid, r, ray.GOLD) }
     }
     parallax_front(T.front_offset, 0, T.c1, T.c2, false)
     loop i in 5 {
         draw_rect(atlas2, ATLAS02.gameplay_props_tree, 150 + (200 * i), 0, 43, 720, T.c3)
     }
-    rl.end_shader_mode()
-    rl.draw_texture_rec(atlas1, T.menu.x, T.menu.y, T.menu.w, T.menu.h, 350 - 35, 100 - 40, rl.WHITE)
-    rl.begin_shader_mode(blend)
+    ray.end_shader_mode()
+    ray.draw_texture_rec(atlas1, T.menu.x, T.menu.y, T.menu.w, T.menu.h, 350 - 35, 100 - 40, ray.WHITE)
+    ray.begin_shader_mode(blend)
     val g0 = ATLAS02.gameplay_back_ground00
     draw_rect(atlas2, g0, 0, 637, g0.w * 2, g0.h * 2, T.c0)
-    rl.end_shader_mode()
+    ray.end_shader_mode()
     val tt = ATLAS01.title_titletext
     val tx = f32(f32(W * f32(0.49)) - (tt.w / 2))
-    rl.draw_texture_pro(atlas1, tt.x, tt.y, tt.w, 230, tx, T.value1, tt.w, 235, 0, 0, 0, rl.WHITE)
-    rl.draw_texture_pro(atlas1, tt.x, tt.y + 232, tt.w, 116, tx, T.value2, tt.w, 116, 0, 0, 0, rl.WHITE)
+    ray.draw_texture_pro(atlas1, tt.x, tt.y, tt.w, 230, tx, T.value1, tt.w, 235, 0, 0, 0, ray.WHITE)
+    ray.draw_texture_pro(atlas1, tt.x, tt.y + 232, tt.w, 116, tx, T.value2, tt.w, 116, 0, 0, 0, ray.WHITE)
     if (((T.frames // 60) % 2) == 1) && (T.frames >= 120) {
-        rl.text_ex(font, "Press to play", f32((W // 2) - f32(T.text_w / 2)), f32((H // 2) + f32(T.text_h * 2)), SIZE, 2, 0xF7EFD1FF)
+        ray.text_ex(font, "Press to play", f32((W // 2) - f32(T.text_w / 2)), f32((H // 2) + f32(T.text_h * 2)), SIZE, 2, 0xF7EFD1FF)
     }
     loop i in 128 {
         val p1, p2, p3, p4, p5 = T.snow.ps@i, T.planetree.ps@i, T.dandelion.ps@i, T.flower.ps@i, T.rain.ps@i
@@ -436,11 +436,11 @@ func title_draw () {
 task Title () {
     title_init()
     spawn {
-        loop on :rl.draw { title_draw() }
+        loop on :draw { title_draw() }
     }
-    loop on :rl.frame {
+    loop on :frame {
         title_update()
-        until rl.key_pressed('ENTER') && (T.frames >= 120)
+        until ray.key_pressed('ENTER') && (T.frames >= 120)
     }
     set pub = :gameplay
     await false
