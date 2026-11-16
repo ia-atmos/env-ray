@@ -31,6 +31,8 @@ pin door   = rl.sound("resources/audio/door.ogg")
 pin scream = rl.sound("resources/audio/scream.ogg")
 val SIZE   = rl.font_size(font)
 
+func b (x) { if x => 1 => 0 }      ;; a flag, as 0 or 1 (for the trace)
+
 func int (x) {
     if x < 0 => math.ceil(x) => math.floor(x)
 }
@@ -49,7 +51,7 @@ pin skully = rl.texture("resources/textures/skully.png")
 pin life   = rl.texture("resources/textures/skully_icon.png")
 val FW, FH = rl.texture_width(skully) // 4, rl.texture_height(skully) // 6
 
-val P = [
+pin P = [
     x=350, y=400, seq=WALK_RIGHT, cf=0, fx=0, fy=0, key=false, lifes=4, dead=false,
     bounds=[x=0, y=0, w=0, h=0],
     moving=false, dir=-1, next=0, px=0, py=0, pointer=false, palpha=0,
@@ -173,7 +175,7 @@ func player_draw () {
 
 val DW, DH = rl.texture_width(doors) // 3, rl.texture_height(doors) // 2
 
-val ROOMS = [
+pin ROOMS = [
     attic = [
         back = "background_attic", cheat = :aisle01,
         msg = "YOUR PARENTS ARE GONE! TIME TO ESCAPE!\nTHE DOOR IS LOCKED... TURN ON THE LIGHTS! ;)",
@@ -273,7 +275,7 @@ loop _,spec in ROOMS {
 }
 
 var death = false                       ;; the death asks the title
-var game = nil                          ;; the room shown, for the trace
+var room_line = nil                     ;; the part of the trace of the room shown (a string)
 
 ;; A monster found: if it scares, it moves: a frame every 8 (back to frame 1
 ;; after the last).
@@ -288,24 +290,41 @@ task Spooky (m) {
 task Room (name) {
     val spec = ROOMS@name
     player_reset()
-    val R = [frames=0, letters=0, mc=0, check=-1, hover=false, buffer="", playing=false, scroll=0, phase=0]
+    pin R = [frames=0, letters=0, mc=0, check=-1, hover=false, buffer="", playing=false, scroll=0, phase=0]
     if spec.scroll { set R.scroll = P.x - 200 }
     pin back = rl.texture("resources/textures/" ++ spec.back ++ ".png")
-    val ds = []
+    pin ds = []
     loop i,d in spec.doors {
         set ds@i = [x=d.x, y=d.y, fx=DW * d.facing, fy=DH, locked=true, selected=false, to=d.to,
                     bound=[x=d.x, y=d.y, w=DW, h=DH]]
     }
-    val ms = []
+    pin ms = []
     loop i,m in spec.monsters {
-        val tex = rl.texture("resources/textures/" ++ m.tex ++ ".png")
-        set ms@i = [tex=tex, x=m.x, y=m.y, spooky=m.spooky, active=false, selected=false, cf=0,
-                    fw=rl.texture_width(tex) // 4, fh=rl.texture_height(tex), ox=m.b@0,
+        set ms@i = [tex=rl.texture("resources/textures/" ++ m.tex ++ ".png"), x=m.x, y=m.y, spooky=m.spooky,
+                    active=false, selected=false, cf=0, ox=m.b@0,
                     bounds=[x=m.x + (m.b@0), y=m.y + (m.b@1), w=m.b@2, h=m.b@3]]
+        val tex = (ms@i).tex
+        set (ms@i).fw, (ms@i).fh = rl.texture_width(tex) // 4, rl.texture_height(tex)
     }
-    set game = [R=R, ds=ds, ms=ms]
     defer {
-        set game = nil
+        set room_line = nil
+    }
+    ;; [trace]: the part of the room, as it is drawn (the trace prints after it)
+    spawn {
+        loop on :rl.draw {
+            var s = string.format(" %d %d %d %d %d %d %d", R.phase, R.mc, R.letters, R.frames,
+                b(spec.searching), R.check, b(R.hover))
+            loop _,d in ds {
+                set s = s ++ string.format(" D%d%d", b(d.locked), b(d.selected))
+            }
+            loop _,m in ms {
+                set s = s ++ string.format(" M%d%d%d", b(m.active), b(m.selected), m.cf)
+            }
+            if spec.scroll {
+                set s = s ++ string.format(" %d", R.scroll)
+            }
+            set room_line = s
+        }
     }
     pin animations = tasks()
 
@@ -603,14 +622,15 @@ spawn {
     }
 }
 
-pin screens = spawn Screens([
-    logo=LogoScreen, title=Title, attic=Attic, aisle01=Aisle01, aisle02=Aisle02,
-    bathroom=Bathroom, livingroom=Livingroom, kitchen=Kitchen, armory=Armory, ending=Ending,
-], :logo, [
+pin FADE = [
     color = rl.BLACK,
     inc = f32(0.05), into = \{ it >= 1 },
     dec = f32(0.05), back = \{ it <= 0 },
-])
+]
+pin screens = spawn Screens([
+    logo=LogoScreen, title=Title, attic=Attic, aisle01=Aisle01, aisle02=Aisle02,
+    bathroom=Bathroom, livingroom=Livingroom, kitchen=Kitchen, armory=Armory, ending=Ending,
+], :logo, FADE)
 
 spawn {
     loop on :rl.frame {
@@ -619,8 +639,7 @@ spawn {
 }
 
 ;; [trace] of the test mode: one line per frame, after its logic
-val NUMBER = [logo=0, title=1, attic=2, aisle01=3, aisle02=4, bathroom=5, livingroom=6, kitchen=7, armory=8, ending=9]
-func b (x) { if x => 1 => 0 }
+pin NUMBER = [logo=0, title=1, attic=2, aisle01=3, aisle02=4, bathroom=5, livingroom=6, kitchen=7, armory=8, ending=9]
 spawn {
     if rl.frame() > 0 {
         loop on :rl.draw {
@@ -633,19 +652,8 @@ spawn {
             if sc.name == :ending {
                 set s = s ++ string.format(" %.4f", ending_alpha)
             }
-            if game {
-                val R = game.R
-                set s = s ++ string.format(" %d %d %d %d %d %d %d", R.phase, R.mc, R.letters, R.frames,
-                    b(ROOMS@(sc.name).searching), R.check, b(R.hover))
-                loop _,d in game.ds {
-                    set s = s ++ string.format(" D%d%d", b(d.locked), b(d.selected))
-                }
-                loop _,m in game.ms {
-                    set s = s ++ string.format(" M%d%d%d", b(m.active), b(m.selected), m.cf)
-                }
-                if ROOMS@(sc.name).scroll {
-                    set s = s ++ string.format(" %d", R.scroll)
-                }
+            if room_line {
+                set s = s ++ room_line
             }
             print(s)
         }
