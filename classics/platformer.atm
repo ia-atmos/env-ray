@@ -9,8 +9,6 @@
 ;; sequences: `win`, `isJumping`, and the `visible` flags of the coins of the
 ;; C became tasks and awaits.
 
-include "../ray.atm"
-
 val TILE    = 16
 val MW, MH  = 20, 12            ;; the map, in tiles
 val SCALE   = 2

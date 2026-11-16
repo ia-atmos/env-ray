@@ -10,7 +10,6 @@
 ;; interceptors, the explosions), the port keeps the slots: see
 ;; doc/fidelity.md.
 
-include "../ray.atm"
 include "classic.atm"
 
 val W, H   = 800, 450

@@ -10,8 +10,6 @@
 ;; pair of awaits. The enemies keep the slots of the C: an enemy takes the
 ;; first free slot, and its rail is never that of the slot before it.
 
-include "../../ray.atm"
-
 val W, H = 1280, 720
 val N    = 10                           ;; MAX_ENEMIES
 val f32  = ray.f32

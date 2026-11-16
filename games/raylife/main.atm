@@ -9,8 +9,6 @@
 ;;
 ;;      raylife [max generations]       (500 by default)
 
-include "../../ray.atm"
-
 ```:prelude
 #define LIFE_ROWS 500
 #define LIFE_COLS 500

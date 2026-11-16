@@ -8,7 +8,6 @@
 ;; and the fade of the ritual are tasks and awaits. The lights and the
 ;; enemies keep the loops of the C, which couple them in each frame.
 
-include "../../ray.atm"
 include "../screens.atm"
 
 ;; The lights of the three levels, from the colors of a map (red, green,

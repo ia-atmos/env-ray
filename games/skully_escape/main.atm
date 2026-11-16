@@ -14,7 +14,6 @@
 ;; and awaits. The player is the module of the C (`player.c`): the rooms
 ;; call its update in their play only.
 
-include "../../ray.atm"
 include "../screens.atm"
 
 val W, H = 1280, 720

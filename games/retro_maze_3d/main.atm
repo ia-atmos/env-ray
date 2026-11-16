@@ -10,8 +10,6 @@
 ;; (its mesh, its model, the camera, and the collisions against the pixels
 ;; of the map) is the C of the original, in the prelude below.
 
-include "../../ray.atm"
-
 ```:prelude
 #define GB_GREEN01 (Color){ 155, 188, 15, 255 }
 #define GB_GREEN02 (Color){ 110, 150, 27, 255 }

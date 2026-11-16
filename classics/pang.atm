@@ -12,8 +12,6 @@
 ;; texts are LIGHTGRAY, a victory freezes the game), so it does not use
 ;; classic.atm.
 
-include "../ray.atm"
-
 val W, H    = 800, 450
 val f32     = ray.f32
 val DEG2RAD = f32(f32(3.14159265358979323846) / 180)

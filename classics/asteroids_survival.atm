@@ -7,7 +7,6 @@
 ;; of raysan5/raylib-games. The game is the same; its control is written as
 ;; sequences: `gameOver` and `pause` of the C became tasks and a toggle.
 
-include "../ray.atm"
 include "classic.atm"
 
 val W, H    = 800, 450

@@ -9,7 +9,6 @@
 ;; the C became tasks, awaits, and a toggle. The functions over the grid are
 ;; the ones of the C.
 
-include "../ray.atm"
 include "classic.atm"
 
 val W, H   = 800, 450

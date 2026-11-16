@@ -12,7 +12,6 @@
 ;; live in a table, which its `init` resets in part, and which a second
 ;; visit finds as the first one left it (a level done stays done).
 
-include "../../ray.atm"
 include "../screens.atm"
 
 val W, H = 1280, 720

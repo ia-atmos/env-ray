@@ -10,7 +10,6 @@
 ;; asked, under the old one, which goes on being drawn (the ending loses
 ;; its kills under the fade, as the gameplay resets them).
 
-include "../../ray.atm"
 include "../screens.atm"
 include "atlas.atm"
 

@@ -7,7 +7,6 @@
 ;; the logo, the title, the objective, the timer, and the cat are tasks and
 ;; awaits. The tiles of dirt keep the loops of the C.
 
-include "../../ray.atm"
 include "../screens.atm"
 
 val W, H = 1280, 720

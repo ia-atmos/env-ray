@@ -6,7 +6,6 @@
 ;; raysan5/raylib-games. The game is the same; the screens, the transition,
 ;; the pause, the logo, and the blinking texts are tasks and awaits.
 
-include "../../ray.atm"
 include "../screens.atm"
 
 ;; The samples of the level come from the audio of the wave, read as the C

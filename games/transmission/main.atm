@@ -10,7 +10,6 @@
 ;; images (the missions, the atlas of words, the layout of the message, the
 ;; headline) is the C of the original, in the prelude below.
 
-include "../../ray.atm"
 include "../screens.atm"
 
 ```:prelude

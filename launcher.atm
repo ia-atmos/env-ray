@@ -7,8 +7,6 @@
 ;; A port runs as a program of its own, from the directory of its assets,
 ;; as the original does; the launcher waits for it to end.
 
-include "ray.atm"
-
 ```:prelude
 #include <stdlib.h>
 ```
