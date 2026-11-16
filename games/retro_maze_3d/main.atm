@@ -161,7 +161,7 @@ pin music_title    = rl.music("resources/audio/music_title.mp3")
 pin music_gameplay = rl.music("resources/audio/music_gameplay.mp3")
 pin music_credits  = rl.music("resources/audio/music_credits.mp3")
 `if (rl_music($music_credits)) rl_music($music_credits)->looping = false;`
-val VOICES = [
+pin VOICES = [
     rl.sound("resources/audio/voice_hello.wav"),
     rl.sound("resources/audio/voice_im_lost.wav"),
     rl.sound("resources/audio/voice_anyone_there.wav"),
@@ -221,7 +221,7 @@ func menu () {
     }
 }
 
-val CHOICES = [:gameplay, :credits, :exit]
+pin CHOICES = [:gameplay, :credits, :exit]
 
 ;; The logo goes down, with a sound when it arrives; 300 frames.
 task Logo () {
@@ -442,8 +442,8 @@ task Ending () {
     :credits
 }
 
-val SCREENS = [logo=Logo, title=Title, gameplay=Gameplay, credits=Credits, ending=Ending]
-val NUMBER  = [logo=0, title=1, credits=2, gameplay=3, ending=4]
+pin SCREENS = [logo=Logo, title=Title, gameplay=Gameplay, credits=Credits, ending=Ending]
+pin NUMBER  = [logo=0, title=1, credits=2, gameplay=3, ending=4]
 var screen  = :logo
 
 ;; the frame: the key G (after the screen, as the C), into the texture of
