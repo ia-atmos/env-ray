@@ -5,7 +5,7 @@
 #                       built for the platform with no screen:
 #                       ext/raylib/build-mem/libraylib.a
 #   ext/raylib-games    the original games, at the commit of the target
-#   ext/ceu-atmos       the Atmos compiler (branch main): ext/ceu-atmos/atmos
+#   ext/ceu-atmos       the Atmos compiler, at the commit ATMOS_REV: ext/ceu-atmos/atmos
 #
 # It may run again: what is already there is kept, and only rebuilt.
 
@@ -16,6 +16,7 @@ mkdir -p ext
 
 RAYLIB_TAG=6.2
 GAMES_REV=318688c
+ATMOS_REV=4b4012c                       # the new rules of pin (main, 2026-11-15)
 
 if [ ! -d ext/raylib ]; then
     git clone -q --depth 1 --branch $RAYLIB_TAG https://github.com/raysan5/raylib ext/raylib
@@ -26,6 +27,7 @@ if [ ! -d ext/raylib-games ]; then
 fi
 if [ ! -d ext/ceu-atmos ]; then
     git clone -q https://github.com/ia-atmos/lang ext/ceu-atmos
+    git -C ext/ceu-atmos checkout -q $ATMOS_REV
 fi
 
 # raylib: the patch, unless it is already applied
