@@ -309,7 +309,7 @@ task Mission () {
     pin mmusic   = rl.music("resources/audio/music_mission.ogg")
     set button_fade = f32(0.8)
     rl.play_music(mmusic)
-    val m = `:value tm_mission(RL_I($mission), $font_mission)`
+    pin m = `:value tm_mission(RL_I($mission), $font_mission)`
     val ky = f32(f32(245 + m.h) + 60)
     var fade, length, number, keyword, blink = 0, 0, false, false, true
     var done = false                    ;; writeEnd
@@ -332,7 +332,7 @@ task Mission () {
         }
     }
     ;; a wait of n frames, counted in `c`
-    val wait = task (n) {
+    pin wait = task (n) {
         set c = 0
         loop {
             await :rl.frame
@@ -388,7 +388,7 @@ task Mission () {
     await false
 }
 
-var words = []                          ;; the twelve words to place, for the ending too
+pin words = []                          ;; the twelve words to place, for the ending too
 
 task Gameplay () {
     pin back     = rl.texture("resources/textures/message_background.png")
@@ -399,23 +399,23 @@ task Gameplay () {
     pin spy = rl.music("resources/audio/s_p_y.xm")
     pin fmsg = rl.font_ex("resources/fonts/traveling_typewriter.ttf", 30, 250)
     rl.play_music(spy)
-    val g = `:value tm_gameplay(RL_I($mission), $fmsg)`
+    pin g = `:value tm_gameplay(RL_I($mission), $fmsg)`
     val atlas = g.atlas
     val n = g.count
-    set words = []
+    vector.clear(words)
     loop i in 12 {
-        val r = [x=110 + (940*(i//6)), y=200 + (60*(i%6)), w=140, h=35]
-        vector.insert(words, [rec=r, ini=r ++ [], hover=false, picked=false])
+        val w = vector.insert(words, [rec=[x=110 + (940*(i//6)), y=200 + (60*(i%6)), w=140, h=35], hover=false, picked=false])
+        set w.ini = w.rec ++ []
     }
-    val mw = func (j) {
+    pin mw = func (j) {
         return `:number messageWords[RL_I($j)].rec.x`, `:number messageWords[RL_I($j)].rec.y`,
                `:number messageWords[RL_I($j)].rec.width`, `:number messageWords[RL_I($j)].rec.height`
     }
-    val mw_id = func (j) { `:number messageWords[RL_I($j)].id` }
-    val mw_set_id = func (j, v) { `messageWords[RL_I($j)].id = RL_I($v);` }
-    val mw_hover = func (j) { `:boolean messageWords[RL_I($j)].hover` }
-    val mw_set_hover = func (j, v) { `messageWords[RL_I($j)].hover = a_truthy($v);` }
-    val over = func (j) {
+    pin mw_id = func (j) { `:number messageWords[RL_I($j)].id` }
+    pin mw_set_id = func (j, v) { `messageWords[RL_I($j)].id = RL_I($v);` }
+    pin mw_hover = func (j) { `:boolean messageWords[RL_I($j)].hover` }
+    pin mw_set_hover = func (j, v) { `messageWords[RL_I($j)].hover = a_truthy($v);` }
+    pin over = func (j) {
         val x, y, w, h = mw(j)
         rl.check_collision_point_rec(rl.mouse_x(), rl.mouse_y(), x, y, w, h)
     }
@@ -509,7 +509,7 @@ task Ending () {
     pin back     = rl.texture("resources/textures/ending_background.png")
     pin vignette = rl.texture("resources/textures/message_vignette.png")
     pin fxnews   = rl.sound("resources/audio/fx_batman.ogg")
-    val e = `:value tm_ending(RL_I($mission))`
+    pin e = `:value tm_ending(RL_I($mission))`
     val paper = e.paper
     val fnews = e.font
     var rotation, scale = f32(0.1), f32(0.05)
@@ -570,7 +570,7 @@ spawn {
 spawn {
     if rl.frame() > 0 {
         loop on :rl.draw {
-            val ids = []
+            pin ids = []
             loop j in 8 {
                 vector.insert(ids, `:number messageWords[RL_I($j)].id`)
             }
@@ -580,7 +580,7 @@ spawn {
 }
 ;; [/trace]
 
-val FADE = [
+pin FADE = [
     color = rl.BLACK,
     inc = f32(0.02), into = \{ it > f32(1.01) },
     dec = f32(0.02), back = \{ it < f32(-0.01) },
