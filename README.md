@@ -59,7 +59,8 @@ memory, with a test mode added by [tools/raylib.patch](tools/raylib.patch)
 [doc/fidelity.md](doc/fidelity.md).
 
 ```
-tools/setup.sh          # raylib 6.2, the original games, and the Atmos compiler, in ext/
+tools/setup.sh          # raylib 6.2, the original games, and the Atmos compiler, in ext/;
+                        # build/atmos-ray, the compiler of this environment
 tools/originals.sh      # the originals, with a trace, in build/orig/
 tools/ports.sh          # the ports, in build/port/
 tst/run.sh              # every scripted run of every port, against its stored results
