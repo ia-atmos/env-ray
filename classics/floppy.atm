@@ -18,7 +18,7 @@ val NTUBES = 100
 
 rl.window [title="classic game: floppy", width=W, height=H, fps=60]
 
-val floppy = [x=0, y=0]         ;; where floppy is
+pin floppy = [x=0, y=0]         ;; where floppy is
 var score  = 0
 var hiscore = 0
 
