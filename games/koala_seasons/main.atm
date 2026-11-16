@@ -43,7 +43,7 @@ rl.music_volume(music, 2)
 ;; The globals of the C, shared by the screens
 var score, hiscore, killer, seasons, years = 0, 0, 0, 0, 0
 var currentLeaves, currentSeason, initSeason, initYears, rainChance = 0, 0, 0, 0, 0
-val killHistory = []
+pin killHistory = []
 loop i in 128 { set killHistory@i = 0 }
 
 include "title.atm"
@@ -62,9 +62,9 @@ task LogoScreen () {
     set pub = true
     await false
 }
-val SCREENS = [[0, LogoScreen], [1, Title], [3, Gameplay], [4, Ending]]
-val NEXT    = [gameplay=3, ending=4]
-val INITS   = [[3, gameplay_init], [4, ending_init]]
+pin SCREENS = [[0, LogoScreen], [1, Title], [3, Gameplay], [4, Ending]]
+pin NEXT    = [gameplay=3, ending=4]
+pin INITS   = [[3, gameplay_init], [4, ending_init]]
 func screen_task (n) {
     var t = nil
     loop _,s in SCREENS { if s@0 == n { set t = s@1 } }

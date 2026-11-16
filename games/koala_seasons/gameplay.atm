@@ -33,7 +33,7 @@ func recs (a, b) {
     rl.check_collision_recs(a.x, a.y, a.w, a.h, b.x, b.y, b.w, b.h)
 }
 func list (n, f) {
-    val l = []
+    pin l = []
     loop i in n { set l@i = f(i) }
     l
 }
@@ -44,7 +44,7 @@ func popup () { [x=0, y=0, active=false, alpha=0, scale=0, score=0] }
 func speed_particle () { [x=0, y=0, w=0, h=0, alpha=0, active=false, color=rl.WHITE, rot=0] }
 
 ;; The statics of the C, as its initializers have them
-val G = [
+pin G = [
     gravity=0, season=0, state=0, frames=0, finish=0, grab=0, velocity=0, speed=0,
     bamboo_timer=0, bamboo_spawn=0, color_timer=0, jump_speed=0, power=0, max_power=0, trans_count=0,
     pos=[0, 0], pos_dingo=[0, 0], enemy_vel=zeros(NE), bee_velocity=0, fire_speed=0, wind_counter=0,
@@ -135,7 +135,7 @@ func gameplay_init () {
     set G.progresion_delay, G.progresion_frames, G.speed_progresion = 0, 0, 0
     set G.fog_speed, G.glow, G.glow_fade, G.pulse_fade, G.pulse_scale = 2, true, 0, 1, 1
     set initYears = year
-    val INIT = [
+    pin INIT = [
         [11, 225, [0x81AC56FF, 0x91A57DFF, 0xA18249FF, 0xC66733FF]],
         [2, 315, [0xF2713EFF, 0xBE8772FF, 0x908265FF, 0xD6853AFF]],
         [5, 45, [0x8282B5FF, 0x9191A6FF, 0x688E90FF, 0x398CADFF]],
@@ -348,7 +348,7 @@ func countdown_step () {
 }
 
 ;; the season of the month: its particles, its colors to come
-val SEASON_MONTHS = [                   ;; months, end month, season number, next colors
+pin SEASON_MONTHS = [                   ;; months, end month, season number, next colors
     [[11, 0], 1, SUMMER, 0, [0xF2713EFF, 0xBE8772FF, 0x908265FF, 0xD6853AFF]],
     [[2, 3], 4, FALL, 1, [0x8282B5FF, 0x9191A6FF, 0x688E90FF, 0x398CADFF]],
     [[5, 6], 7, WINTER, 2, [0xC4B031FF, 0xB2A343FF, 0x858F5AFF, 0x859C2AFF]],
@@ -417,7 +417,7 @@ func seasons_step () {
     }
 }
 
-val CLOCK_AT = [[10, 225], [1, 315], [4, 45], [7, 135]]     ;; months that change the season
+pin CLOCK_AT = [[10, 225], [1, 315], [4, 45], [7, 135]]     ;; months that change the season
 
 func animations_step () {
     set G.this_wind += 1
@@ -1510,9 +1510,9 @@ task Gameplay () {
 func tex_rec (atlas, r, x, y, c) {
     rl.draw_texture_rec(atlas, r.x, r.y, r.w, r.h, x, y, c)
 }
-val COUNTDOWN = [nil, ATLAS01.gameplay_countdown_1, ATLAS01.gameplay_countdown_2, ATLAS01.gameplay_countdown_3]
-val INIT_FADE = [0xD8C827FF, 0x9B4616FF, 0x1181A2FF, 0x52AE07FF]
-val MESSAGES = [                        ;; month: texts and color
+pin COUNTDOWN = [nil, ATLAS01.gameplay_countdown_1, ATLAS01.gameplay_countdown_2, ATLAS01.gameplay_countdown_3]
+pin INIT_FADE = [0xD8C827FF, 0x9B4616FF, 0x1181A2FF, 0x52AE07FF]
+pin MESSAGES = [                        ;; month: texts and color
     [7, "FLOWER POWER!", "POLLEN IS IN THE AIR", 0xB9DE69FF],
     [10, "PREPARE FOR THE SUMMER!", "HAPPY NEW YEAR!", 0xFDC86CFF],
     [1, "HERE COMES THE FALL!", "IT'S RAINING RAIN", 0xFF956BFF],
@@ -1618,7 +1618,7 @@ func gameplay_draw () {
         val h = G.enemy_hit@i
         if h.active { draw_particle(atlas1, ATLAS01.particle_hit, h, h.color) }
     }
-    val LEAF_RECS = [ATLAS01.gameplay_props_leaf_lil, ATLAS01.gameplay_props_leaf_lil, ATLAS01.gameplay_props_leaf_mid, ATLAS01.gameplay_props_leaf_big]
+    pin LEAF_RECS = [ATLAS01.gameplay_props_leaf_lil, ATLAS01.gameplay_props_leaf_lil, ATLAS01.gameplay_props_leaf_mid, ATLAS01.gameplay_props_leaf_big]
     val el = ATLAS01.particle_ecualyptusleaf
     loop i in NL {
         if G.leaf_active@i {

@@ -9,7 +9,7 @@ func particle (size, rot, alpha) {
     [x=0, y=0, rot=rot, size=size, alpha=alpha, phy=0, active=false, color=rl.WHITE]
 }
 func system (n) {
-    val ps = []
+    pin ps = []
     loop i in n { set ps@i = particle(0, 0, 1) }
     [active=false, spawn=0, max=0, ps=ps]
 }
@@ -17,12 +17,12 @@ func ray () {
     [x=0, y=0, color=0xFFFFB6FF, alpha=0, size=0, rot=0, active=false, fading=false, delay=0]
 }
 func rays (n) {
-    val ps = []
+    pin ps = []
     loop i in n { set ps@i = ray() }
     [active=false, spawn=0, max=0, ps=ps]
 }
 
-val T = [
+pin T = [
     frames=0, global=0, frame=0, this=0, value1=0, value2=0, back_offset=0, front_offset=0,
     snow=system(128), back_snow=system(128), dandelion=system(128), dandelion_back=system(128),
     planetree=system(128), back_planetree=system(128), flower=system(128), back_flower=system(128),
@@ -164,7 +164,7 @@ func update_rays (s, dx) {
     }
 }
 
-val SEASON_COLORS = [                   ;; color00..color03, by season
+pin SEASON_COLORS = [                   ;; color00..color03, by season
     [0x81AC56FF, 0x91A57DFF, 0xA18249FF, 0xC66733FF],   ;; summer
     [0xF2713EFF, 0xBE8772FF, 0x908265FF, 0xD6853AFF],   ;; fall
     [0x8282B5FF, 0x9191A6FF, 0x688E90FF, 0x398CADFF],   ;; winter
@@ -331,7 +331,7 @@ func draw_rect (atlas, r, x, y, w, h, c) {
 ;; draws a second copy, one screen to the right.
 func parallax_front (offset, scroll, c1, c2, again) {
     val g = ATLAS02.gameplay_back_ground01
-    val YS = [60, 60, 55, 60, 60, 55, 60, 60]
+    pin YS = [60, 60, 55, 60, 60, 55, 60, 60]
     loop k in (if again => 2 => 1) {
         val dx = int(scroll) + (k * W)
         loop i in 8 {
