@@ -140,7 +140,7 @@ task Ending () {
     await false
 }
 
-var game = nil                  ;; the state of the gameplay (for the trace)
+var game_line = nil             ;; the part of the trace of the gameplay (a string)
 
 task Gameplay () {
     pin back   = rl.texture("resources/textures/background_gameplay.png")
@@ -155,18 +155,23 @@ task Gameplay () {
     rl.sound_volume(son, 0.6)
     rl.sound_volume(spause, 0.5)
     set ending = 0
-    val g = [
+    pin g = [
         x = f32((200 + f32(80/2)) - (rl.texture_width(tplay)//2)),
         y = f32((160 + f32(400/2)) - (rl.texture_height(tplay)//2)),
         warp = 395, synchro = f32(0.2), combo = 0, max = 0,
         collected = 0, current = 0, speed = 7, paused = false,
     ]
-    set game = g
     defer {
-        set game = nil
+        set game_line = nil
+    }
+    ;; [trace]: the part of the gameplay, as it is drawn (the trace prints after it)
+    spawn {
+        loop on :rl.draw {
+            set game_line = string.format(" %.4f %d %d %d %.6f %.4f %d", g.y, g.collected, g.combo, g.current, g.synchro, g.speed, g.warp)
+        }
     }
     val gx = g.x
-    val samples = `:value wc_samples(RL_F($gx), GetScreenHeight())`
+    pin samples = `:value wc_samples(RL_F($gx), GetScreenHeight())`
     val total = #samples
     loop _,s in samples {
         set s.on, s.got = true, false
@@ -315,13 +320,21 @@ task Gameplay () {
     await false
 }
 
+
+spawn {
+    loop on :rl.draw {
+        rl.clear(rl.RAYWHITE)
+    }
+}
+
+pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay, ending=Ending], :logo)
+
 ;; [trace] of the test mode: one line per frame, after its logic
 spawn {
     if rl.frame() > 0 {
         loop on :rl.draw {
-            if game {
-                print(string.format("%d %d %.4f %d %d %d %.6f %.4f %d", rl.frame(), ending, game.y, game.collected,
-                    game.combo, game.current, game.synchro, game.speed, game.warp))
+            if game_line {
+                print(string.format("%d %d", rl.frame(), ending) ++ game_line)
             } else {
                 print(string.format("%d %d", rl.frame(), ending))
             }
@@ -330,10 +343,4 @@ spawn {
 }
 ;; [/trace]
 
-spawn {
-    loop on :rl.draw {
-        rl.clear(rl.RAYWHITE)
-    }
-}
-
-await Screens([logo=LogoScreen, title=Title, gameplay=Gameplay, ending=Ending], :logo)
+await(screens)
