@@ -19,7 +19,7 @@ val f32     = rl.f32
 rl.window [title="classic game: platformer", width=TILE*MW*SCALE, height=TILE*MH*SCALE, fps=60]
 
 ;; The map: a border and four platforms.
-val tiles = []
+pin tiles = []
 loop y in MH {
     loop x in MW {
         set tiles@(x + (y*MW)) = (y == 0) || (x == 0) || (y == (MH-1)) || (x == (MW-1))
@@ -59,7 +59,7 @@ val GRAVITY = f32(f32(f32(0.363281)*60)*60)
 val IMPULSE = f32(f32(-6.5625)*60)
 val RELEASE = f32(IMPULSE*f32(0.2))
 
-var player = [x=0, y=0, vx=0, vy=0, hsp=0, vsp=0]
+pin player = [x=0, y=0, vx=0, vy=0, hsp=0, vsp=0]
 var jump   = false              ;; the button, latched until released or used (never reset, as the C)
 var score  = 0
 
@@ -99,7 +99,7 @@ task Physics (game) {
             set player.vy = -IMPULSE
         }
         ;; the blocks, to the side, then above or below
-        val steps = func () {
+        pin steps = func () {
             val xv = f32(f32(player.vx*delta) + player.hsp)
             val yv = f32(f32(player.vy*delta) + player.vsp)
             return (math.floor(math.abs(xv)) * sign(xv)), (math.floor(math.abs(yv)) * sign(yv))
@@ -167,7 +167,7 @@ task Coin (x, y) {
 
 ;; One game: ends with ENTER, once the coins are taken.
 task Play () {
-    set player = [x=f32((TILE*MW)*0.5), y=((MH*TILE) - 16) - 1, vx=0, vy=0, hsp=0, vsp=0]
+    set player.x, player.y, player.vx, player.vy, player.hsp, player.vsp = f32((TILE*MW)*0.5), ((MH*TILE) - 16) - 1, 0, 0, 0, 0
     set score = 0
     spawn {
         loop on :rl.draw {
