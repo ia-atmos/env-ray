@@ -8,7 +8,9 @@
 #                      "control"; those whose port says **left** are left
 #   runs               tst/<game>/*.run: frames and screens; "yes" if every
 #                      run has its .sum, which is only stored when the port
-#                      is the same as the original
+#                      is the same as the original; "relaxed" for a game of
+#                      the table "Relaxed ports" of doc/fidelity.md (the
+#                      same up to the tag faithful)
 #
 #   tools/table.py      rewrites the table in doc/table.md
 
@@ -75,6 +77,9 @@ def runs(g):
     same = all(os.path.exists(r[:-4] + '.sum') for r in rs) and len(rs) > 0
     return len(rs), frames, shots, same
 
+fid = open(ROOT + '/doc/fidelity.md').read()
+RELAXED = set(re.findall(r'^\| ([a-z_0-9]+) \|', fid[fid.index('## Relaxed ports'):], re.M)) - {'Game'}
+
 rows = []
 for g in ORDER:
     p = port(g)
@@ -85,7 +90,7 @@ for g in ORDER:
     c, left = control(g)
     n, frames, shots, same = runs(g)
     rows.append('| %s | %d | %d | %d | %d | %s | %s | %d (%d frames, %d screens) | %s |' % (
-        g, lc, la, tc, ta, c, left, n, frames, shots, 'yes' if same else 'no'))
+        g, lc, la, tc, ta, c, left, n, frames, shots, 'relaxed' if g in RELAXED else 'yes' if same else 'no'))
 
 p = ROOT + '/doc/table.md'
 s = open(p).read()

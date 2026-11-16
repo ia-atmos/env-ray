@@ -9,7 +9,9 @@
   of frames, flags of phases, screens), and how many are left in the port.
   The list is in [state.md](state.md).
 - **Runs**: scripted runs, and whether the port is the same as the original
-  on all of their trace lines and screens ([fidelity.md](fidelity.md)).
+  on all of their trace lines and screens ([fidelity.md](fidelity.md));
+  "relaxed": the same up to the tag `faithful`, and then changed on
+  purpose, as listed in "Relaxed ports" of fidelity.md.
 - **Memory** and **CPU**: in [bench.md](bench.md), once measured.
 
 The rows are written by `tools/table.py`, from the sources, `state.md`, and
@@ -17,26 +19,26 @@ the runs: no number here is typed by hand.
 
 | Game | Lines C | Lines Atmos | Tokens C | Tokens Atmos | Control C | Control left | Runs | Same |
 |------|--------:|------------:|---------:|-------------:|----------:|-------------:|-----:|------|
-| snake | 181 | 127 | 1509 | 938 | 5 | 0 | 2 (1220 frames, 16 screens) | yes |
-| floppy | 143 | 120 | 1054 | 701 | 4 | 0 | 2 (2746 frames, 25 screens) | yes |
-| gold_fever | 178 | 165 | 1470 | 1237 | 6 | 1 | 2 (1369 frames, 27 screens) | yes |
-| arkanoid | 207 | 150 | 2005 | 1312 | 4 | 0 | 2 (22977 frames, 23 screens) | yes |
-| asteroids_survival | 241 | 182 | 2262 | 1471 | 3 | 0 | 2 (4531 frames, 22 screens) | yes |
-| space_invaders | 271 | 207 | 1903 | 1252 | 9 | 1 | 2 (5477 frames, 26 screens) | yes |
-| missile_commander | 343 | 202 | 2796 | 1615 | 10 | 4 | 2 (6812 frames, 34 screens) | yes |
-| gorilas | 351 | 183 | 2994 | 1662 | 6 | 0 | 2 (1008 frames, 44 screens) | yes |
-| asteroids | 402 | 262 | 3940 | 2176 | 7 | 1 | 2 (1249 frames, 25 screens) | yes |
-| pang | 446 | 210 | 4072 | 1791 | 8 | 2 | 2 (2998 frames, 38 screens) | yes |
-| platformer | 466 | 170 | 3277 | 1767 | 4 | 0 | 2 (1634 frames, 43 screens) | yes |
-| tetris | 577 | 341 | 4370 | 2894 | 11 | 2 | 2 (10000 frames, 26 screens) | yes |
-| raylife | 196 | 181 | 1506 | 1413 | 1 | 1 | 2 (1400 frames, 33 screens) | yes |
-| wave_collector | 679 | 421 | 4998 | 3741 | 7 | 1 | 3 (13723 frames, 46 screens) | yes |
-| repair | 672 | 385 | 5601 | 3864 | 5 | 1 | 2 (3350 frames, 45 screens) | yes |
-| cat_vs_roomba | 857 | 512 | 7312 | 5585 | 5 | 1 | 2 (13420 frames, 31 screens) | yes |
-| light_my_ritual | 901 | 494 | 7087 | 4482 | 5 | 2 | 2 (8700 frames, 34 screens) | yes |
-| transmission | 1125 | 654 | 6898 | 5595 | 6 | 3 | 2 (7036 frames, 37 screens) | yes |
-| drturtle | 293 | 222 | 2416 | 1891 | 4 | 1 | 2 (3700 frames, 17 screens) | yes |
-| just_do | 1454 | 707 | 9350 | 6548 | 5 | 4 | 2 (4801 frames, 47 screens) | yes |
-| skully_escape | 2685 | 682 | 18429 | 6161 | 6 | 3 | 3 (11514 frames, 60 screens) | yes |
-| retro_maze_3d | 497 | 433 | 4185 | 3336 | 5 | 4 | 3 (7092 frames, 58 screens) | yes |
-| koala_seasons | 4689 | 2766 | 46792 | 33111 | 8 | 6 | 8 (8854 frames, 62 screens) | yes |
+| snake | 181 | 123 | 1509 | 958 | 5 | 0 | 2 (1220 frames, 16 screens) | relaxed |
+| floppy | 143 | 119 | 1054 | 699 | 4 | 0 | 2 (2746 frames, 25 screens) | yes |
+| gold_fever | 178 | 165 | 1470 | 1238 | 6 | 1 | 2 (1369 frames, 27 screens) | yes |
+| arkanoid | 207 | 149 | 2005 | 1314 | 4 | 0 | 2 (22977 frames, 23 screens) | yes |
+| asteroids_survival | 241 | 181 | 2262 | 1477 | 3 | 0 | 2 (4531 frames, 22 screens) | yes |
+| space_invaders | 271 | 207 | 1903 | 1271 | 9 | 1 | 2 (5477 frames, 26 screens) | yes |
+| missile_commander | 343 | 204 | 2796 | 1604 | 10 | 4 | 2 (6812 frames, 34 screens) | yes |
+| gorilas | 351 | 182 | 2994 | 1662 | 6 | 0 | 2 (1008 frames, 44 screens) | yes |
+| asteroids | 402 | 261 | 3940 | 2196 | 7 | 1 | 2 (1249 frames, 25 screens) | yes |
+| pang | 446 | 209 | 4072 | 1841 | 8 | 2 | 2 (2998 frames, 38 screens) | yes |
+| platformer | 466 | 169 | 3277 | 1773 | 4 | 0 | 2 (1634 frames, 43 screens) | yes |
+| tetris | 577 | 338 | 4370 | 2884 | 11 | 2 | 2 (10000 frames, 26 screens) | yes |
+| raylife | 196 | 180 | 1506 | 1411 | 1 | 1 | 2 (1400 frames, 33 screens) | yes |
+| wave_collector | 679 | 275 | 4998 | 2249 | 7 | 1 | 3 (13723 frames, 46 screens) | yes |
+| repair | 672 | 384 | 5601 | 3916 | 5 | 1 | 2 (3350 frames, 45 screens) | yes |
+| cat_vs_roomba | 857 | 337 | 7312 | 3590 | 5 | 1 | 2 (13420 frames, 31 screens) | yes |
+| light_my_ritual | 901 | 283 | 7087 | 2450 | 5 | 2 | 2 (8700 frames, 34 screens) | yes |
+| transmission | 1125 | 653 | 6898 | 5585 | 6 | 3 | 2 (7036 frames, 37 screens) | yes |
+| drturtle | 293 | 221 | 2416 | 1886 | 4 | 1 | 2 (3700 frames, 17 screens) | yes |
+| just_do | 1454 | 706 | 9350 | 6535 | 5 | 4 | 2 (4801 frames, 47 screens) | yes |
+| skully_escape | 2685 | 403 | 18429 | 4043 | 6 | 3 | 3 (11514 frames, 60 screens) | yes |
+| retro_maze_3d | 497 | 432 | 4185 | 3331 | 5 | 4 | 3 (7092 frames, 58 screens) | yes |
+| koala_seasons | 4689 | 2765 | 46792 | 33100 | 8 | 6 | 8 (8854 frames, 62 screens) | yes |
