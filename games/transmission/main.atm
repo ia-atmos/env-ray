@@ -387,8 +387,6 @@ task Mission () {
     await false
 }
 
-pin words = []                          ;; the twelve words to place, for the ending too
-
 task Gameplay () {
     pin back     = ray.texture("resources/textures/message_background.png")
     pin vignette = ray.texture("resources/textures/message_vignette.png")
@@ -401,7 +399,7 @@ task Gameplay () {
     pin g = `:value tm_gameplay(RL_I($mission), $fmsg)`
     val atlas = g.atlas
     val n = g.count
-    vector.clear(words)
+    pin words = []                      ;; the twelve words to place
     loop i in 12 {
         val w = vector.insert(words, [rec=[x=110 + (940*(i//6)), y=200 + (60*(i%6)), w=140, h=35], hover=false, picked=false])
         set w.ini = w.rec ++ []
