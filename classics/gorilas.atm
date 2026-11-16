@@ -25,15 +25,15 @@ rl.window [title="classic game: gorilas", width=W, height=H, fps=60]
 ;; fields InitPlayers may leave as they were (a player beyond the last
 ;; building keeps its old y).
 var turn = 0
-val players = [ [x=0, y=0, left=true], [x=0, y=0, left=false] ]
+pin players = [ [x=0, y=0, left=true], [x=0, y=0, left=false] ]
 loop _,p in players {
     set p.ax, p.ay, p.px, p.py = 0, 0, 0, 0      ;; the aiming point, the previous one
     set p.power, p.angle, p.ppower, p.pangle = 0, 0, 0, 0
 }
-val ball = [x=0, y=0, sx=0, sy=0]
-var buildings  = []             ;; [x=, y=, w=, h=, gray=]
-var explosions = []             ;; the impact points
-var alive = [true, true]
+pin ball = [x=0, y=0, sx=0, sy=0]
+pin buildings  = []             ;; [x=, y=, w=, h=, gray=]
+pin explosions = []             ;; the impact points
+pin alive = [true, true]
 
 ;; The aim follows the mouse, above the player and toward the other team;
 ;; true on a click.
@@ -92,7 +92,7 @@ func fly () {
 ;; One game: turns until a team is gone.
 task Play () {
     ;; the buildings: a width, a height, and a gray, each from the left
-    set buildings = []
+    vector.clear(buildings)
     val mean = f32(f32(W/15) + 1)
     var x = 0
     loop _ in 15 {
@@ -116,7 +116,7 @@ task Play () {
         set p.ax, p.ay, p.px, p.py = p.x, p.y, p.x, p.y
         set p.power, p.angle, p.ppower, p.pangle = 0, 0, 0, 0
     }
-    set explosions = []
+    vector.clear(explosions)
 
     spawn {
         loop on :rl.draw {
