@@ -276,12 +276,12 @@ task Title () {
     }
     par :any {
         loop _ in 12 {
-            await rl.Frames(15)
+            await(15, :rl.frame)
             set tl += 1
             rl.play_sound(typing)
         }
         loop _ in 7 {
-            await rl.Frames(15)
+            await(15, :rl.frame)
             set ml += 1
             rl.play_sound(typing)
         }
@@ -535,7 +535,7 @@ task Ending () {
         }
     }
     spawn {
-        await rl.Frames(10)
+        await(10, :rl.frame)
         rl.play_sound(fxnews)
     }
     ;; it spins and grows; once whole, the button, from that same frame

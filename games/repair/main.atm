@@ -107,7 +107,7 @@ task Title () {
     spawn {
         ;; every 6 frames, one part of the player changes
         loop {
-            await rl.Frames(6)
+            await(6, :rl.frame)
             match rl.random(0, 4) {
                 0 => {
                     set C.player.head = rl.random(0, (rl.texture_width(thead)//HEAD) - 1)
@@ -221,16 +221,16 @@ task Ending () {
     }
     ;; the question mark blinks, 15 frames off and 15 on, for 200 frames
     par :any {
-        await rl.Frames(201)
+        await(201, :rl.frame)
     } with {
-        await rl.Frames(15)
+        await(15, :rl.frame)
         loop {
-            watching rl.Frames(15) {
+            watching 15, :rl.frame {
                 loop on :rl.draw {
                     rl.draw_texture(tqmark, (W//2) - (rl.texture_width(tqmark)//2), 180, rl.WHITE)
                 }
             }
-            await rl.Frames(15)
+            await(15, :rl.frame)
         }
     }
     ;; the likes of the date, before and after the re-touch

@@ -83,14 +83,14 @@ task Title () {
             set V.vs.scale = math.max(f32(V.vs.scale - f32(0.1)), 1)
             set V.vs.alpha = math.min(f32(V.vs.alpha + f32(0.01)), 1)
         }
-        await rl.Frames(30)
+        await(30, :rl.frame)
         loop {
-            watching rl.Frames(30) {
+            watching 30, :rl.frame {
                 loop on :rl.draw {
                     rl.text_ex(font2, "PRESS ENTER to START", 340, 550, FS2, 2, rl.WHITE)
                 }
             }
-            await rl.Frames(30)
+            await(30, :rl.frame)
         }
     }
     await :rl.frame until rl.key_pressed('ENTER') || rl.gesture_detected(rl.GESTURE_TAP)
@@ -119,14 +119,14 @@ task Ending () {
         }
     }
     spawn {
-        await rl.Frames(30)
+        await(30, :rl.frame)
         loop {
-            watching rl.Frames(30) {
+            watching 30, :rl.frame {
                 loop on :rl.draw {
                     rl.text_ex(font2, "PRESS ENTER to TITLE", 340, 550, FS2, 2, rl.WHITE)
                 }
             }
-            await rl.Frames(30)
+            await(30, :rl.frame)
         }
     }
     await :rl.frame until rl.key_pressed('ENTER') || rl.gesture_detected(rl.GESTURE_TAP)
@@ -294,7 +294,7 @@ task Gameplay () {
     ;; the timer: a second every 60 frames, first in each frame
     spawn {
         loop _ in 180 {
-            await rl.Frames(60)
+            await(60, :rl.frame)
             set g.time -= 1
         }
         rl.play_sound(coin)

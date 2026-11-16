@@ -512,7 +512,7 @@ task Level (n) {
         await false
     } with {
         if L.done {
-            await rl.Frames(v.again)
+            await(v.again, :rl.frame)
         } else {
             loop on :rl.frame {
                 set L.frames += 1
@@ -521,7 +521,7 @@ task Level (n) {
             }
             rl.play_sound(win)
             set L.secs = L.frames // 60
-            await rl.Frames(v.first)
+            await(v.first, :rl.frame)
         }
         await :rl.frame until pressed()
         set pub = true

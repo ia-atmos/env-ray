@@ -68,14 +68,14 @@ func credits (logo) {
 ;; A text that blinks, 40 frames on and 40 off, from frame `from` of the
 ;; screen on.
 task Blink (from, s, x, y) {
-    await rl.Frames(from)
+    await(from, :rl.frame)
     loop {
-        watching rl.Frames(40) {
+        watching 40, :rl.frame {
             loop on :rl.draw {
                 rl.text_ex(font, s, x, y, FS, 0, rl.SKYBLUE)
             }
         }
-        await rl.Frames(40)
+        await(40, :rl.frame)
     }
 }
 

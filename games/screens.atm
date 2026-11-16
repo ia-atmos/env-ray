@@ -22,16 +22,16 @@ task Logo (next, bars, written) {
     var top, left, bottom, right = 16, 16, 16, 16
     ;; the corner blinks: off in the frames 1..9, on in 10..19, and so on
     par :any {
-        await rl.Frames(80)
+        await(80, :rl.frame)
     } with {
-        await rl.Frames(10)
+        await(10, :rl.frame)
         loop {
-            watching rl.Frames(10) {
+            watching 10, :rl.frame {
                 loop on :rl.draw {
                     rl.rectangle(x, y, 16, 16, rl.BLACK)
                 }
             }
-            await rl.Frames(10)
+            await(10, :rl.frame)
         }
     }
     if bars { bars() }
@@ -65,17 +65,17 @@ task Logo (next, bars, written) {
     var letters, alpha, powered = 0, 1, false
     par :any {
         loop _ in 10 {
-            await rl.Frames(12)
+            await(12, :rl.frame)
             set letters += 1
         }
         par :any {
-            await rl.Frames(20)
+            await(20, :rl.frame)
             if written { written() }
             await :rl.frame
             set powered = true
             await false
         } with {
-            await rl.Frames(201)
+            await(201, :rl.frame)
             loop {
                 set alpha = rl.f32(alpha - rl.f32(0.02))
                 if alpha <= 0 {

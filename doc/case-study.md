@@ -48,13 +48,13 @@ loop {
     ...
     until wall || self
     emit :moved [tail=tail]
-    await rl.Frames(5)
+    await(5, :rl.frame)
 }
 ```
 
 The counter, its reset, its modulo, and the "is it the frame" question are
-gone; what is left reads as what the game does. `rl.Frames(n)` is a task of
-`raylib.atm` that awaits n frames of logic: a paused game (see 4) does not
+gone; what is left reads as what the game does. `await(n, :rl.frame)` awaits the
+nth frame of logic: a paused game (see 4) does not
 count them, with no code for it.
 
 The same holds for a blink: **drturtle** shows "PRESS ENTER" when
@@ -64,8 +64,8 @@ logic resets; the port has a task that is off 30 frames and on 30:
 ```
 task Blink (s, x, y, spacing, c) {
     loop {
-        await rl.Frames(30)
-        watching rl.Frames(30) {
+        await(30, :rl.frame)
+        watching 30, :rl.frame {
             loop on :rl.draw {
                 rl.text_ex(font, s, x, y, SIZE, spacing, c)
             }

@@ -281,7 +281,7 @@ var room_line = nil                     ;; the part of the trace of the room sho
 ;; after the last).
 task Spooky (m) {
     loop {
-        await rl.Frames(8)
+        await(8, :rl.frame)
         set m.cf += 1
         if m.cf > 3 { set m.cf = 1 }
     }
@@ -530,7 +530,7 @@ task LogoScreen () {
         set alpha = f32(alpha + f32(0.02))
         until alpha >= 1
     }
-    await rl.Frames(361 - count)        ;; until the count of the C is over 360
+    await(361 - count, :rl.frame)        ;; until the count of the C is over 360
     loop {
         await :rl.frame
         set alpha = f32(alpha - f32(0.02))
@@ -543,14 +543,14 @@ task LogoScreen () {
 
 ;; "PRESS ... " blinks after 200 frames: 40 on, 40 off.
 task Blink (s) {
-    await rl.Frames(200)
+    await(200, :rl.frame)
     loop {
-        watching rl.Frames(40) {
+        watching 40, :rl.frame {
             loop on :rl.draw {
                 rl.text(s, 380, 545, 40, rl.BLACK)
             }
         }
-        await rl.Frames(40)
+        await(40, :rl.frame)
     }
 }
 
@@ -616,7 +616,7 @@ spawn {
 spawn {
     loop {
         await :rl.frame until P.dead
-        await rl.Frames(80)
+        await(80, :rl.frame)
         set P.dead, P.lifes = false, 4
         set death = true
     }

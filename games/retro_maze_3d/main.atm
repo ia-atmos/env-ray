@@ -232,7 +232,7 @@ task Logo () {
             set y = math.min(y, (H//2) - 64)
         }
     } with {
-        await rl.Frames(301)
+        await(301, :rl.frame)
     } with {
         loop on :rl.draw {
             rl.draw_texture(tlogo, (W//2) - 64, y, rl.WHITE)
@@ -255,12 +255,12 @@ task Title () {
                     set y = math.min(y + 2, 0)
                 }
             } with {
-                await rl.Frames(141)
+                await(141, :rl.frame)
             }
             set title = 1
             await :rl.frame
         } else {
-            if title == 1 { await rl.Frames(141) }
+            if title == 1 { await(141, :rl.frame) }
         }
         if title != 2 {
             set title = 2

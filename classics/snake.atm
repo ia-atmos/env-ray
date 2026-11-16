@@ -65,7 +65,7 @@ task Logic () {
             }
             until wall || self
             emit :moved [tail=tail]
-            await rl.Frames(5)
+            await(5, :rl.frame)
         }
     } with {
         ;; the fruit: placed in the first frame, after the move, and in the

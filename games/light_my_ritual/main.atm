@@ -80,14 +80,14 @@ task Title () {
         }
     }
     spawn {
-        await rl.Frames(200)
+        await(200, :rl.frame)
         loop {
-            watching rl.Frames(40) {
+            watching 40, :rl.frame {
                 loop on :rl.draw {
                     rl.text_ex(font, "PRESS ENTER to START LIGHTING", 230, 450, FS, -2, rl.WHITE)
                 }
             }
-            await rl.Frames(40)
+            await(40, :rl.frame)
         }
     }
     loop on :rl.frame {
