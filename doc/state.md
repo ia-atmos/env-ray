@@ -129,11 +129,11 @@ Left in the port for the trace only: `phase`.
 | `shoot[].active` | control | the phase of each `Shot`: waits to be fired, then flies until it hits or leaves |
 | `activeEnemies` | data: how many enemies are in play | `#enemies`, which the waves extend |
 | `alpha` | drawn | `alpha` |
-| `score` | score | `score` |
-| `player.rec`, `enemy[].rec`, `shoot[].rec` | drawn | `player`, `enemies`, the `pub` of each `Shot` |
+| `score` | score | `g.score`, the state of the game, made in each game (`Play`) |
+| `player.rec`, `enemy[].rec`, `shoot[].rec` | drawn | `g.player`, `g.enemies`, the `pub` of each `Shot` |
 | `.speed`, `.color` | constant | literals |
 
-The port adds `fire`: the request of the gun, which the first free shot
+The port adds `g.fire`: the request of the gun, which the first free shot
 takes in the same frame. Left in the port for the trace only: `phase`.
 
 ## missile_commander

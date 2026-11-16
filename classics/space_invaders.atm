@@ -15,11 +15,6 @@ val f32    = ray.f32
 
 ray.window [title="classic game: space invaders", width=W, height=H, fps=60]
 
-pin player  = [x=0, y=0]        ;; 20x20
-pin all     = []                ;; the 50 enemies of a game, which its waves take in order
-pin enemies = []                ;; the enemies in play, in order: [x=,y=] (10x10)
-var score   = 0
-
 func overlap (a, aw, ah, b, bw, bh) {
     ray.check_collision_recs(a.x, a.y, aw, ah, b.x, b.y, bw, bh)
 }
@@ -32,11 +27,11 @@ func respawn (e) {
 ;; An enemy: joins the game with its wave; then, in each frame, ends the
 ;; game when it touches the player (who moved, and is not yet back inside
 ;; the screen), moves left, and comes back from the right.
-task Enemy (game, i, e) {
-    await :frame until #enemies > i
+task Enemy (g, game, i, e) {
+    await :frame until #g.enemies > i
     par {
         loop {
-            if overlap(player, 20, 20, e, 10, 10) {
+            if overlap(g.player, 20, 20, e, 10, 10) {
                 emit @game :over
             }
             set e.x -= 5
@@ -52,26 +47,24 @@ task Enemy (game, i, e) {
     }
 }
 
-pin S = [fire=nil]                  ;; the gun asks the first free shot, in this frame
-
 ;; A shot: a slot that waits to be fired, flies, and is free again. The
 ;; first free slot takes the request of the gun, and moves at once, in the
 ;; order of the slots, as in the C. In each frame it checks every enemy in
 ;; order, even after a hit: one shot may take more than one enemy.
-task Shot (game) {
+task Shot (g, game) {
     par {
         loop {
             set pub = nil
-            await :frame until S.fire
-            set pub = S.fire
-            set S.fire = nil
+            await :frame until g.fire
+            set pub = g.fire
+            set g.fire = nil
             loop {
                 set pub.x += 7
                 var done = (pub.x + 10) >= W
-                loop _,en in enemies {
+                loop _,en in g.enemies {
                     if overlap(pub, 10, 5, en, 10, 10) {
                         respawn(en)
-                        set score += 100
+                        set g.score += 100
                         emit @game :killed
                         set done = true
                     }
@@ -93,27 +86,26 @@ task Shot (game) {
 }
 
 ;; One game: three waves, then the last one goes on. Ends when an enemy
-;; touches the player.
+;; touches the g.player.
 ;;
 ;; The tasks are spawned in the order of the C, which here is also the order
-;; of the drawing: the waves, the player, the enemies, the player back inside
-;; the screen, the gun, the shots, the score.
+;; of the drawing: the waves, the player, the g.enemies, the player back inside
+;; the screen, the gun, the shots, the g.score.
 task Play () {
-    set player.x, player.y = 20, 50
-    vector.clear(enemies)
-    set score   = 0
-    set S.fire    = nil
-    vector.clear(all)
+    ;; its state: the player (20x20), the 50 enemies of the game, which its
+    ;; waves take in order, the enemies in play, in order ([x=,y=], 10x10),
+    ;; the score, and the shot that the gun asks of the first free slot
+    pin g = [player=[x=20, y=50], all=[], enemies=[], score=0, fire=nil]
     loop i in 50 {
         val x = ray.random(W, W + 1000)
         val y = ray.random(0, H - 10)
-        set all@i = [x=x, y=y]
+        set g.all@i = [x=x, y=y]
     }
     var title, alpha = "", 0
 
     spawn {
         loop on :draw {
-            ray.rectangle_v(player.x, player.y, 20, 20, ray.BLACK)
+            ray.rectangle_v(g.player.x, g.player.y, 20, 20, ray.BLACK)
             ray.text(title, (W//2) - (ray.measure(title,40)//2), (H//2) - 40, 40, ray.fade(ray.BLACK, alpha))
         }
     }
@@ -129,8 +121,8 @@ task Play () {
         loop _,w in [[10,"FIRST WAVE"], [20,"SECOND WAVE"], [50,"THIRD WAVE"]] {
             val n = w@0
             set title, alpha, kills = w@1, 0, 0
-            loop i in (#enemies, n-1) {
-                vector.insert(enemies, all@i)
+            loop i in (#g.enemies, n-1) {
+                vector.insert(g.enemies, g.all@i)
             }
             par :any {
                 loop on :frame {
@@ -152,23 +144,23 @@ task Play () {
     }
     spawn {
         loop on :frame {
-            if ray.key_down('RIGHT') { set player.x += 5 }
-            if ray.key_down('LEFT')  { set player.x -= 5 }
-            if ray.key_down('UP')    { set player.y -= 5 }
-            if ray.key_down('DOWN')  { set player.y += 5 }
+            if ray.key_down('RIGHT') { set g.player.x += 5 }
+            if ray.key_down('LEFT')  { set g.player.x -= 5 }
+            if ray.key_down('UP')    { set g.player.y -= 5 }
+            if ray.key_down('DOWN')  { set g.player.y += 5 }
         }
     }
     pin ens = tasks()
     loop i in 50 {
-        spawn @ens Enemy(task, i, all@i)
+        spawn @ens Enemy(g, task, i, g.all@i)
     }
     spawn {
-        ;; the player back inside the screen, after the enemies
+        ;; the player back inside the screen, after the g.enemies
         loop on :frame {
-            if player.x <= 0 { set player.x = 0 }
-            if (player.x + 20) >= W { set player.x = W - 20 }
-            if player.y <= 0 { set player.y = 0 }
-            if (player.y + 20) >= H { set player.y = H - 20 }
+            if g.player.x <= 0 { set g.player.x = 0 }
+            if (g.player.x + 20) >= W { set g.player.x = W - 20 }
+            if g.player.y <= 0 { set g.player.y = 0 }
+            if (g.player.y + 20) >= H { set g.player.y = H - 20 }
         }
     }
     spawn {
@@ -180,19 +172,19 @@ task Play () {
                     loop _ in 4 {
                         await :frame until ray.key_down('SPACE')
                     }
-                    set S.fire = [x=player.x, y=player.y + 5]
+                    set g.fire = [x=g.player.x, y=g.player.y + 5]
                 }
             }
         }
     }
     pin shots = tasks(50)
     loop _ in 50 {
-        spawn @shots Shot(task)
+        spawn @shots Shot(g, task)
     }
     spawn {
         par {
             loop on :draw {
-                ray.text(string.format("%04d", score), 20, 20, 40, ray.GRAY)
+                ray.text(string.format("%04d", g.score), 20, 20, 40, ray.GRAY)
             }
         } with {
             await :victory
@@ -202,18 +194,24 @@ task Play () {
             }
         }
     }
+    ;; [trace] of the test mode: one line per frame of a game, after its logic
+    spawn {
+        if ray.frame() > 0 {
+            loop on :draw {
+                print(string.format("%d %s %.0f %.0f %d %d", ray.frame(), phase, g.player.x, g.player.y, #g.enemies, g.score))
+            }
+        }
+    }
+    ;; [/trace]
     await :over
 }
 
-;; [trace] of the test mode: one line per frame, after its logic; the score
-;; is shown while the game is on (see doc/fidelity.md)
+;; [trace] of the test mode: the frames out of a game
 spawn {
     if ray.frame() > 0 {
         loop on :draw {
             if phase == :over {
                 print(string.format("%d %s", ray.frame(), phase))
-            } else {
-                print(string.format("%d %s %.0f %.0f %d %d", ray.frame(), phase, player.x, player.y, #enemies, score))
             }
         }
     }
