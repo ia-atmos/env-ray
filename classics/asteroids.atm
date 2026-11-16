@@ -21,9 +21,9 @@ val WX, HY  = f32(W + SHIP_H), f32(H + SHIP_H)     ;; beyond the borders
 
 rl.window [title="classic game: asteroids", width=W, height=H, fps=60]
 
-var ship = [x=0, y=0, rot=0, acc=0, cx=0, cy=0]
+pin ship = [x=0, y=0, rot=0, acc=0, cx=0, cy=0]
 var kills = 0                   ;; for the trace
-var fire = nil                  ;; the ship asks the first free shot, in this frame
+pin S = [fire=nil]                  ;; the ship asks the first free shot, in this frame
 
 ;; The collider, a circle ahead of the center, as in the C (sin and cos on
 ;; doubles, stored in floats).
@@ -68,7 +68,7 @@ task Ship () {
             collider()
             if rl.key_pressed('SPACE') {
                 val a = f32(ship.rot * DEG2RAD)
-                set fire = [x=f32(ship.x + (math.sin(a)*SHIP_H)), y=f32(ship.y - (math.cos(a)*SHIP_H)),
+                set S.fire = [x=f32(ship.x + (math.sin(a)*SHIP_H)), y=f32(ship.y - (math.cos(a)*SHIP_H)),
                             sx=f32((1.5*math.sin(a))*SPEED), sy=f32((1.5*math.cos(a))*SPEED), rot=ship.rot]
             }
         }
@@ -125,9 +125,9 @@ task Meteor (game, m, r, color) {
 task Shot () {
     loop {
         set pub = nil
-        await :rl.frame until fire
-        set pub = fire
-        set fire = nil
+        await :rl.frame until S.fire
+        set pub = S.fire
+        set S.fire = nil
         watching :hit {
             loop n in (1, 60) {
                 set pub.x = f32(pub.x + pub.sx)
@@ -145,14 +145,14 @@ task Shot () {
 ;; the shots, the meteors (big, medium, small), and the hits. Drawn in the
 ;; order of the C: the ship, the meteors, the shots, "VICTORY".
 task Play () {
-    set ship = [x=W//2, y=f32((H//2) - f32(SHIP_H/2)), rot=0, acc=0, cx=0, cy=0]
+    set ship.x, ship.y, ship.rot, ship.acc, ship.cx, ship.cy = W//2, f32((H//2) - f32(SHIP_H/2)), 0, 0, 0, 0
     collider()
-    set kills, fire = 0, nil
+    set kills, S.fire = 0, nil
 
     ;; The big meteors start out of the center. As in the C, `ok` is not
     ;; reset after the speeds, so only the first one checks its x.
     var ok = false
-    val meteor = func () {
+    pin meteor = func () {
         var x = rl.random(0, W)
         loop {
             until ok
@@ -204,7 +204,7 @@ task Play () {
     ;; after a hit, as in the C; a big one splits in two medium ones, a medium
     ;; one in two small ones, in the direction of the shot
     val game = task
-    val split = func (pool, m, rot, r) {
+    pin split = func (pool, m, rot, r) {
         loop _ in 2 {
             val a = f32(rot * DEG2RAD)
             val sign = if (#pool % 2) == 0 => -1 => 1
