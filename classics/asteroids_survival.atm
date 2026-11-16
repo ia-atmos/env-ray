@@ -20,7 +20,7 @@ val WX, HY  = f32(W + SHIP_H), f32(H + SHIP_H)     ;; beyond the borders
 
 rl.window [title="classic game: asteroids survival", width=W, height=H, fps=60]
 
-var ship = [x=0, y=0, rot=0, acc=0, cx=0, cy=0]
+pin ship = [x=0, y=0, rot=0, acc=0, cx=0, cy=0]
 var time = 0                    ;; frames survived: the score
 
 ;; The collider, a circle ahead of the center, as in the C (sin and cos on
@@ -104,14 +104,14 @@ task Meteor (game, m, r, color) {
 
 ;; One game: ends when a meteor touches the ship.
 task Play () {
-    set ship = [x=W//2, y=f32((H//2) - f32(SHIP_H/2)), rot=0, acc=0, cx=0, cy=0]
+    set ship.x, ship.y, ship.rot, ship.acc, ship.cx, ship.cy = W//2, f32((H//2) - f32(SHIP_H/2)), 0, 0, 0, 0
     collider()
     set time = 0
 
     ;; The meteors start out of the center. As in the C, `ok` is not reset
     ;; after the speeds, so only the first one checks its x.
     var ok = false
-    val meteor = func () {
+    pin meteor = func () {
         var x = rl.random(0, W)
         loop {
             until ok
