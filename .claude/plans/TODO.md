@@ -8,7 +8,7 @@ when possible.
 
 The numbers do not change. Numbers that are missing were settled.
 
-Last update: 2026-11-16.
+Last update: 2026-11-17.
 
 ## A. Decisions waiting for an answer
 
@@ -17,6 +17,7 @@ Each has the option recommended by this session.
 | # | Decision | Recommended |
 |---|----------|-------------|
 | 1 | The remotes: this repository is now `ia-atmos/env-ray`, the compiler `ia-atmos/lang` (the old addresses redirect; the names in `README.md`, `doc/compiler.md`, `tools/setup.sh` are updated). The remote of this checkout and of `ext/ceu-atmos` still name the old addresses: changing a remote is refused by the permissions of this session (auto mode) | The author allows it, or runs `git remote set-url origin https://github.com/ia-atmos/env-ray` and `git -C ext/ceu-atmos remote set-url origin https://github.com/ia-atmos/lang`. Not urgent: pushes still go through |
+| 27 | The rules of `pin` changed again (compiler `0ba7afc`, `98547d3`, 2026-11-17): a `pin` may be reassigned (`set p = [x=0, y=0]`, the old value finalized), and `val`/`var` may hold a fresh value again (with a ceiling: the block of the name). What the migration rewrote could go back: the records reset field by field (8 classics), the variables turned into fields of a holder (`S.fire`, `S.shot`, `V.vs`, `C.player`...), the reassignments dropped in tetris and drturtle, the textures made inside a table literal (skully_escape). Allowed, not required; the tests stay identical | Go back where it reads better: the records and the holders (a reassigned `pin`), in small commits with the 55 runs identical; keep `pin` for natives, tasks and pools, and keep the state made in each game (the relaxation). Waiting for the author |
 | 5 | The original of koala_seasons reads the date (`time`), so its runs are not repeatable; the test mode fixes it, by a patch of the original (`tools/original.patch`) and the same in the port | Keep it, as written in `doc/fidelity.md` |
 | 21 | Lessmilk (`ia-atmos/ray-lessmilk`) carries a patched copy of the binding (item 47 of the compiler), now `ray.atm` with the table `ray` and the events with no prefix | Merge its patch into `ray.atm` here, so it can use the file as it is |
 
