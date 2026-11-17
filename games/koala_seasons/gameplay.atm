@@ -33,7 +33,7 @@ func recs (a, b) {
     ray.check_collision_recs(a.x, a.y, a.w, a.h, b.x, b.y, b.w, b.h)
 }
 func list (n, f) {
-    pin l = []
+    val l = []
     loop i in n { set l@i = f(i) }
     l
 }

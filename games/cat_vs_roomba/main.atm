@@ -158,7 +158,7 @@ pin COLMAP = [
 
 ;; The lines "f a b c d e" of a file of furniture.
 func furniture_file (path) {
-    pin out = []
+    val out = []
     loop l in io.lines(path) {
         if string.sub(l, 0, 0) == "f" {
             pin p = string.split(l)

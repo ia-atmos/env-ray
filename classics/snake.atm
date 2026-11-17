@@ -30,7 +30,7 @@ func same (a, b) {
 ;; A fruit out of the snake: draws again while it falls on a segment.
 func place (snake) {
     loop {
-        pin p = cell()
+        val p = cell()
         val hit = loop _,s in snake {
             until same(p, s)
         }

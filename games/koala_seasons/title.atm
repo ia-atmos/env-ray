@@ -9,7 +9,7 @@ func particle (size, rot, alpha) {
     [x=0, y=0, rot=rot, size=size, alpha=alpha, phy=0, active=false, color=ray.WHITE]
 }
 func system (n) {
-    pin ps = []
+    val ps = []
     loop i in n { set ps@i = particle(0, 0, 1) }
     [active=false, spawn=0, max=0, ps=ps]
 }
@@ -17,7 +17,7 @@ func new_ray () {
     [x=0, y=0, color=0xFFFFB6FF, alpha=0, size=0, rot=0, active=false, fading=false, delay=0]
 }
 func rays (n) {
-    pin ps = []
+    val ps = []
     loop i in n { set ps@i = new_ray() }
     [active=false, spawn=0, max=0, ps=ps]
 }

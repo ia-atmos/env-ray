@@ -37,7 +37,7 @@ val BACK  = 0xf6aa60ff
 pin C = [player=[], player_base=[], dating=[], dating_base=[]]   ;; the characters, made anew in each game
 
 func generate () {
-    pin c = []
+    val c = []
     set c.head    = ray.random(0, (ray.texture_width(thead)//HEAD) - 1)
     set c.colHead = HEADS@(ray.random(0, 5))
     set c.hair    = ray.random(0, (ray.texture_width(thair)//HAIR) - 1)
