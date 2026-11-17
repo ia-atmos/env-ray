@@ -51,7 +51,7 @@ task Title () {
     pin troomba = ray.texture("resources/title_roomba.png")
     ray.play_music(music)
     var x, cx, rx = 0, 1760, -700
-    pin V = [vs=nil]                        ;; [scale=, alpha=] once both are in
+    pin var vs = nil                        ;; [scale=, alpha=] once both are in
     spawn {
         loop on :frame {
             set x = scroll(x)
@@ -62,10 +62,10 @@ task Title () {
             stripes(x)
             ray.draw_texture(tcat, cx, 80, ray.WHITE)
             ray.draw_texture(troomba, rx, 320, ray.WHITE)
-            if V.vs {
+            if vs {
                 val w, h = ray.texture_width(tvs), ray.texture_height(tvs)
-                ray.draw_texture_pro(tvs, 0, 0, w, h, W//2, 300, f32(w*V.vs.scale), f32(h*V.vs.scale),
-                    f32((w//2)*V.vs.scale), f32((h//2)*V.vs.scale), 0, ray.fade(ray.WHITE, V.vs.alpha))
+                ray.draw_texture_pro(tvs, 0, 0, w, h, W//2, 300, f32(w*vs.scale), f32(h*vs.scale),
+                    f32((w//2)*vs.scale), f32((h//2)*vs.scale), 0, ray.fade(ray.WHITE, vs.alpha))
             }
         }
     }
@@ -76,11 +76,11 @@ task Title () {
             set cx, rx = math.max(cx - 4, cend), math.min(rx + 3, rend)
             until (cx == cend) && (rx == rend)
         }
-        set V.vs = [scale=10, alpha=0]
+        set vs = [scale=10, alpha=0]
         loop _ in 161 {
             await :frame
-            set V.vs.scale = math.max(f32(V.vs.scale - f32(0.1)), 1)
-            set V.vs.alpha = math.min(f32(V.vs.alpha + f32(0.01)), 1)
+            set vs.scale = math.max(f32(vs.scale - f32(0.1)), 1)
+            set vs.alpha = math.min(f32(vs.alpha + f32(0.01)), 1)
         }
         await(30, :frame)
         loop {

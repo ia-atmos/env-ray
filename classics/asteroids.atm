@@ -22,7 +22,7 @@ ray.window [title="classic game: asteroids", width=W, height=H, fps=60]
 
 pin ship = [x=0, y=0, rot=0, acc=0, cx=0, cy=0]
 var kills = 0                   ;; for the trace
-pin S = [fire=nil]                  ;; the ship asks the first free shot, in this frame
+pin var fire = nil                  ;; the ship asks the first free shot, in this frame
 
 ;; The collider, a circle ahead of the center, as in the C (sin and cos on
 ;; doubles, stored in floats).
@@ -67,7 +67,7 @@ task Ship () {
             collider()
             if ray.key_pressed('SPACE') {
                 val a = f32(ship.rot * DEG2RAD)
-                set S.fire = [x=f32(ship.x + (math.sin(a)*SHIP_H)), y=f32(ship.y - (math.cos(a)*SHIP_H)),
+                set fire = [x=f32(ship.x + (math.sin(a)*SHIP_H)), y=f32(ship.y - (math.cos(a)*SHIP_H)),
                             sx=f32((1.5*math.sin(a))*SPEED), sy=f32((1.5*math.cos(a))*SPEED), rot=ship.rot]
             }
         }
@@ -124,9 +124,9 @@ task Meteor (game, m, r, color) {
 task Shot () {
     loop {
         set pub = nil
-        await :frame until S.fire
-        set pub = S.fire
-        set S.fire = nil
+        await :frame until fire
+        set pub = fire
+        set fire = nil
         watching :hit {
             loop n in (1, 60) {
                 set pub.x = f32(pub.x + pub.sx)
@@ -146,7 +146,7 @@ task Shot () {
 task Play () {
     set ship.x, ship.y, ship.rot, ship.acc, ship.cx, ship.cy = W//2, f32((H//2) - f32(SHIP_H/2)), 0, 0, 0, 0
     collider()
-    set kills, S.fire = 0, nil
+    set kills, fire = 0, nil
 
     ;; The big meteors start out of the center. As in the C, `ok` is not
     ;; reset after the speeds, so only the first one checks its x.
