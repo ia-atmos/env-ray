@@ -28,14 +28,15 @@ Seen and expected, as the manual says, listed for whoever writes a port:
   a constant first.
 - `await` takes a call that spawns; to await a task computed by an
   expression, spawn it first (`pin s = spawn (f(x))()`), then `await(s)`.
-- The rules of `pin` (the compiler since `98ad03a`): a dynamic value
-  (table, function, native, task, pool) is declared with `pin`; a `val`
-  or `var` only refers to a value that has an owner, and a `var` cannot
-  receive a fresh one. A record that a game resets is a `pin`, reset field
-  by field; a list is emptied with `vector.clear`; a value built for a
-  table is built in it (`set t@i = [tex=ray.texture(...)]`, then read back
-  from `t@i`). A pinned value cannot be referenced from an outer block: the
-  trace of a screen is a string that the screen writes as it draws.
+- The rules of `pin` (the compiler of `tools/setup.sh`, rules of
+  2026-11-17): a `pin` owns its value, and a `pin var` may be assigned anew
+  (the old value goes with its last reference); `val` and `var` hold a value
+  that nobody owns, which is adopted by whoever pins it. A pinned value never
+  leaves its block: what a function builds and gives back is a `val`
+  (`val out = [] ... out`), not a `pin`. A pinned value cannot be referenced
+  from an outer block: the trace of a screen is a string that the screen
+  writes as it draws. The ports keep `pin` for textures, sounds, tasks and
+  pools, and for the records of a game (`pin var player`).
 - `%` is the remainder of C (`fmod`, with the sign of the dividend), not
   the modulo of Lua; `//` floors.
 - A local declared in a task hides a parameter of the same name for the
