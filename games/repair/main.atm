@@ -34,7 +34,8 @@ pin HEADS = [0xffe29bff, 0xfed5a8ff, 0xad8962ff, 0xfff1b8ff, 0xffd6c4ff, 0xd49c8
 pin HAIRS = [0xf5bf60ff, 0xaa754aff, 0x974e14ff, 0xf36347ff, 0x87f347ff, 0xfc48d0ff, 0x3b435dff, 0x5f5e60ff, 0xe7e7e7ff, 0xfb386bff]
 val BACK  = 0xf6aa60ff
 
-pin C = [player=[], player_base=[], dating=[], dating_base=[]]   ;; the characters, made anew in each game
+;; the characters, made anew in each game
+pin var player, player_base, dating, dating_base = [], [], [], []
 
 func generate () {
     val c = []
@@ -101,7 +102,7 @@ var title_frames = 0
 task Title () {
     pin ttitle = ray.texture("resources/title.png")
     pin tlogo  = ray.texture("resources/raylib_logo.png")
-    set C.player = generate()
+    set player = generate()
     var y = -200
     spawn {
         ;; every 6 frames, one part of the player changes
@@ -109,15 +110,15 @@ task Title () {
             await(6, :frame)
             match ray.random(0, 4) {
                 0 => {
-                    set C.player.head = ray.random(0, (ray.texture_width(thead)//HEAD) - 1)
-                    set C.player.colHead = HEADS@(ray.random(0, 5))
+                    set player.head = ray.random(0, (ray.texture_width(thead)//HEAD) - 1)
+                    set player.colHead = HEADS@(ray.random(0, 5))
                 }
-                1 => { set C.player.eyes = ray.random(0, (ray.texture_width(teyes)//EYES) - 1) }
-                2 => { set C.player.nose = ray.random(0, (ray.texture_width(tnose)//NOSE) - 1) }
-                3 => { set C.player.mouth = ray.random(0, (ray.texture_width(tmouth)//MOUTH) - 1) }
+                1 => { set player.eyes = ray.random(0, (ray.texture_width(teyes)//EYES) - 1) }
+                2 => { set player.nose = ray.random(0, (ray.texture_width(tnose)//NOSE) - 1) }
+                3 => { set player.mouth = ray.random(0, (ray.texture_width(tmouth)//MOUTH) - 1) }
                 4 => {
-                    set C.player.hair = ray.random(0, (ray.texture_width(thair)//HAIR) - 1)
-                    set C.player.colHair = HAIRS@(ray.random(0, 9))
+                    set player.hair = ray.random(0, (ray.texture_width(thair)//HAIR) - 1)
+                    set player.colHair = HAIRS@(ray.random(0, 9))
                 }
             }
         }
@@ -133,7 +134,7 @@ task Title () {
     }
     loop on :draw {
         ray.draw_texture(background, 0, 0, BACK)
-        draw_character(C.player, (W//2) - 125, 80)
+        draw_character(player, (W//2) - 125, 80)
         ray.draw_texture(ttitle, (W//2) - (ray.texture_width(ttitle)//2), y, ray.WHITE)
         if title_frames > 180 {
             if button((W//2) - (440//2), 580, 440, 80, "START DATE!", -1) {
@@ -159,14 +160,14 @@ task Once (y, text, act) {
 task Gameplay () {
     pin target = ray.render_texture(720, 720)
     ray.texture_filter(target, ray.FILTER_BILINEAR)
-    set C.player_base = C.player ++ []
-    set C.dating = generate()
-    set C.dating_base = C.dating ++ []
+    set player_base = player ++ []
+    set dating = generate()
+    set dating_base = dating ++ []
     spawn {
         loop on :frame {
             if ray.key_pressed('SPACE') {
-                set C.player = generate()
-                set C.player_base = C.player ++ []
+                set player = generate()
+                set player_base = player ++ []
             }
             if ray.key_pressed('ENTER') {
                 set pub = :ending
@@ -180,18 +181,18 @@ task Gameplay () {
             button(20, 40, 300, 60, "RE-TOUCH:", 2)
         }
     }
-    spawn Once(40 + 90,  "HAIR TINT", \{ set C.player.colHair = HAIRS@(ray.random(0, 9)) })
-    spawn Once(40 + 180, "HAIR",      \{ set C.player.hair = ray.random(0, ray.texture_width(thair)//HAIR) })
-    spawn Once(40 + 270, "EYES",      \{ set C.player.eyes = ray.random(0, (ray.texture_width(teyes)//EYES) - 1) })
-    spawn Once(40 + 360, "NOSE",      \{ set C.player.nose = ray.random(0, (ray.texture_width(tnose)//NOSE) - 1) })
-    spawn Once(40 + 450, "LIPS",      \{ set C.player.mouth = ray.random(0, (ray.texture_width(tmouth)//MOUTH) - 1) })
+    spawn Once(40 + 90,  "HAIR TINT", \{ set player.colHair = HAIRS@(ray.random(0, 9)) })
+    spawn Once(40 + 180, "HAIR",      \{ set player.hair = ray.random(0, ray.texture_width(thair)//HAIR) })
+    spawn Once(40 + 270, "EYES",      \{ set player.eyes = ray.random(0, (ray.texture_width(teyes)//EYES) - 1) })
+    spawn Once(40 + 360, "NOSE",      \{ set player.nose = ray.random(0, (ray.texture_width(tnose)//NOSE) - 1) })
+    spawn Once(40 + 450, "LIPS",      \{ set player.mouth = ray.random(0, (ray.texture_width(tmouth)//MOUTH) - 1) })
     loop on :draw {
         button(20, 40 + 540, 300, 80, "GLASSES", 3)
-        draw_character(C.player, (W//2) - 125, 80)
+        draw_character(player, (W//2) - 125, 80)
         button(970, 40, 260, 60, "DATING:", 2)
         button(970, 40 + 70, 260, 260, " ", 0)
         ray.begin_texture_mode(target)
-        draw_character(C.dating, (720 - 250)//2, (720 - 500)//2)
+        draw_character(dating, (720 - 250)//2, (720 - 500)//2)
         ray.end_texture_mode()
         ray.draw_texture_pro(target, 0, 0, 720, -720, 970, 40 + 70, 260, 260, 0, 0, 0, ray.WHITE)
         if button(970, 580, 260, 90, "GO DATE!", -1) {
@@ -205,7 +206,7 @@ var match_value = 0             ;; (for the trace)
 task Ending () {
     pin tqmark = ray.texture("resources/qmark.png")
     pin tmatch = ray.texture("resources/match.png")
-    customize(C.dating)
+    customize(dating)
     spawn {
         await :key.dn [name='ENTER']
         set pub = :title
@@ -214,8 +215,8 @@ task Ending () {
     spawn {
         loop on :draw {
             ray.draw_texture(background, 0, 0, BACK)
-            draw_character(C.player, 180, 40)
-            draw_character(C.dating, 820, 40)
+            draw_character(player, 180, 40)
+            draw_character(dating, 820, 40)
         }
     }
     ;; the question mark blinks, 15 frames off and 15 on, for 200 frames
@@ -235,16 +236,16 @@ task Ending () {
     ;; the likes of the date, before and after the re-touch
     pin like = func (part) {
         ifs {
-            part@0 == C.dating@(part@1)      => ray.random(70, 100)
-            part@0 == C.dating_base@(part@1) => ray.random(0, 30)
+            part@0 == dating@(part@1)      => ray.random(70, 100)
+            part@0 == dating_base@(part@1) => ray.random(0, 30)
             else                           => ray.random(0, 100)
         }
     }
     pin parts = [:hair, :colHair, :eyes, :nose, :mouth]
     pin LABELS = ["HAIR:", "TINT:", "EYES:", "NOSE:", "LIPS:"]
     pin base, likes = [], []
-    loop _,k in parts { set base@k = like([C.player_base@k, k]) }
-    loop _,k in parts { set likes@k = like([C.player@k, k]) }
+    loop _,k in parts { set base@k = like([player_base@k, k]) }
+    loop _,k in parts { set likes@k = like([player@k, k]) }
     set match_value = 0
     loop _,k in parts { set match_value += likes@k }
     val m = match_value
@@ -261,7 +262,7 @@ task Ending () {
         }
         loop i,k in parts {
             val y = 550 + (30*i)
-            if C.player@k != C.player_base@k {
+            if player@k != player_base@k {
                 ray.text_ex(font, "after re-touch:", ((80 + 80) + 400) + 20, y, FS//2, 1, ray.WHITE)
                 ray.rectangle((((80 + 80) + 400) + 100) + 90, y + 6, 400, FS//4, ray.GRAY)
                 ray.rectangle((((80 + 80) + 400) + 100) + 90, y + 6, (likes@k)*4, FS//4, ray.RED)
@@ -287,7 +288,7 @@ spawn {
             if c.colHead => string.format("%d %d %d %d %d %d %d", c.head, c.colHead, c.hair, c.colHair, c.eyes, c.nose, c.mouth) => "-"
         }
         loop on :draw {
-            print(string.format("%d %s %s %d", ray.frame(), f(C.player), f(C.dating), match_value))
+            print(string.format("%d %s %s %d", ray.frame(), f(player), f(dating), match_value))
         }
     }
 }
