@@ -20,6 +20,8 @@ Each has the option recommended by this session.
 | 5 | The original of koala_seasons reads the date (`time`), so its runs are not repeatable; the test mode fixes it, by a patch of the original (`tools/original.patch`) and the same in the port | Keep it, as written in `doc/fidelity.md` |
 | 21 | Lessmilk (`ia-atmos/ray-lessmilk`) carries a patched copy of the binding (item 47 of the compiler), now `ray.atm` with the table `ray` and the events with no prefix | Merge its patch into `ray.atm` here, so it can use the file as it is |
 
+| 28 | The events of the keys and of the mouse across the environments (item 46 of the compiler, session `envs`): `[key=262, name='RIGHT']` here against pico's `key` as the name and `code` the number; `:mouse.dn` against `:mouse.button.dn`, `:mouse.motion` | Do not rename until the author decides; the session `envs` will say. Decided (2026-11-17, "Mantém frame"): every environment with frames emits `:frame` once per frame for the logic, before `:draw`, and `:clock` is time only. `ray.atm` already does it (one `:frame`, then `:draw` between BeginDrawing and EndDrawing; checked by `tst/env`) |
+
 ## B. Work known and not done
 
 | # | Work | Note |
