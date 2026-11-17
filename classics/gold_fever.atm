@@ -14,10 +14,10 @@ val W, H = 800, 450
 
 ray.window [title="classic game: gold fever", width=W, height=H, fps=60]
 
-pin player = [x=0, y=0]
-pin enemy  = [x=0, y=0, speed=0]
-pin gold   = [x=0, y=0]
-pin home   = [x=0, y=0]
+pin var player = [x=0, y=0]
+pin var enemy  = [x=0, y=0, speed=0]
+pin var gold   = [x=0, y=0]
+pin var home   = [x=0, y=0]
 var score  = 0
 var hiscore = 0
 
@@ -25,16 +25,15 @@ var hiscore = 0
 func place_gold () {
     val x = ray.random(10, W - 10)
     val y = ray.random(10, H - 10)
-    set gold.x, gold.y = x, y
+    [x=x, y=y]
 }
 
 ;; One game. Ends when the enemy catches the player out of the home.
 task Play () {
-    set player.x, player.y = 50, 50
-    set enemy.x, enemy.y, enemy.speed = W-50, H//2, 3
-    place_gold()
-    val hx = ray.random(0, W-50)
-    set home.x, home.y = hx, ray.random(0, H-50)
+    set player = [x=50, y=50]
+    set enemy  = [x=W-50, y=H//2, speed=3]
+    set gold   = place_gold()
+    set home   = [x=ray.random(0, W-50), y=ray.random(0, H-50)]
     set score  = 0
     var safe   = false          ;; the player was in the home at the end of the last frame
 
@@ -135,7 +134,7 @@ task Play () {
             await :touch.home
             set score += 100
             set enemy.speed += 0.5
-            place_gold()
+            set gold = place_gold()
             emit :stored
         }
     }
