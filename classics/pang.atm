@@ -20,7 +20,7 @@ val GRAVITY = f32(0.25)
 
 ray.window [title="classic game: pang", width=W, height=H, fps=60]
 
-pin player = [x=0, y=0]
+pin var player = [x=0, y=0]
 pin var shot = nil                ;; [x=, y=, lx=, ly=]: the shot and where it was fired
 var score, destroyed = 0, 0
 var phase  = :play              ;; :play, :pause, :won, or :over (for the trace)
@@ -156,7 +156,7 @@ task Logic (game, bigs, mediums, smalls) {
 ;; One game: its logic, its looks, its pause; after a victory, the game
 ;; stays drawn with "YOU WIN!" until ENTER.
 task Play () {
-    set player.x, player.y = W//2, H
+    set player = [x=W//2, y=H]
     set shot, score, destroyed = nil, 0, 0
     loop _,p in popups {
         set p.x, p.y, p.value, p.alpha = 0, 0, 0, 0
