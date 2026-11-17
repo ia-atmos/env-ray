@@ -57,7 +57,7 @@ val GRAVITY = f32(f32(f32(0.363281)*60)*60)
 val IMPULSE = f32(f32(-6.5625)*60)
 val RELEASE = f32(IMPULSE*f32(0.2))
 
-pin player = [x=0, y=0, vx=0, vy=0, hsp=0, vsp=0]
+pin var player = [x=0, y=0, vx=0, vy=0, hsp=0, vsp=0]
 var jump   = false              ;; the button, latched until released or used (never reset, as the C)
 var score  = 0
 
@@ -165,7 +165,7 @@ task Coin (x, y) {
 
 ;; One game: ends with ENTER, once the coins are taken.
 task Play () {
-    set player.x, player.y, player.vx, player.vy, player.hsp, player.vsp = f32((TILE*MW)*0.5), ((MH*TILE) - 16) - 1, 0, 0, 0, 0
+    set player = [x=f32((TILE*MW)*0.5), y=((MH*TILE) - 16) - 1, vx=0, vy=0, hsp=0, vsp=0]
     set score = 0
     spawn {
         loop on :draw {
