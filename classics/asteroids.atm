@@ -20,7 +20,7 @@ val WX, HY  = f32(W + SHIP_H), f32(H + SHIP_H)     ;; beyond the borders
 
 ray.window [title="classic game: asteroids", width=W, height=H, fps=60]
 
-pin ship = [x=0, y=0, rot=0, acc=0, cx=0, cy=0]
+pin var ship = [x=0, y=0, rot=0, acc=0, cx=0, cy=0]
 var kills = 0                   ;; for the trace
 pin var fire = nil                  ;; the ship asks the first free shot, in this frame
 
@@ -144,7 +144,7 @@ task Shot () {
 ;; the shots, the meteors (big, medium, small), and the hits. Drawn in the
 ;; order of the C: the ship, the meteors, the shots, "VICTORY".
 task Play () {
-    set ship.x, ship.y, ship.rot, ship.acc, ship.cx, ship.cy = W//2, f32((H//2) - f32(SHIP_H/2)), 0, 0, 0, 0
+    set ship = [x=W//2, y=f32((H//2) - f32(SHIP_H/2)), rot=0, acc=0, cx=0, cy=0]
     collider()
     set kills, fire = 0, nil
 
