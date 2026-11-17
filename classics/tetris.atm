@@ -21,9 +21,9 @@ ray.window [title="classic game: tetris", width=W, height=H, fps=60]
 ;; The grid and the pieces, as in the C: grid[i][j] is at i*GH + j, so that
 ;; a read past the bottom of a column reads the top of the next one, as the
 ;; C does when it turns a piece at the bottom.
-pin grid     = []
-pin piece    = []               ;; 4x4: piece[i][j] at i*4 + j
-pin incoming = []
+pin var grid     = []
+pin var piece    = []           ;; 4x4: piece[i][j] at i*4 + j
+pin var incoming = []
 var px, py   = 0, 0
 var lines    = 0
 var fading   = ray.GRAY
@@ -35,6 +35,7 @@ func setg (i, j, v) { set grid@((i*GH) + j) = v }
 
 func random_piece () {
     val r = ray.random(0, 6)
+    set incoming = []
     loop k in 16 { set incoming@k = EMPTY }
     pin cells = match r {
         0 => [[1,1],[2,1],[1,2],[2,2]]
@@ -52,7 +53,7 @@ func random_piece () {
 
 func create () {
     set px, py = (GW - 4) // 2, 0
-    loop k in 16 { set piece@k = incoming@k }
+    set piece = incoming ++ []
     random_piece()
     loop i in (px, px + 3) {
         loop j in 4 {
@@ -215,7 +216,7 @@ func turn () {
 ;; One game: piece after piece, until a landed piece reaches the two top
 ;; rows.
 task Play () {
-    set lines, fading, active, fast = 0, ray.GRAY, false, 0
+    set grid, lines, fading, active, fast = [], 0, ray.GRAY, false, 0
     set px, py = 0, 0
     loop i in GW {
         loop j in GH {
