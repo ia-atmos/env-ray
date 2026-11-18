@@ -202,10 +202,10 @@ task Play () {
         await(logic)
     } with {
         loop {
-            await :key.dn [name='P']
+            await :key.dn [key='P']
             toggle logic(false)
             set phase = :pause
-            watching :key.dn [name='P'] {
+            watching :key.dn [key='P'] {
                 val s = "GAME PAUSED"
                 loop on :draw {
                     ray.text(s, (W//2) - (ray.measure(s,40)//2), (H//2) - 40, 40, ray.LIGHTGRAY)
@@ -217,7 +217,7 @@ task Play () {
     }
     if r == :won {
         set phase = :won
-        watching :key.dn [name='ENTER'] {
+        watching :key.dn [key='ENTER'] {
             val s1 = "YOU WIN!"
             val s2 = "PRESS [ENTER] TO PLAY AGAIN"
             loop on :draw {
@@ -256,7 +256,7 @@ loop {
     val r = await Play()
     if r == :over {
         set phase = :over
-        watching :key.dn [name='ENTER'] {
+        watching :key.dn [key='ENTER'] {
             val s = "PRESS [ENTER] TO PLAY AGAIN"
             loop on :draw {
                 ray.text(s, (ray.width()//2) - (ray.measure(s,20)//2), (ray.height()//2) - 50, 20, ray.LIGHTGRAY)

@@ -262,12 +262,12 @@ task Gameplay () {
     ;; the pause: P stops the logic; "WAVE PAUSED" while it lasts
     spawn {
         loop {
-            await :key.dn [name='P']
+            await :key.dn [key='P']
             ray.play_sound(spause)
             ray.pause_music(music)
             toggle logic(false)
             set g.paused = true
-            watching :key.dn [name='P'] {
+            watching :key.dn [key='P'] {
                 loop on :draw {
                     ray.text_ex(font, "WAVE PAUSED", 235, 400, FS*2, 0, ray.WHITE)
                 }

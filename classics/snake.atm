@@ -73,14 +73,14 @@ task Logic (g) {
         ;; the turns: at most one per step, never back
         loop {
             await :moved
-            val e = await :key.dn until (match it.name {
+            val e = await :key.dn until (match it.key {
                 'RIGHT' => g.speed.x == 0
                 'LEFT'  => g.speed.x == 0
                 'UP'    => g.speed.y == 0
                 'DOWN'  => g.speed.y == 0
                 else    => false
             })
-            set g.speed = match e.name {
+            set g.speed = match e.key {
                 'RIGHT' => [x= SQUARE, y=0]
                 'LEFT'  => [x=-SQUARE, y=0]
                 'UP'    => [x=0, y=-SQUARE]

@@ -25,10 +25,10 @@ task Classic (Play) {
             pin play = spawn Play()
             spawn {
                 loop {
-                    await :key.dn [name='P']
+                    await :key.dn [key='P']
                     toggle play(false) with :draw
                     set phase = :pause
-                    watching :key.dn [name='P'] {
+                    watching :key.dn [key='P'] {
                         val s = "GAME PAUSED"
                         loop on :draw {
                             ray.text(s, (ray.width()//2) - (ray.measure(s,40)//2), (ray.height()//2) - 40, 40, ray.GRAY)
@@ -41,7 +41,7 @@ task Classic (Play) {
             await(play)
         }
         set phase = :over
-        watching :key.dn [name='ENTER'] {
+        watching :key.dn [key='ENTER'] {
             val s = "PRESS [ENTER] TO PLAY AGAIN"
             loop on :draw {
                 ray.text(s, (ray.width()//2) - (ray.measure(s,20)//2), (ray.height()//2) - 50, 20, ray.GRAY)

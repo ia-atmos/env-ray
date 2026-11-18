@@ -93,14 +93,14 @@ In the port, the turns are a loop: after a move, one valid key.
 ```
 loop {
     await :moved
-    val e = await :key.dn until (match it.name {
+    val e = await :key.dn until (match it.key {
         'RIGHT' => speed.x == 0
         'LEFT'  => speed.x == 0
         'UP'    => speed.y == 0
         'DOWN'  => speed.y == 0
         else    => false
     })
-    set speed = match e.name { ... }
+    set speed = match e.key { ... }
 }
 ```
 
@@ -202,9 +202,9 @@ loop {
         pin play = spawn Play()
         spawn {
             loop {
-                await :key.dn [name='P']
+                await :key.dn [key='P']
                 toggle play(false) with :draw
-                watching :key.dn [name='P'] {
+                watching :key.dn [key='P'] {
                     ... "GAME PAUSED" ...
                 }
                 toggle play(true)
@@ -212,7 +212,7 @@ loop {
         }
         await(play)
     }
-    watching :key.dn [name='ENTER'] {
+    watching :key.dn [key='ENTER'] {
         ... "PRESS [ENTER] TO PLAY AGAIN" ...
     }
     await :frame         ;; the frame of ENTER only starts the next game

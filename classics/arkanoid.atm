@@ -48,7 +48,7 @@ task Player () {
 task Ball () {
     par :any {
         loop {
-            watching :key.dn [name='SPACE'] {
+            watching :key.dn [key='SPACE'] {
                 loop on :frame {
                     set ball.x, ball.y = player.x, (player.y - 10) - R
                 }

@@ -199,7 +199,7 @@ task Play () {
             ray.text(s, (ray.width()//2) - (ray.measure(s,20)//2), (ray.height()//2) - 50, 20, ray.GRAY)
         }
     }
-    await :key.dn [name='ENTER']
+    await :key.dn [key='ENTER']
     await :frame         ;; the player still moves in the frame of ENTER
 }
 

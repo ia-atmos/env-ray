@@ -208,7 +208,7 @@ task Ending () {
     pin tmatch = ray.texture("resources/match.png")
     customize(dating)
     spawn {
-        await :key.dn [name='ENTER']
+        await :key.dn [key='ENTER']
         set pub = :title
         ray.play_sound(coin)
     }

@@ -281,10 +281,10 @@ task Gameplay () {
     var paused = false
     spawn {
         loop {
-            await :key.dn [name='P']
+            await :key.dn [key='P']
             set paused = true
             toggle play(false)
-            await :key.dn [name='P']
+            await :key.dn [key='P']
             set paused = false
             toggle play(true)
         }
