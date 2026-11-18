@@ -8,6 +8,8 @@ when possible.
 
 The numbers do not change. Numbers that are missing were settled.
 
+Sessions (by the name of their repository): this one is `env-ray`; the compiler is `atmos-lang` (session_011eECogKVQ7ZzmWCoMST2wK); everything about `pin` goes to `atmos-pin` (session_011eECogSDhkVfyt7qme5DLh); the events across environments, `envs` (session_011eECofYWTNPACTtUjHN4p6); Lessmilk is `ray-lessmilk` (session_011eECohyasjWkvCHdxGxJ6D).
+
 Last update: 2026-11-17.
 
 ## A. Decisions waiting for an answer
