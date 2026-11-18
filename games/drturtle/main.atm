@@ -106,8 +106,8 @@ task Title () {
 ;; A game, from the frame of ENTER to the frame of the death.
 task Gameplay () {
     set gameraMode = false
-    set game.enemies = []
-    val es = game.enemies
+    val es = []
+    set game.enemies = es
     loop i in N {
         val p = ray.random(0, 100)
         set es@i = []
