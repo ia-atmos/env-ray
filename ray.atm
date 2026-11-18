@@ -11,14 +11,15 @@
 ;; The program opens the window with `ray.window [...]` and then runs inside the
 ;; loop of raylib, which emits, once per frame and in this order:
 ;;
-;;      :key.dn [key=262, name='RIGHT']  a key was pressed
-;;      :key.up [key=262, name='RIGHT']  a key was released
-;;      :mouse.dn [button=0, x=, y=]     a mouse button was pressed
-;;      :mouse.up [button=0, x=, y=]     a mouse button was released
+;;      :key.dn [key='RIGHT', code=262]  a key was pressed
+;;      :key.up [key='RIGHT', code=262]  a key was released
+;;      :mouse.button.dn [button=0, x=, y=]  a mouse button was pressed
+;;      :mouse.button.up [button=0, x=, y=]  a mouse button was released
 ;;      :wheel [dy=1]                    the mouse wheel moved
 ;;      <number>                            the time passed, in microseconds,
 ;;                                          so that `await 1s` works as usual
-;;      :frame                           one frame of logic
+;;      :frame [n=, us=]                 one frame of logic: n from 1, us
+;;                                          the microseconds since the last frame
 ;;      :draw                            one frame of drawing, between
 ;;                                          BeginDrawing and EndDrawing
 ;;      :quit                            the window closes (ESC, or the end
@@ -289,11 +290,11 @@ static AStatus rl_emit (const char* tag, AVal evt) {
 
 static AStatus rl_emit_key (const char* tag, int key) {
     AVal e = a_tab();
-    rl_set(e, "key", a_int(key));
     const char* name = rl_key_name(key);
     if (name != NULL) {
-        rl_set(e, "name", a_strz(name));
+        rl_set(e, "key", a_strz(name));
     }
+    rl_set(e, "code", a_int(key));
     return rl_emit(tag, e);
 }
 
@@ -306,12 +307,12 @@ static AStatus rl_emit_mouse (const char* tag, int button) {
     return rl_emit(tag, e);
 }
 
-// The tags of the events that the driver emits, all in one place (they
-// are to lose their prefix, see .claude/plans/TODO.md)
-static const char* RL_EV_KEY_DN   = "key.dn";      // [key=, name=]
-static const char* RL_EV_KEY_UP   = "key.up";      // [key=, name=]
-static const char* RL_EV_MOUSE_DN = "mouse.dn";    // [button=, x=, y=]
-static const char* RL_EV_MOUSE_UP = "mouse.up";    // [button=, x=, y=]
+// The tags of the events that the driver emits, all in one place: the
+// vocabulary of all environments (pico, sdl)
+static const char* RL_EV_KEY_DN   = "key.dn";            // [key=name, code=]
+static const char* RL_EV_KEY_UP   = "key.up";            // [key=name, code=]
+static const char* RL_EV_MOUSE_DN = "mouse.button.dn";   // [button=, x=, y=]
+static const char* RL_EV_MOUSE_UP = "mouse.button.up";   // [button=, x=, y=]
 static const char* RL_EV_WHEEL    = "wheel";
 static const char* RL_EV_QUIT     = "quit";
 static const char* RL_EV_FRAME    = "frame";
@@ -359,6 +360,7 @@ int main (int argc, char** argv) {
     }
 
     int64_t prv = llround(GetTime() * 1e6);
+    int64_t frames = 0;
     while (st==A_OK && atm_alive()) {
         if (WindowShouldClose()) {
             st = rl_emit(RL_EV_QUIT, a_nil());
@@ -369,9 +371,13 @@ int main (int argc, char** argv) {
         if (st==A_OK && now>prv) {
             st = atm_emit(a_int(now - prv));
         }
+        int64_t us = now - prv;
         prv = now;
         if (st == A_OK) {
-            st = rl_emit(RL_EV_FRAME, a_nil());
+            AVal e = a_tab();
+            rl_set(e, "n", a_int(++frames));
+            rl_set(e, "us", a_int(us));
+            st = rl_emit(RL_EV_FRAME, e);
         }
         BeginDrawing();
         if (st == A_OK) {
