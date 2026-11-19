@@ -181,7 +181,7 @@ func dirt (old) {
     }
 }
 
-var game_line = nil                     ;; the part of the trace of the game (a string)
+var game = nil                          ;; the game shown, for the trace (set :out)
 
 task Gameplay () {
     pin troomba = ray.texture("resources/roomba.png")
@@ -221,15 +221,7 @@ task Gameplay () {
     }
     set result = 0
     pin g = [time=180, rx=100, ry=100, cx=(30*TILE) + OX, cy=TILE + OY, mx=-1, my=-1]
-    defer {
-        set game_line = nil
-    }
-    ;; [trace]: the part of the game, as it is drawn (the trace prints after it)
-    spawn {
-        loop on :draw {
-            set game_line = string.format(" %d %.4f %.4f %.4f %.4f", g.time, g.rx, g.ry, g.cx, g.cy)
-        }
-    }
+    set :out game = g                   ;; [trace]: nil again when the game ends
 
     pin percent = func () {
         var total, left = 0, 0
@@ -421,8 +413,8 @@ pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay, en
 spawn {
     if ray.frame() > 0 {
         loop on :draw {
-            if game_line {
-                print(string.format("%d %d %d", ray.frame(), score, result) ++ game_line)
+            if game {
+                print(string.format("%d %d %d %d %.4f %.4f %.4f %.4f", ray.frame(), score, result, game.time, game.rx, game.ry, game.cx, game.cy))
             } else {
                 print(string.format("%d %d %d", ray.frame(), score, result))
             }

@@ -274,7 +274,7 @@ loop _,spec in ROOMS {
 }
 
 var death = false                       ;; the death asks the title
-var room_line = nil                     ;; the part of the trace of the room shown (a string)
+var game = nil                          ;; the room shown, for the trace (set :out)
 
 ;; A monster found: if it scares, it moves: a frame every 8 (back to frame 1
 ;; after the last).
@@ -305,26 +305,8 @@ task Room (name) {
         val tex = (ms@i).tex
         set (ms@i).fw, (ms@i).fh = ray.texture_width(tex) // 4, ray.texture_height(tex)
     }
-    defer {
-        set room_line = nil
-    }
-    ;; [trace]: the part of the room, as it is drawn (the trace prints after it)
-    spawn {
-        loop on :draw {
-            var s = string.format(" %d %d %d %d %d %d %d", R.phase, R.mc, R.letters, R.frames,
-                b(spec.searching), R.check, b(R.hover))
-            loop _,d in ds {
-                set s = s ++ string.format(" D%d%d", b(d.locked), b(d.selected))
-            }
-            loop _,m in ms {
-                set s = s ++ string.format(" M%d%d%d", b(m.active), b(m.selected), m.cf)
-            }
-            if spec.scroll {
-                set s = s ++ string.format(" %d", R.scroll)
-            }
-            set room_line = s
-        }
-    }
+    pin shown = [spec=spec, R=R, ds=ds, ms=ms]
+    set :out game = shown               ;; [trace]: nil again when the room ends
     pin animations = tasks()
 
     ;; the room, in the order of the C, but the message
@@ -651,8 +633,19 @@ spawn {
             if sc.name == :ending {
                 set s = s ++ string.format(" %.4f", ending_alpha)
             }
-            if room_line {
-                set s = s ++ room_line
+            if game {
+                val R = game.R
+                set s = s ++ string.format(" %d %d %d %d %d %d %d", R.phase, R.mc, R.letters, R.frames,
+                    b(game.spec.searching), R.check, b(R.hover))
+                loop _,d in game.ds {
+                    set s = s ++ string.format(" D%d%d", b(d.locked), b(d.selected))
+                }
+                loop _,m in game.ms {
+                    set s = s ++ string.format(" M%d%d%d", b(m.active), b(m.selected), m.cf)
+                }
+                if game.spec.scroll {
+                    set s = s ++ string.format(" %d", R.scroll)
+                }
             }
             print(s)
         }

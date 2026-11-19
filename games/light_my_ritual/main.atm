@@ -99,7 +99,7 @@ task Title () {
     await false
 }
 
-var game_line = nil                          ;; for the trace
+var game = nil                          ;; the game shown, for the trace (set :out)
 
 ;; per level, the speed (in tenths) and the delay to awake of an enemy
 pin ENEMY = [[15,20,90,400], [10,20,240,800], [8,18,180,1200]]
@@ -166,16 +166,8 @@ task Gameplay () {
     var stopped = false
     pin tmusic = ray.music("resources/audio/ritual.ogg")
     ray.play_music(tmusic)
-    var shown = level                   ;; the level of the trace, as the C prints it
-    defer {
-        set game_line = nil
-    }
-    ;; [trace]: the part of the game, as it is drawn (the trace prints after it)
-    spawn {
-        loop on :draw {
-            set game_line = string.format(" %d %d %.6f %d", p.x, p.y, energy, shown)
-        }
-    }
+    pin shown = [p=p, level=level]      ;; [trace]: the level as the C prints it
+    set :out game = shown               ;; nil again when the game ends
 
     ;; the game, until the lights are lit or the time is over
     pin play = spawn {
@@ -268,7 +260,7 @@ task Gameplay () {
             if level != prev {
                 loop _,e in enemies { reset(e) }
             }
-            set shown = level
+            set shown.level = level
             set ritual_time = f32(frames / f32(60))
             if f32(99 - ritual_time) <= 0 {
                 set ritual_time = 99
@@ -401,8 +393,8 @@ pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay], :
 spawn {
     if ray.frame() > 0 {
         loop on :draw {
-            if game_line {
-                print(string.format("%d", ray.frame()) ++ game_line)
+            if game {
+                print(string.format("%d %d %d %.6f %d", ray.frame(), game.p.x, game.p.y, energy, game.level))
             } else {
                 print(string.format("%d", ray.frame()))
             }

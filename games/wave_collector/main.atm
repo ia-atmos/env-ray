@@ -139,7 +139,7 @@ task Ending () {
     await false
 }
 
-var game_line = nil             ;; the part of the trace of the gameplay (a string)
+var game = nil                  ;; the gameplay shown, for the trace (set :out)
 
 task Gameplay () {
     pin back   = ray.texture("resources/textures/background_gameplay.png")
@@ -160,15 +160,7 @@ task Gameplay () {
         warp = 395, synchro = f32(0.2), combo = 0, max = 0,
         collected = 0, current = 0, speed = 7, paused = false,
     ]
-    defer {
-        set game_line = nil
-    }
-    ;; [trace]: the part of the gameplay, as it is drawn (the trace prints after it)
-    spawn {
-        loop on :draw {
-            set game_line = string.format(" %.4f %d %d %d %.6f %.4f %d", g.y, g.collected, g.combo, g.current, g.synchro, g.speed, g.warp)
-        }
-    }
+    set :out game = g                   ;; [trace]: nil again when the gameplay ends
     val gx = g.x
     pin samples = `:value wc_samples(RL_F($gx), GetScreenHeight())`
     val total = #samples
@@ -332,8 +324,9 @@ pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay, en
 spawn {
     if ray.frame() > 0 {
         loop on :draw {
-            if game_line {
-                print(string.format("%d %d", ray.frame(), ending) ++ game_line)
+            if game {
+                print(string.format("%d %d %.4f %d %d %d %.6f %.4f %d", ray.frame(), ending, game.y, game.collected,
+                    game.combo, game.current, game.synchro, game.speed, game.warp))
             } else {
                 print(string.format("%d %d", ray.frame(), ending))
             }
