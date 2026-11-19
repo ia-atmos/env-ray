@@ -346,9 +346,10 @@ score.
 
 ## tetris
 
-Same as the original on its runs `play` (6000 frames, 15 screens: random
-taps and holds of the arrows, a pause, game overs and restarts) and `seed2`
-(4000 frames, 11 screens).
+Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, and
+still identical on its runs `play` (6000 frames, 15 screens: random taps and
+holds of the arrows, a pause, game overs and restarts) and `seed2` (4000
+frames, 11 screens), where no line is ever full.
 
 Trace: frame, phase, position of the piece, lines, full and moving cells.
 
@@ -358,8 +359,10 @@ Trace: frame, phase, position of the piece, lines, full and moving cells.
 - **Lines are never cleared.** `CheckCompletion` starts its loop at
   `j = GRID_VERTICAL_SIZE - 2 && !isEmptyRowFound`, which is 1: it checks
   only the two top rows, and a piece that lands there ends the game in that
-  frame, before any check. The port keeps it; the blinking and the deletion
-  are ported, but no run can show them.
+  frame, before any check. The faithful port kept it; the relaxed one checks
+  every row, so full lines blink and are cleared. No run fills a line (8
+  random runs of 30000 frames neither); the check and the deletion were
+  tested apart, on a grid with a full row.
 - A turn in the frame a piece lands puts it back as moving, as in the C.
 - The repeats of the keys are counted in the frames of fall only (not in
   the frame a piece appears, nor while lines blink), and carry from a piece
@@ -679,3 +682,4 @@ stored results replaced. The deliberate differences:
 | snake | The state of a game (`snake`, `fruit`, `speed`) is made anew in each game, in `Play`, not kept at the top level and emptied; the next fruit is placed as the last one is eaten | In the frame the snake eats, the new fruit is drawn (the C draws the eaten one over the head). In the frame of a restart, the new game shows its own fruit (the C, the fruit of the last game). The trace prints only the frame and the phase out of a game. 42 lines of the trace of `play` and 26 of `self`, 3 of the 12 screens of `play` and 1 of the 4 of `self`, differ |
 | gorilas | The state of a game (buildings, explosions, ball, players) is made anew in each game, in `Play`, not kept at the top level and emptied; the hole of the unused explosions at (0,0) is gone; a player beyond the last building stands on it | The trace: the ball of a new game starts at (0,0) (the C keeps where the last one fell), and out of a game it prints only the frame, the phase and the turn. 103 lines of the trace of `play` and 40 of `seed3` differ; no screen differs |
 | missile_commander | The state of a game (score, frames, launchers, buildings) is made anew in each game; the 30 slots of interceptors and the 100 of explosions, with their rings, are pools of tasks; a new explosion starts at 0; a missile that hits a launcher or a building no longer scores in its own explosion | The score from the first missile that hits the city on (100 less for each); the second game launches its missiles from the start of its own count. The trace from line 2491 of `play` and 1761 of `seed3`, and 4 of the 23 screens of `play` and 3 of the 11 of `seed3`, differ |
+| tetris | The full lines are found in every row, not only the two top ones (the C starts its loop at `j = GRID_VERTICAL_SIZE - 2 && !isEmptyRowFound`, which is 1, and never clears a line) | A full line blinks and is cleared, and counts in the lines. No run fills a line: the traces and the screens of `play` and `seed2` are still identical |

@@ -62,11 +62,14 @@ func create () {
     }
 }
 
-;; As in the C: the loop starts at `j = (GRID_VERTICAL_SIZE - 2 && !isEmptyRowFound)`,
-;; which is 1, so only the two top rows are checked.
+;; The full rows, from the bottom up, blink. Relaxed: the C starts its loop
+;; at `j = (GRID_VERTICAL_SIZE - 2 && !isEmptyRowFound)`, which is 1, and so
+;; checks only the two top rows and never clears a line; the port checks
+;; every row, as the C meant.
 func completion () {
     var found = false
-    loop j in [1, 0] {
+    loop jj in (0, GH - 2) {
+        val j = (GH - 2) - jj
         var n = 0
         loop i in (1, GW - 2) {
             if g(i, j) == FULL { set n += 1 }
