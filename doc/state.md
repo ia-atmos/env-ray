@@ -124,7 +124,7 @@ Left in the port for the trace only: `phase`.
 | `smooth` | control: the title fades in, then out | two loops in sequence: until `alpha >= 1`, then forever |
 | `victory` | control | `:victory`, emitted once by the last wave; the score task then also draws "YOU WIN" |
 | `shootRate` | control: a count of the frames with SPACE held, reset by a hit | the gun: `await :frame until ray.key_down('SPACE')` four times per shot, restarted by `:rearm` |
-| `enemiesKill` | control: the kills of the wave, compared with `==` | **left**: `kills`, local to the waves, since the C compares it exactly (two kills in one frame at the end of a wave would keep the wave forever) |
+| `enemiesKill` | control: the kills of the wave, compared with `==` | **left**: `kills`, local to the waves; relaxed, compared with `>=` (with `==`, two kills in one frame at the end of a wave keep it forever) |
 | `enemy[].active` | control: always true, never cleared | gone |
 | `shoot[].active` | control | the phase of each `Shot`: waits to be fired, then flies until it hits or leaves |
 | `activeEnemies` | data: how many enemies are in play | `#enemies`, which the waves extend |

@@ -24,7 +24,7 @@ the runs: no number here is typed by hand.
 | gold_fever | 178 | 164 | 1470 | 1239 | 6 | 1 | 2 (1369 frames, 27 screens) | yes |
 | arkanoid | 207 | 149 | 2005 | 1312 | 4 | 0 | 2 (22977 frames, 23 screens) | yes |
 | asteroids_survival | 241 | 181 | 2262 | 1470 | 3 | 0 | 2 (4531 frames, 22 screens) | yes |
-| space_invaders | 271 | 198 | 1903 | 1297 | 9 | 1 | 2 (5477 frames, 26 screens) | yes |
+| space_invaders | 271 | 198 | 1903 | 1297 | 9 | 1 | 2 (5477 frames, 26 screens) | relaxed |
 | missile_commander | 343 | 162 | 2796 | 1443 | 10 | 1 | 2 (6812 frames, 34 screens) | relaxed |
 | gorilas | 351 | 174 | 2994 | 1627 | 6 | 0 | 2 (1008 frames, 44 screens) | relaxed |
 | asteroids | 402 | 261 | 3940 | 2176 | 7 | 1 | 2 (1249 frames, 25 screens) | yes |

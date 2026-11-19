@@ -111,7 +111,8 @@ task Play () {
     }
     spawn {
         ;; the waves: the title fades in and out; a wave ends at the start of
-        ;; the frame that finds exactly its number of kills (as the C)
+        ;; the frame that finds its number of kills (relaxed: the C compares with
+        ;; `==`, so two kills in one frame at its end would keep the wave forever)
         var kills = 0
         spawn {
             loop on :killed {
@@ -134,7 +135,7 @@ task Play () {
                     set alpha = f32(alpha - f32(0.02))
                 }
             } with {
-                await :frame until kills == n
+                await :frame until kills >= n
                 if n == 50 {
                     emit :victory
                     await false

@@ -179,7 +179,8 @@ rotation), time.
 
 ## space_invaders
 
-Same as the original on its runs `play` (3477 frames, 18 screens: SPACE
+Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, and
+still identical on its runs `play` (3477 frames, 18 screens: SPACE
 held through the three waves and "YOU WIN", a pause, then the enemies, an
 ENTER in the frame of the game over, a restart) and `seed4` (2000 frames, 8
 screens: other enemies).
@@ -198,8 +199,10 @@ score of that frame is left out of both traces.
   frame and moves at once (an await started in the middle of a frame would
   only see the next one). The enemies are 50 tasks too, which join the game
   with their wave, in the same frame.
-- **The waves** end at the start of the frame that finds exactly their
-  number of kills, as the C (`==`), so the port counts the kills.
+- **The waves** end at the start of the frame that finds their number of
+  kills. The C compares with `==`, so two kills in one frame at the end of a
+  wave would keep it forever; the faithful port did the same, the relaxed
+  one compares with `>=`.
 - After the first fade, the title of the wave keeps being drawn with a
   negative alpha, which `Fade` turns into 0, as in the C.
 
@@ -683,3 +686,4 @@ stored results replaced. The deliberate differences:
 | gorilas | The state of a game (buildings, explosions, ball, players) is made anew in each game, in `Play`, not kept at the top level and emptied; the hole of the unused explosions at (0,0) is gone; a player beyond the last building stands on it | The trace: the ball of a new game starts at (0,0) (the C keeps where the last one fell), and out of a game it prints only the frame, the phase and the turn. 103 lines of the trace of `play` and 40 of `seed3` differ; no screen differs |
 | missile_commander | The state of a game (score, frames, launchers, buildings) is made anew in each game; the 30 slots of interceptors and the 100 of explosions, with their rings, are pools of tasks; a new explosion starts at 0; a missile that hits a launcher or a building no longer scores in its own explosion | The score from the first missile that hits the city on (100 less for each); the second game launches its missiles from the start of its own count. The trace from line 2491 of `play` and 1761 of `seed3`, and 4 of the 23 screens of `play` and 3 of the 11 of `seed3`, differ |
 | tetris | The full lines are found in every row, not only the two top ones (the C starts its loop at `j = GRID_VERTICAL_SIZE - 2 && !isEmptyRowFound`, which is 1, and never clears a line) | A full line blinks and is cleared, and counts in the lines. No run fills a line: the traces and the screens of `play` and `seed2` are still identical |
+| space_invaders | The state of a game is made in each game (still identical); a wave ends when its kills reach its number (`>=`), not only when they are exactly it (`==`) | Two kills in the last frame of a wave end it, where the C would keep the wave forever. No run does it: the traces and the screens of `play` and `seed4` are still identical |
