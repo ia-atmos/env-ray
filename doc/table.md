@@ -29,7 +29,7 @@ the runs: no number here is typed by hand.
 | gorilas | 351 | 174 | 2994 | 1627 | 6 | 0 | 2 (1008 frames, 44 screens) | relaxed |
 | asteroids | 402 | 261 | 3940 | 2176 | 7 | 1 | 2 (1249 frames, 25 screens) | yes |
 | pang | 446 | 209 | 4072 | 1791 | 8 | 2 | 2 (2998 frames, 38 screens) | yes |
-| platformer | 466 | 169 | 3277 | 1766 | 4 | 0 | 2 (1634 frames, 43 screens) | yes |
+| platformer | 466 | 169 | 3277 | 1770 | 4 | 0 | 2 (1634 frames, 43 screens) | relaxed |
 | tetris | 577 | 340 | 4370 | 2902 | 11 | 2 | 2 (10000 frames, 26 screens) | relaxed |
 | raylife | 196 | 180 | 1506 | 1411 | 1 | 1 | 2 (1400 frames, 33 screens) | yes |
 | wave_collector | 679 | 273 | 4998 | 2247 | 7 | 1 | 3 (13723 frames, 46 screens) | yes |

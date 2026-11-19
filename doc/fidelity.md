@@ -321,7 +321,8 @@ of a game over, the phase only.
 
 ## platformer
 
-Same as the original on its runs `play` (734 frames, 29 screens: the ten
+Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, and
+still identical on its runs `play` (734 frames, 29 screens: the ten
 coins, "PRESS [ENTER]", ENTER, the ten coins again) and `moves` (900
 frames, 14 screens: walls, a ceiling, a cut jump, a jump pressed in the
 air, A and D).
@@ -687,3 +688,4 @@ stored results replaced. The deliberate differences:
 | missile_commander | The state of a game (score, frames, launchers, buildings) is made anew in each game; the 30 slots of interceptors and the 100 of explosions, with their rings, are pools of tasks; a new explosion starts at 0; a missile that hits a launcher or a building no longer scores in its own explosion | The score from the first missile that hits the city on (100 less for each); the second game launches its missiles from the start of its own count. The trace from line 2491 of `play` and 1761 of `seed3`, and 4 of the 23 screens of `play` and 3 of the 11 of `seed3`, differ |
 | tetris | The full lines are found in every row, not only the two top ones (the C starts its loop at `j = GRID_VERTICAL_SIZE - 2 && !isEmptyRowFound`, which is 1, and never clears a line) | A full line blinks and is cleared, and counts in the lines. No run fills a line: the traces and the screens of `play` and `seed2` are still identical |
 | space_invaders | The state of a game is made in each game (still identical); a wave ends when its kills reach its number (`>=`), not only when they are exactly it (`==`) | Two kills in the last frame of a wave end it, where the C would keep the wave forever. No run does it: the traces and the screens of `play` and `seed4` are still identical |
+| platformer | The jump button is reset at the start of each game (the C never resets it, so a button held into the game over could jump at the start of the next game) | No run holds it across a game: the traces and the screens of `play` and `moves` are still identical |

@@ -58,7 +58,7 @@ val IMPULSE = f32(f32(-6.5625)*60)
 val RELEASE = f32(IMPULSE*f32(0.2))
 
 pin var player = [x=0, y=0, vx=0, vy=0, hsp=0, vsp=0]
-var jump   = false              ;; the button, latched until released or used (never reset, as the C)
+var jump   = false              ;; the button, latched until released or used (reset in each game)
 var score  = 0
 
 ;; The physics of the player, in the order of the C. In the middle of it,
@@ -166,7 +166,7 @@ task Coin (x, y) {
 ;; One game: ends with ENTER, once the coins are taken.
 task Play () {
     set player = [x=f32((TILE*MW)*0.5), y=((MH*TILE) - 16) - 1, vx=0, vy=0, hsp=0, vsp=0]
-    set score = 0
+    set score, jump = 0, false        ;; relaxed: the C never resets the button
     spawn {
         loop on :draw {
             ray.begin_mode2d(0, 0, 0, 0, 0, SCALE)

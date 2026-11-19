@@ -236,7 +236,7 @@ the coins are taken, and the game goes on.
 | `player.isJumping` | control: a jump in course | the phase of `Jumper` between two awaits of `:gravity` |
 | `player.isGrounded` | data: a sensor, computed in each frame | `grounded`, local to the frame, sent in `:gravity` |
 | `player.hitOnFloor`, `hitOnCeiling`, `hitOnWall` | control, never read | gone |
-| `input.jump` | data: the button, latched until released or used; never reset | `jump`, also across games |
+| `input.jump` | data: the button, latched until released or used; never reset | `jump`; relaxed, reset in each game |
 | `input.right`, `left`, `up`, `down` | data: the keys of the frame (`up` and `down` never read) | `right`, `left`, local to the frame |
 | `coins[].visible` | control | the task `Coin`, which ends when taken |
 | `player.position`, `velocity`, `hsp`, `vsp` | drawn, and data | `player` |
