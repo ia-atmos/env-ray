@@ -6,7 +6,7 @@ acknowledged, or known and not done. Keep it current: remove an item when
 it is settled, add one whenever something is left open, in the same commit
 when possible.
 
-Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#29`. Nothing else is enumerated with bare numbers.
+Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#30`. Nothing else is enumerated with bare numbers.
 
 Sessions (by the name of their repository): this one is `env-ray`; the compiler is `atmos-lang` (session_011eECogKVQ7ZzmWCoMST2wK); everything about `pin` goes to `atmos-pin` (session_011eECogSDhkVfyt7qme5DLh); the events across environments, `envs` (session_011eECofYWTNPACTtUjHN4p6); Lessmilk is `ray-lessmilk` (session_011eECohyasjWkvCHdxGxJ6D).
 
@@ -19,6 +19,7 @@ Each has the option recommended by this session.
 | # | Decision | Recommended |
 |---|----------|-------------|
 | #1 | The remotes: this repository is now `ia-atmos/env-ray`, the compiler `ia-atmos/lang` (the old addresses redirect; the names in `README.md`, `doc/compiler.md`, `tools/setup.sh` are updated). The remote of this checkout and of `ext/ceu-atmos` still name the old addresses: changing a remote is refused by the permissions of this session (auto mode) | The author allows it, or runs `git remote set-url origin https://github.com/ia-atmos/env-ray` and `git -C ext/ceu-atmos remote set-url origin https://github.com/ia-atmos/lang`. Not urgent: pushes still go through |
+| #29 | The compiler now has `set :out place = value` (lang 8361f88): a place outside refers to a pinned value of the current block, and goes back to `nil` when the block ends. It fits what the first migration had to rewrite in four games (cat_vs_roomba, skully_escape, light_my_ritual, wave_collector): the top-level trace read the state of a screen through a global, and now reads a string that the screen writes as it draws | Go back to `set :out game = g` in the four games, with the 55 runs identical, after moving the compiler to 8361f88. Small; waiting for the author |
 | #5 | The original of koala_seasons reads the date (`time`), so its runs are not repeatable; the test mode fixes it, by a patch of the original (`tools/original.patch`) and the same in the port | Keep it, as written in `doc/fidelity.md` |
 | #21 | Lessmilk (`ia-atmos/ray-lessmilk`) has no patch of its own to merge: its binding is `raylib.atm` of 4360cb2 with `pin rl`, and its test patch is ours. It stays on compiler f3389f6 and binding 4360cb2 until a case of pin is settled by the compiler session (16 of its 33 runs fail on 1746969), then it moves to `ray.atm`, `atmos-ray` and the vocabulary of events at once | Nothing to do here; Lessmilk will tell |
 
