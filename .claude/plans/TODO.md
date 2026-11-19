@@ -42,7 +42,7 @@ Each has the option recommended by this session.
 | # | Report |
 |---|--------|
 | #12 | The summary and conclusions of the port (all 23 games, identical on 55 runs; 96 of 134 control variables become structure, 38 stay; CPU 1.02 times the C; 1.4 against 0.75 µs per enemy in the stress) |
-| #13 | The last full regression: 57 checks, none failed (2026-11-18, compiler 8c9453c) |
+| #13 | The last full regression: 57 checks, none failed (2026-11-19, compiler 8361f88) |
 | #14 | The logo of `games/screens.atm` showed "raylib" whole for 12 frames before its first letter; fixed (TextSubtext, as the C) |
 | #15 | `raylib.atm` (now `ray.atm`) grew: `rl.poly`, shaders, gestures, the touch position; `Screens` keeps its state in its `pub`. Lessmilk was told |
 | #16 | The original of transmission aborts (`free` of a static buffer of raylib 6.2) on a wrong word; no run can use one |
