@@ -18,29 +18,29 @@ of 3 runs. Machine: Intel(R) Xeon(R) Processor @ 2.10GHz, x86_64.
 
 | Game | Run | Frames | CPU/frame C | CPU/frame Atmos | Atmos/C | fps C | fps Atmos | CPU at 60 fps C | CPU at 60 fps Atmos | Memory C | Memory Atmos | Binary C | Binary Atmos |
 |------|-----|-------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|----:|----:|
-| snake | play | 760 | 0.66 | 0.64 | 0.97 | 1446 | 1546 | 4% | 4% | 12.6 | 12.6 | 790 | 2010 |
-| floppy | play | 1200 | 1.90 | 1.90 | 1.00 | 519 | 525 | 11% | 11% | 12.6 | 12.6 | 786 | 1998 |
-| gold_fever | play | 1009 | 3.39 | 3.60 | 1.06 | 292 | 275 | 20% | 22% | 12.6 | 12.6 | 790 | 2030 |
-| arkanoid | lose | 1200 | 2.92 | 2.71 | 0.93 | 340 | 366 | 18% | 16% | 12.6 | 12.6 | 790 | 2027 |
-| asteroids_survival | seed3 | 1200 | 1.15 | 1.08 | 0.94 | 807 | 927 | 7% | 6% | 12.7 | 12.6 | 790 | 2031 |
-| space_invaders | play | 1200 | 0.87 | 1.03 | 1.18 | 1085 | 958 | 5% | 6% | 12.6 | 12.6 | 790 | 2039 |
-| missile_commander | play | 1200 | 1.62 | 1.55 | 0.95 | 576 | 639 | 10% | 9% | 12.6 | 12.6 | 790 | 2039 |
-| gorilas | play | 648 | 2.86 | 3.03 | 1.06 | 347 | 327 | 17% | 18% | 12.6 | 12.7 | 790 | 2038 |
-| asteroids | die | 577 | 1.08 | 1.05 | 0.97 | 861 | 944 | 6% | 6% | 12.7 | 12.7 | 790 | 2067 |
-| pang | play | 1200 | 1.00 | 1.13 | 1.13 | 948 | 876 | 6% | 7% | 12.6 | 12.7 | 790 | 2047 |
-| platformer | play | 734 | 1.67 | 1.64 | 0.98 | 594 | 606 | 10% | 10% | 12.6 | 12.7 | 790 | 2043 |
-| tetris | play | 1200 | 1.08 | 1.29 | 1.20 | 913 | 763 | 6% | 8% | 12.7 | 12.7 | 790 | 2115 |
-| raylife | play | 800 | 2.51 | 2.73 | 1.09 | 396 | 364 | 15% | 16% | 22.4 | 15.2 | 790 | 2006 |
-| wave_collector | lose | 1200 | 11.08 | 11.20 | 1.01 | 90 | 88 | 66% | 67% | 44.1 | 44.9 | 1363 | 2128 |
-| repair | play | 1200 | 18.39 | 18.31 | 1.00 | 53 | 54 | 110% | 110% | 36.5 | 35.9 | 1363 | 2149 |
-| cat_vs_roomba | play | 1200 | 16.65 | 17.36 | 1.04 | 60 | 57 | 100% | 104% | 25.7 | 26.3 | 1368 | 2216 |
-| light_my_ritual | start | 1200 | 18.19 | 18.38 | 1.01 | 54 | 53 | 109% | 110% | 43.0 | 43.3 | 1367 | 2180 |
-| transmission | play | 1200 | 8.12 | 8.20 | 1.01 | 122 | 121 | 49% | 49% | 28.8 | 29.4 | 1373 | 2165 |
-| drturtle | play | 1200 | 33.85 | 33.83 | 1.00 | 29 | 29 | 203% | 203% | 29.3 | 29.8 | 1356 | 2059 |
-| just_do | play | 1200 | 10.81 | 11.00 | 1.02 | 92 | 90 | 65% | 66% | 17.0 | 17.7 | 1383 | 2291 |
-| skully_escape | play | 1200 | 9.57 | 9.77 | 1.02 | 104 | 100 | 57% | 59% | 32.2 | 32.9 | 1407 | 2270 |
-| retro_maze_3d | play | 1200 | 6.76 | 6.73 | 1.00 | 147 | 147 | 41% | 40% | 13.7 | 14.2 | 1644 | 2395 |
-| koala_seasons | play | 1200 | 33.16 | 34.16 | 1.03 | 30 | 29 | 199% | 205% | 52.9 | 54.3 | 1452 | 3393 |
+| snake | play | 760 | 0.68 | 0.82 | 1.21 | 1465 | 1197 | 4% | 5% | 12.8 | 12.8 | 790 | 2314 |
+| floppy | play | 1200 | 2.04 | 2.18 | 1.07 | 484 | 450 | 12% | 13% | 12.8 | 12.8 | 790 | 2294 |
+| gold_fever | play | 1009 | 3.77 | 3.76 | 1.00 | 262 | 261 | 23% | 23% | 12.8 | 12.8 | 790 | 2330 |
+| arkanoid | lose | 1200 | 3.12 | 3.29 | 1.05 | 317 | 300 | 19% | 20% | 12.8 | 12.7 | 790 | 2326 |
+| asteroids_survival | seed3 | 1200 | 1.17 | 1.22 | 1.04 | 844 | 810 | 7% | 7% | 12.8 | 12.8 | 790 | 2330 |
+| space_invaders | play | 1200 | 0.96 | 1.15 | 1.19 | 1029 | 862 | 6% | 7% | 12.8 | 12.8 | 790 | 2346 |
+| missile_commander | play | 1200 | 1.60 | 1.65 | 1.03 | 617 | 590 | 10% | 10% | 12.8 | 12.7 | 790 | 2342 |
+| gorilas | play | 648 | 3.35 | 3.29 | 0.98 | 292 | 302 | 20% | 20% | 12.8 | 12.8 | 790 | 2346 |
+| asteroids | die | 577 | 1.01 | 0.97 | 0.97 | 973 | 1012 | 6% | 6% | 12.8 | 12.8 | 790 | 2370 |
+| pang | play | 1200 | 1.08 | 1.15 | 1.07 | 914 | 857 | 6% | 7% | 12.8 | 12.8 | 790 | 2354 |
+| platformer | play | 734 | 1.79 | 1.68 | 0.94 | 555 | 590 | 11% | 10% | 12.8 | 12.7 | 790 | 2342 |
+| tetris | play | 1200 | 1.17 | 1.62 | 1.38 | 844 | 613 | 7% | 10% | 12.8 | 12.8 | 790 | 2435 |
+| raylife | play | 800 | 2.67 | 2.56 | 0.96 | 370 | 383 | 16% | 15% | 22.4 | 15.3 | 790 | 2306 |
+| wave_collector | lose | 1200 | 12.24 | 12.55 | 1.03 | 81 | 79 | 73% | 75% | 44.3 | 45.2 | 1363 | 2443 |
+| repair | play | 1200 | 20.53 | 20.23 | 0.99 | 48 | 49 | 123% | 121% | 36.5 | 36.1 | 1363 | 2484 |
+| cat_vs_roomba | play | 1200 | 18.83 | 19.95 | 1.06 | 53 | 50 | 113% | 120% | 25.9 | 26.5 | 1368 | 2560 |
+| light_my_ritual | start | 1200 | 19.87 | 19.73 | 0.99 | 50 | 50 | 119% | 118% | 42.9 | 43.6 | 1367 | 2507 |
+| transmission | play | 1200 | 9.09 | 9.23 | 1.02 | 109 | 107 | 55% | 55% | 29.0 | 29.5 | 1373 | 2484 |
+| drturtle | play | 1200 | 37.34 | 37.89 | 1.01 | 27 | 26 | 224% | 227% | 29.4 | 29.9 | 1356 | 2395 |
+| just_do | play | 1200 | 12.10 | 11.87 | 0.98 | 82 | 83 | 73% | 71% | 17.1 | 17.9 | 1383 | 2638 |
+| skully_escape | play | 1200 | 10.62 | 10.65 | 1.00 | 93 | 93 | 64% | 64% | 32.4 | 33.0 | 1407 | 2618 |
+| retro_maze_3d | play | 1200 | 7.23 | 7.18 | 0.99 | 137 | 138 | 43% | 43% | 13.9 | 14.4 | 1644 | 2727 |
+| koala_seasons | play | 1200 | 35.54 | 36.60 | 1.03 | 28 | 27 | 213% | 220% | 52.9 | 54.6 | 1456 | 3849 |
 
 Over the 23 games, the sum of the CPU per frame of the ports is 1.02 times
 that of the originals. The frames of these games are mostly drawing: the
@@ -49,6 +49,51 @@ which costs the same in both, and hides the cost of the logic. Above
 100% at 60 fps, one core of this machine cannot draw 60 frames per
 second in software, with the C as with the port; with a GPU, the
 drawing leaves the CPU.
+
+## The logic alone
+
+The same runs with `RL_NODRAW=1`: the test mode of raylib rasterizes
+nothing (no point, line, triangle, quad, nor clear writes a pixel) and
+copies no screen, in the original and in the port alike. What is left
+in a frame is the logic of the game and its calls of drawing, which
+raylib still receives, batches and transforms. The time is the CPU of
+the run minus the CPU of the same program run for 1 frame (its start:
+the window, the assets), over the other frames, in µs; the whole frame
+of the table above is beside it. The traces are the same with and
+without the switch.
+
+| Game | Run | Frames | Logic C (µs) | Logic Atmos (µs) | Atmos/C | Whole frame C (µs) | Whole frame Atmos (µs) |
+|------|-----|-------:|----:|----:|----:|----:|----:|
+| snake | play | 760 | 7.8 | 20.9 | 2.68 | 675 | 817 |
+| floppy | play | 1200 | 37.5 | 137.6 | 3.67 | 2036 | 2178 |
+| gold_fever | play | 1009 | 16.8 | 26.0 | 1.55 | 3767 | 3762 |
+| arkanoid | lose | 1200 | 37.7 | 124.7 | 3.31 | 3124 | 3292 |
+| asteroids_survival | seed3 | 1200 | 82.9 | 131.6 | 1.59 | 1169 | 1217 |
+| space_invaders | play | 1200 | 79.5 | 305.7 | 3.85 | 962 | 1147 |
+| missile_commander | play | 1200 | 13.7 | 40.1 | 2.93 | 1602 | 1652 |
+| gorilas | play | 648 | 7.1 | 28.2 | 3.97 | 3353 | 3285 |
+| asteroids | die | 577 | 53.2 | 35.1 | 0.66 | 1007 | 972 |
+| pang | play | 1200 | 115.3 | 129.3 | 1.12 | 1080 | 1153 |
+| platformer | play | 734 | 14.1 | 49.9 | 3.54 | 1791 | 1682 |
+| tetris | play | 1200 | 82.1 | 240.1 | 2.92 | 1169 | 1617 |
+| raylife | play | 800 | 337.8 | 268.5 | 0.79 | 2666 | 2558 |
+| wave_collector | lose | 1200 | 128.8 | 375.6 | 2.92 | 12237 | 12555 |
+| repair | play | 1200 | 11.6 | 19.6 | 1.69 | 20526 | 20234 |
+| cat_vs_roomba | play | 1200 | 35.9 | 136.3 | 3.80 | 18829 | 19945 |
+| light_my_ritual | start | 1200 | 77.5 | 97.0 | 1.25 | 19871 | 19726 |
+| transmission | play | 1200 | 69.2 | 76.2 | 1.10 | 9091 | 9232 |
+| drturtle | play | 1200 | 14.0 | 30.7 | 2.19 | 37340 | 37893 |
+| just_do | play | 1200 | 18.1 | 25.0 | 1.38 | 12103 | 11873 |
+| skully_escape | play | 1200 | 26.3 | 35.7 | 1.36 | 10616 | 10648 |
+| retro_maze_3d | play | 1200 | 140.9 | 146.3 | 1.04 | 7229 | 7182 |
+| koala_seasons | play | 1200 | 24.3 | 589.0 | 24.24 | 35544 | 36596 |
+
+Over the 23 games, the sum of the logic of the ports is 2.14 times that
+of the originals (3069 against 1432 µs for one frame of each game), where the
+whole frames are 1.02 times.
+Each number is the difference of two runs of a whole program, a few
+tens of milliseconds in all: the small ones (under some 20 µs per frame)
+carry the noise of the machine, and a ratio under 1 is within it.
 
 ## Stress: many entities
 

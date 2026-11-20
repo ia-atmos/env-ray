@@ -63,7 +63,10 @@ for g, run, frames, cc, ca, c, a in logic:
     out.append('| %s | %s | %s | %.1f | %.1f | %s | %.0f | %.0f |' % (g, run, frames, c, a, ('%.2f' % (a / c)) if c > 0 else '-', cc * 1000, ca * 1000))
 out += ['', 'Over the 23 games, the sum of the logic of the ports is %.2f times that' % (la / lc),
         'of the originals (%.0f against %.0f µs for one frame of each game), where the' % (la, lc),
-        'whole frames are %.2f times.' % (ta / tc), '',
+        'whole frames are %.2f times.' % (ta / tc),
+        'Each number is the difference of two runs of a whole program, a few',
+        'tens of milliseconds in all: the small ones (under some 20 µs per frame)',
+        'carry the noise of the machine, and a ratio under 1 is within it.', '',
         '## Stress: many entities', '',
         '`tools/stress.py` builds space_invaders with a first wave of N enemies',
         '(10 in the game) in a copy of the original and of the port; each runs',
