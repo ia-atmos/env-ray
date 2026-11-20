@@ -168,16 +168,15 @@ func furniture_file (path) {
     out
 }
 
-;; A level of dirt for a tile: 50% clean, 20% 1, 20% 2, 10% 3; as in the
-;; C, a draw of 100 matches none of these, and the tile keeps `old`.
-func dirt (old) {
+;; A level of dirt for a tile: 50% clean, 20% 1, 20% 2, 10% 3. Relaxed: in
+;; the C a draw of 100 matches no case, and the tile keeps the level it had.
+func dirt () {
     val d = ray.random(0, 100)
     ifs {
         d < 50  => 0
         d < 70  => 1
         d < 90  => 2
-        d < 100 => 3
-        else    => old
+        else    => 3
     }
 }
 
@@ -199,7 +198,7 @@ task Gameplay () {
     loop y in TY {
         loop x in TX {
             val c = COLMAP@((y*TX) + x)
-            val level = if (c != 0) && (c != 3) => dirt(0) => 0
+            val level = if (c != 0) && (c != 3) => dirt() => 0
             vector.insert(tiles, [x=OX + (TILE*x), y=OY + (TILE*y), level=level, state=level, counter=if level == 0 => 0 => 2])
         }
     }
@@ -378,7 +377,7 @@ task Gameplay () {
                                 val t = tiles@((y*TX) + x)
                                 val cc = COLMAP@((y*TX) + x)
                                 if (t.state == 0) && (cc != 0) && (cc != 3) {
-                                    set t.level = dirt(t.level)
+                                    set t.level = dirt()
                                     set t.state = t.level
                                     set t.counter = if t.level == 0 => 0 => 2
                                 }
