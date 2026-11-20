@@ -1,5 +1,5 @@
 diff --git a/src/external/rlsw.h b/src/external/rlsw.h
-index 68639f3..da01a48 100644
+index 68639f3..fdf4612 100644
 --- a/src/external/rlsw.h
 +++ b/src/external/rlsw.h
 @@ -776,7 +776,7 @@ SWAPI void swGetFramebufferAttachmentParameteriv(SWattachment attachment, SWatta
@@ -11,21 +11,85 @@ index 68639f3..da01a48 100644
  #else
      #define SW_LOG(...)
  #endif
+@@ -1109,6 +1109,12 @@ typedef struct {
+ //----------------------------------------------------------------------------------
+ static sw_context_t RLSW = { 0 };
+ 
++// Test mode (RL_NODRAW): when set, nothing is rasterized: the calls of
++// drawing are received, batched and transformed, but no pixel is written
++// (points, lines, triangles, quads, and the clear). To measure the logic
++// of a program with no cost of pixels.
++int swNoRaster = 0;
++
+ #if RLSW_USE_COLOR_LUT
+ static float SW_LUT_UINT8_TO_FLOAT[256] = { 0 };
+ #endif
+@@ -3341,6 +3347,7 @@ static void sw_triangle_clip_and_project(void)
+ 
+ static void sw_triangle_render(uint32_t state)
+ {
++    if (swNoRaster) return;
+     if (RLSW.userState & SW_STATE_CULL_FACE)
+     {
+         if (!sw_triangle_face_culling()) return;
+@@ -3492,6 +3499,7 @@ static bool sw_quad_is_axis_aligned(void)
+ 
+ static void sw_quad_render(uint32_t state)
+ {
++    if (swNoRaster) return;
+     if (RLSW.userState & SW_STATE_CULL_FACE)
+     {
+         if (!sw_quad_face_culling()) return;
+@@ -3632,6 +3640,7 @@ static bool sw_line_clip_and_project(sw_vertex_t *v0, sw_vertex_t *v1)
+ 
+ static void sw_line_render(uint32_t state, sw_vertex_t *vertices)
+ {
++    if (swNoRaster) return;
+     if (!sw_line_clip_and_project(&vertices[0], &vertices[1])) return;
+     state &= SW_RASTER_LINE_STATE_MASK;
+     SW_RASTER_LINE_TABLE[state](&vertices[0], &vertices[1]);
+@@ -3676,6 +3685,7 @@ static bool sw_point_clip_and_project(sw_vertex_t *v)
+ 
+ static void sw_point_render(uint32_t state, sw_vertex_t *v)
+ {
++    if (swNoRaster) return;
+     if (!sw_point_clip_and_project(v)) return;
+     state &= SW_RASTER_POINT_STATE_MASK;
+     SW_RASTER_POINT_TABLE[state](v);
+@@ -4215,6 +4225,7 @@ void swClearDepth(float depth)
+ 
+ void swClear(uint32_t bitmask)
+ {
++    if (swNoRaster) return;
+     if (!sw_is_ready_to_render()) return;
+ 
+     if ((bitmask & (SW_COLOR_BUFFER_BIT)) && (RLSW.colorBuffer != NULL) && (RLSW.colorBuffer->pixels != NULL))
 diff --git a/src/platforms/rcore_memory.c b/src/platforms/rcore_memory.c
-index 5d9461c..03510c1 100644
+index 5d9461c..9bdbff7 100644
 --- a/src/platforms/rcore_memory.c
 +++ b/src/platforms/rcore_memory.c
-@@ -95,6 +95,157 @@ static int kbhit(void);                         // Check if key has been pressed
+@@ -73,6 +73,7 @@ typedef struct {
+ // Global Variables Definition
+ //----------------------------------------------------------------------------------
+ extern CoreData CORE;                   // Global CORE state context
++extern int swNoRaster;                  // rlsw: test mode, nothing is rasterized (RL_NODRAW)
+ 
+ static PlatformData platform = { 0 };   // Platform specific data
+ 
+@@ -95,6 +96,161 @@ static int kbhit(void);                         // Check if key has been pressed
  static char getch(void) { return getchar(); }   // Get pressed character
  #endif
  
 +
 +//----------------------------------------------------------------------------------
-+// Test mode (added for the Atmos port, see fsantanna/raylib, tools/raylib.patch)
++// Test mode (added for the Atmos port, see ia-atmos/env-ray, tools/raylib.patch)
 +//----------------------------------------------------------------------------------
 +// Active when RL_FRAMES is set. The original games and their ports read the
 +// same variables, so that both run the same frames with the same input:
 +//
++//      RL_NODRAW=1         nothing is rasterized nor copied to the screen: the
++//                          calls of drawing cost only their batching (to
++//                          measure the logic of a program)
 +//      RL_FRAMES=n[:ms]    runs n frames with a fixed time step (default 1/60 s),
 +//                          with no waits, then WindowShouldClose() is true
 +//      RL_SEED=s           the seed of the random generator (default 1)
@@ -150,6 +214,7 @@ index 5d9461c..03510c1 100644
 +    if (s == NULL) return;
 +    double ms = 0.0;
 +    rlt.on = 1;
++    swNoRaster = (getenv("RL_NODRAW") != NULL);
 +    rlt.frame = 1;
 +    sscanf(s, "%d:%lf", &rlt.frames, &ms);
 +    rlt.dt = (ms > 0.0) ? ms/1000.0 : 1.0/60.0;
@@ -173,7 +238,7 @@ index 5d9461c..03510c1 100644
  //----------------------------------------------------------------------------------
  // Module Functions Definition: Window and Graphics Device
  //----------------------------------------------------------------------------------
-@@ -102,6 +253,7 @@ static char getch(void) { return getchar(); }   // Get pressed character
+@@ -102,6 +258,7 @@ static char getch(void) { return getchar(); }   // Get pressed character
  // Check if application should close
  bool WindowShouldClose(void)
  {
@@ -181,10 +246,14 @@ index 5d9461c..03510c1 100644
      if (CORE.Window.ready) return CORE.Window.shouldClose;
      else return true;
  }
-@@ -353,6 +505,12 @@ void SwapScreenBuffer(void)
+@@ -351,8 +508,14 @@ void DisableCursor(void)
+ // Swap back buffer with front buffer (screen drawing)
+ void SwapScreenBuffer(void)
  {
-     // Update framebuffer
-     rlCopyFramebuffer(0, 0, CORE.Window.render.width, CORE.Window.render.height, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8, platform.pixels);
+-    // Update framebuffer
+-    rlCopyFramebuffer(0, 0, CORE.Window.render.width, CORE.Window.render.height, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8, platform.pixels);
++    // Update framebuffer (not with RL_NODRAW: nothing was drawn)
++    if (!swNoRaster) rlCopyFramebuffer(0, 0, CORE.Window.render.width, CORE.Window.render.height, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8, platform.pixels);
 +
 +    if (rlt.on)
 +    {
@@ -194,7 +263,7 @@ index 5d9461c..03510c1 100644
  }
  
  //----------------------------------------------------------------------------------
-@@ -363,6 +521,7 @@ void SwapScreenBuffer(void)
+@@ -363,6 +526,7 @@ void SwapScreenBuffer(void)
  double GetTime(void)
  {
      double time = 0.0;
@@ -202,7 +271,7 @@ index 5d9461c..03510c1 100644
  #if defined(_WIN32)
      LARGE_INTEGER currentTicks = { 0 };
      QueryPerformanceCounter(&currentTicks);
-@@ -465,12 +624,25 @@ void PollInputEvents(void)
+@@ -465,12 +629,25 @@ void PollInputEvents(void)
  
      // Register previous keys states
      // NOTE: Android supports up to 260 keys
@@ -229,7 +298,7 @@ index 5d9461c..03510c1 100644
      // TODO: Poll input events for current platform
  
      // Check for key pressed to exit
-@@ -538,7 +710,9 @@ int InitPlatform(void)
+@@ -538,7 +715,9 @@ int InitPlatform(void)
      QueryPerformanceFrequency(&platform.timerFrequency);
      CORE.Time.base = time.QuadPart;
  #endif

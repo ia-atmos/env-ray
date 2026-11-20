@@ -19,6 +19,8 @@ that is checked, and what differs, game by game.
       code), `mv:X:Y` (mouse), `md:B` and `mu:B` (mouse buttons), `wh:D`
       (wheel).
     - `RL_SHOT=f:file.png,...`: saves the screen at the end of frame `f`.
+    - `RL_NODRAW=1`: nothing is rasterized nor copied to the screen (the
+      calls of drawing stay): to measure the logic alone (`doc/bench.md`).
   It also sends the whole log of raylib to stderr (warnings included, such
   as those of the audio with no device), so that stdout has the trace only. `tst/rlt` checks the test mode.
 - `tools/originals.sh` builds the 23 originals against it, with
