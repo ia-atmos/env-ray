@@ -565,7 +565,7 @@ the current level (positions, flags, colors, the time of done).
 
 ## skully_escape
 
-Same as the original on its runs `start` (1500 frames, 27 screens: the two
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its runs `start` (1500 frames, 27 screens: the two
 logos, the title, the message of the attic through its four phases),
 `play` (6479 frames, 24 screens: the escape) and `death` (3535 frames, 9
 screens). `play` and `death` are made by `tst/skully_escape/gen.py`, which
@@ -588,7 +588,8 @@ frame), and the scroll of the aisles.
   another, the monsters are searched, drawn and shown with "CHOOSE
   WISELY!" in orders of their own, and the kitchen leaves its chair out of
   the hover text. The tables keep each order.
-- **A search goes on through a door.** The second SPACE that goes through
+- **A search goes on through a door** in the C (the relaxed port ends the
+  search of a room when the player enters it). The second SPACE that goes through
   the left door of the first aisle also searches the lamp beside it; the
   flag of the search, never reset, is still on when the player comes back
   to the aisle, where the search ends with no monster (the run `play` does
@@ -597,7 +598,8 @@ frame), and the scroll of the aisles.
   (counted twice per frame) and of the typed letters are the same counter;
   the port keeps it shared.
 - **The bounds of the player** are those of the last room until the
-  player moves (the C updates them in its update only).
+  player moves (the C updates them in its update only); the relaxed port
+  sets them when the player enters a room.
 - **The death counts out of the transitions** in the C; the port counts
   80 frames from the death. Both are the same unless a door is taken in
   those 80 frames, when the scared player cannot move: no run does it.
@@ -697,3 +699,4 @@ stored results replaced. The deliberate differences:
 | gold_fever | A game that ends does not check the home in that frame (#30) | The C checks it, and a point scored there shows in the score but not in the best score. No run does it: the traces and the screens of `play` and `caught` are still identical |
 | light_my_ritual | The light of the player starts at 0 in each game (#31) | The C never resets it: the second game of `timeover` starts with the 35 left of the first. The trace of `timeover` from line 6920, and 3 of its 20 screens, differ; `start` is identical |
 | retro_maze_3d | The time, the stamina and the steps are reset in each game; each menu (the title, the pause) starts at its first option (#32) | In the C a game goes on with the time and the stamina of the last, and the two menus share one option. In `menus`, the ENTER after BACK TO TITLE starts a game (the C opens the credits): its trace differs in lines 700 to 759 and from 920, and 11 of its 20 screens; `start` and `play` are identical |
+| skully_escape | On entering a room, its search ends and the bounds of the player are set (#33) | In the C the flag of a search is never reset, so a search started at a door goes on when the player comes back to the room; and the bounds are those of the last room until the player moves. Both runs go the same way; the trace of `play` differs in lines 2437 to 2620 with 4 of its 24 screens, that of `death` in lines 2690 to 2873 with no screen; `start` is identical |

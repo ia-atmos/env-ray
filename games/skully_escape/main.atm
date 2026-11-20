@@ -289,6 +289,10 @@ task Spooky (m) {
 task Room (name) {
     val spec = ROOMS@name
     player_reset()
+    ;; relaxed: the C never resets the search of a room, and keeps the bounds
+    ;; of the player of the last room until it moves
+    set spec.searching = false
+    set P.bounds = [x=P.x + 50, y=P.y - 60, w=100, h=300]
     pin R = [frames=0, letters=0, mc=0, check=-1, hover=false, buffer="", playing=false, scroll=0, phase=0]
     if spec.scroll { set R.scroll = P.x - 200 }
     pin back = ray.texture("resources/textures/" ++ spec.back ++ ".png")

@@ -39,6 +39,6 @@ the runs: no number here is typed by hand.
 | transmission | 1125 | 652 | 6898 | 5579 | 6 | 3 | 2 (7036 frames, 37 screens) | yes |
 | drturtle | 293 | 221 | 2416 | 1884 | 4 | 1 | 2 (3700 frames, 17 screens) | yes |
 | just_do | 1454 | 706 | 9350 | 6535 | 5 | 4 | 2 (4801 frames, 47 screens) | yes |
-| skully_escape | 2685 | 402 | 18429 | 4061 | 6 | 3 | 3 (11514 frames, 60 screens) | yes |
+| skully_escape | 2685 | 404 | 18429 | 4097 | 6 | 3 | 3 (11514 frames, 60 screens) | relaxed |
 | retro_maze_3d | 497 | 435 | 4185 | 3355 | 5 | 4 | 3 (7092 frames, 58 screens) | relaxed |
 | koala_seasons | 4689 | 2765 | 46792 | 33100 | 8 | 6 | 8 (8854 frames, 62 screens) | yes |
