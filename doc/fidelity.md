@@ -515,7 +515,7 @@ port.
 
 ## drturtle
 
-Same as the original on its runs `start` (700 frames, 8 screens: the
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its runs `start` (700 frames, 8 screens: the
 title and its blink, a game lost without a move, the end, a second game)
 and `play` (3000 frames, 9 screens). `play` is made by `tst/drturtle/gen.py`,
 which simulates the game, with the generator of raylib (rprand), to steer
@@ -529,7 +529,8 @@ and the best score and distance.
 - **The death ends the frame.** The C goes on with the frame after the
   death (the other enemies, the food, the distance): the distance shown at
   the end is half a unit more than the best distance, taken at the death.
-  The port does the same: the game ends after the frame.
+  The faithful port did the same; in the relaxed one the game still ends
+  after the frame, and the best score and distance are taken there.
 - **The slots.** An enemy takes the first free slot, and a new rail is
   never that of the slot before; the port keeps the slots.
 - The floats of the C (`enemySpeed`, `seaScrolling -= enemySpeed - 2`,
@@ -701,3 +702,4 @@ stored results replaced. The deliberate differences:
 | retro_maze_3d | The time, the stamina and the steps are reset in each game; each menu (the title, the pause) starts at its first option (#32) | In the C a game goes on with the time and the stamina of the last, and the two menus share one option. In `menus`, the ENTER after BACK TO TITLE starts a game (the C opens the credits): its trace differs in lines 700 to 759 and from 920, and 11 of its 20 screens; `start` and `play` are identical |
 | skully_escape | On entering a room, its search ends and the bounds of the player are set (#33) | In the C the flag of a search is never reset, so a search started at a door goes on when the player comes back to the room; and the bounds are those of the last room until the player moves. Both runs go the same way; the trace of `play` differs in lines 2437 to 2620 with 4 of its 24 screens, that of `death` in lines 2690 to 2873 with no screen; `start` is identical |
 | repair | The counter of the title is reset in each visit; the button HAIR draws a hair in its range (#34) | In the C the title shows its button at once on a second visit, and HAIR may draw a hair past the last one, which draws nothing. The trace of `play` differs in lines 922 to 1009, with 12 of its 30 screens (another hair, and the title with no button yet); the trace of `keys` is identical, and 2 of its 15 screens differ |
+| drturtle | The best score and distance are taken at the end of the frame of the death (#43) | The C takes them at the death and goes on with the frame, so the distance shown at the end is half a unit more than the best one. The best distance in the trace differs from the death on (line 2386 of `play`, 250 of `start`), with 3 of the 9 screens of `play` and 1 of the 8 of `start` |

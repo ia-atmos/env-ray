@@ -32,12 +32,12 @@ the runs: no number here is typed by hand.
 | platformer | 466 | 169 | 3277 | 1770 | 4 | 0 | 2 (1634 frames, 43 screens) | relaxed |
 | tetris | 577 | 340 | 4370 | 2902 | 11 | 2 | 2 (10000 frames, 26 screens) | relaxed |
 | raylife | 196 | 180 | 1506 | 1411 | 1 | 1 | 2 (1400 frames, 33 screens) | yes |
-| wave_collector | 679 | 273 | 4998 | 2247 | 7 | 1 | 3 (13723 frames, 46 screens) | yes |
+| wave_collector | 679 | 274 | 4998 | 2251 | 7 | 1 | 3 (13723 frames, 46 screens) | yes |
 | repair | 672 | 385 | 5601 | 3855 | 5 | 1 | 2 (3350 frames, 45 screens) | relaxed |
-| cat_vs_roomba | 857 | 335 | 7312 | 3563 | 5 | 1 | 2 (13420 frames, 31 screens) | yes |
+| cat_vs_roomba | 857 | 334 | 7312 | 3556 | 5 | 1 | 2 (13420 frames, 31 screens) | yes |
 | light_my_ritual | 901 | 281 | 7087 | 2455 | 5 | 2 | 2 (8700 frames, 34 screens) | relaxed |
 | transmission | 1125 | 652 | 6898 | 5579 | 6 | 3 | 2 (7036 frames, 37 screens) | yes |
-| drturtle | 293 | 221 | 2416 | 1884 | 4 | 1 | 2 (3700 frames, 17 screens) | yes |
+| drturtle | 293 | 223 | 2416 | 1888 | 4 | 1 | 2 (3700 frames, 17 screens) | relaxed |
 | just_do | 1454 | 706 | 9350 | 6535 | 5 | 4 | 2 (4801 frames, 47 screens) | yes |
 | skully_escape | 2685 | 404 | 18429 | 4097 | 6 | 3 | 3 (11514 frames, 60 screens) | relaxed |
 | retro_maze_3d | 497 | 435 | 4185 | 3355 | 5 | 4 | 3 (7092 frames, 58 screens) | relaxed |

@@ -159,8 +159,6 @@ task Gameplay () {
                         } else {
                             ray.play_sound(die)
                             set dead = true
-                            set hiscore = math.max(hiscore, game.score)
-                            set hidistance = math.max(hidistance, game.distance)
                         }
                     } else {                    ;; a sweet fish
                         reset(i, ray.random(0, 3))
@@ -183,6 +181,12 @@ task Gameplay () {
                 }
             }
             set game.distance += 0.5
+            if dead {
+                ;; relaxed: the best of the end of the frame (the C takes them
+                ;; at the death, and the frame goes on)
+                set hiscore = math.max(hiscore, game.score)
+                set hidistance = math.max(hidistance, game.distance)
+            }
             until dead
         }
     } with {
