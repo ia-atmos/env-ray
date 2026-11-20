@@ -6,7 +6,7 @@ acknowledged, or known and not done. Keep it current: remove an item when
 it is settled, add one whenever something is left open, in the same commit
 when possible.
 
-Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#45`. Nothing else is enumerated with bare numbers.
+Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#46`. Nothing else is enumerated with bare numbers.
 
 Sessions (by the name of their repository): this one is `env-ray`; the compiler is `atmos-lang` (session_011eECogKVQ7ZzmWCoMST2wK); everything about `pin` goes to `atmos-pin` (session_011eECogSDhkVfyt7qme5DLh); the events across environments, `envs` (session_011eECofYWTNPACTtUjHN4p6); Lessmilk is `ray-lessmilk` (session_011eECohyasjWkvCHdxGxJ6D).
 
@@ -40,6 +40,7 @@ Each has the option recommended by this session.
 | #40 | just_do: done stays done (a second visit to a level skips the play); the key 9 shows a level never initialized | Leave: it reads as a choice of the original, not as a slip |
 | #41 | transmission: the words of the message keep the tail of a longer word of the last mission (`strncpy` with no terminator) | Leave: it is in the C of the original that the port reuses in a prelude |
 | #42 | floppy: no wall at the top of the screen (floppy flies over the tubes and scores) | Leave: a wall changes the game, and the run `top` exists to show this |
+| #45 | The CPU of the game logic alone, measured the same way in every port (asked by paper-games, through atmos-lang, 2026-11-20). `doc/bench.md` has the CPU per frame of a whole run, where the software renderer weighs most (1.02 times the C on average), and the stress of space_invaders (1.4 against 0.75 µs per enemy), which is the closest to logic alone | To do: a switch of the test mode that skips the rasterizer (in `tools/raylib.patch`, read by the C and by the port alike), then `tools/bench.py` with it: the per-frame CPU of logic plus the calls of drawing, with no pixels. It needs the method the other ports use, to be the same: ask paper-games |
 | #22 | `tools/raylib.patch` names the repository by its old name in a comment that it adds to raylib (`fsantanna/raylib`) | Change it with the next change of the patch: editing it alone means rebuilding raylib for a comment |
 | #11 | Differences that no run shows, kept as documented: snake (two keys in one frame), gold_fever (ENTER in the frame of the last coin), skully_escape (a door taken during the 80 frames of a death) | See `doc/fidelity.md` |
 

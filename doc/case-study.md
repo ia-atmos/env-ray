@@ -333,7 +333,8 @@ task.
 ## 8. Where the pattern stops: flags read across the frame
 
 Some flags stay. The table counts them: of 134 control variables in the
-C, the ports leave 38 ([table.md](table.md)). They have one thing in
+C, the faithful ports leave 38 (35 after the relaxed ones: missile_commander
+dropped three with its slots; [table.md](table.md)). They have one thing in
 common: the C reads them at many points of one frame, and changes them
 at others, so the order inside the frame is part of the game.
 

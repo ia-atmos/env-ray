@@ -74,8 +74,20 @@ needs the platform with no screen.
 
 ## State
 
-All 23 games are ported, each identical to its original on its scripted
-runs (55 runs; see [doc/table.md](doc/table.md)).
+All 23 games are ported. The branch `faithful` is the port with each game
+identical to its original on its scripted runs (55 runs: the same trace
+line per frame and the same screens). On `main`, 14 of the games were then
+relaxed on purpose, where the exactness kept a slip of the C or made the
+port harder to read (state made anew in each game, counters reset, a line
+of tetris that clears): each deliberate difference is listed in "Relaxed
+ports" of [doc/fidelity.md](doc/fidelity.md), and
+[doc/table.md](doc/table.md) says which games.
+
+How it was written: by an AI coding agent (Claude Code), in one long
+session directed by the author of Atmos, game by game. For each game the
+agent added a trace to the original, wrote the port from the C, and
+changed the port until both gave the same trace and screens on scripted
+runs; the author decided the scope, the names, and what to relax.
 
 - `ray.atm`: the environment.
 - `classics/`: the 12 classics. `classics/classic.atm` is the pause and
