@@ -10,7 +10,7 @@
 #                      run has its .sum, which is only stored when the port
 #                      is the same as the original; "relaxed" for a game of
 #                      the table "Relaxed ports" of doc/fidelity.md (the
-#                      same up to the tag faithful)
+#                      same up to the branch faithful)
 #
 #   tools/table.py      rewrites the table in doc/table.md
 

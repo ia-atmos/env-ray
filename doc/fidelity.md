@@ -60,7 +60,7 @@ that is checked, and what differs, game by game.
 
 ## snake
 
-Relaxed (see "Relaxed ports" at the end): identical up to the tag
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
 `faithful`, on its runs `play` (760 frames, 12 screens: six fruits, a pause,
 a wall, an ENTER in the frame of the game over, two restarts) and `self`
 (460 frames, 4 screens: the snake runs into itself).
@@ -179,7 +179,7 @@ rotation), time.
 
 ## space_invaders
 
-Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, and
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, and
 still identical on its runs `play` (3477 frames, 18 screens: SPACE
 held through the three waves and "YOU WIN", a pause, then the enemies, an
 ENTER in the frame of the game over, a restart) and `seed4` (2000 frames, 8
@@ -208,7 +208,7 @@ score of that frame is left out of both traces.
 
 ## missile_commander
 
-Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, on its
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its
 runs `play` (4112 frames, 23 screens: the
 missiles shot down for 2000 frames with a pause, then the city falls; an
 ENTER in the frame of the game over, a restart, a game with no clicks) and
@@ -246,7 +246,7 @@ pools of tasks, and its state is made in each game):
 
 ## gorilas
 
-Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, on its
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its
 runs `play` (648 frames, 32 screens, seed 2:
 three shots on buildings and a hit, a pause in a flight, an ENTER in the
 frame of the game over, a restart in which the winner shoots first, two
@@ -321,7 +321,7 @@ of a game over, the phase only.
 
 ## platformer
 
-Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, and
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, and
 still identical on its runs `play` (734 frames, 29 screens: the ten
 coins, "PRESS [ENTER]", ENTER, the ten coins again) and `moves` (900
 frames, 14 screens: walls, a ceiling, a cut jump, a jump pressed in the
@@ -350,7 +350,7 @@ score.
 
 ## tetris
 
-Relaxed (see "Relaxed ports"): identical up to the tag `faithful`, and
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, and
 still identical on its runs `play` (6000 frames, 15 screens: random taps and
 holds of the arrows, a pause, game overs and restarts) and `seed2` (4000
 frames, 11 screens), where no line is ever full.
@@ -677,7 +677,7 @@ shown, the color of the button, the leaves).
 
 The author allowed a port that was identical to its original to relax the
 exactness in favor of expressiveness, as long as the intent of the original
-author stays (2026-11-16). The tag `faithful` (e0b6a01) is the last version
+author stays (2026-11-16). The branch `faithful` (e0b6a01) is the last version
 identical on all runs; each relaxation is a commit of its own, with its
 stored results replaced. The deliberate differences:
 

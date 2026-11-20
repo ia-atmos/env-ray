@@ -10,7 +10,7 @@
   The list is in [state.md](state.md).
 - **Runs**: scripted runs, and whether the port is the same as the original
   on all of their trace lines and screens ([fidelity.md](fidelity.md));
-  "relaxed": the same up to the tag `faithful`, and then changed on
+  "relaxed": the same up to the branch `faithful`, and then changed on
   purpose, as listed in "Relaxed ports" of fidelity.md.
 - **Memory** and **CPU**: in [bench.md](bench.md), once measured.
 
