@@ -606,7 +606,7 @@ frame), and the scroll of the aisles.
 
 ## retro_maze_3d
 
-Same as the original on its runs `start` (700 frames, 20 screens: the
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its runs `start` (700 frames, 20 screens: the
 logo, the title, the menu, the maze, the map, the pause), `menus` (1500
 frames, 20 screens) and `play` (4892 frames, 18 screens: the maze walked
 to its exit, the end, the credits, the title). `play` is made by
@@ -620,7 +620,9 @@ the map, the credits, the result, the GPi mode, the exit.
 
 - **3D in software.** The maze is drawn by the rlsw renderer of the test
   mode, in both: the same calls give the same pixels.
-- **Never reset.** The time and the stamina of a game go on in the next;
+- **Never reset** in the C (the relaxed port resets the time, the stamina
+  and the steps in each game, and the option in each menu). The time and
+  the stamina of a game go on in the next;
   the title, back from a game, goes on from where its animation was (the
   run `menus` starts a game before the 3D shows up).
 - **One option for two menus.** The pause menu and the title share the
@@ -694,3 +696,4 @@ stored results replaced. The deliberate differences:
 | platformer | The jump button is reset at the start of each game (the C never resets it, so a button held into the game over could jump at the start of the next game) | No run holds it across a game: the traces and the screens of `play` and `moves` are still identical |
 | gold_fever | A game that ends does not check the home in that frame (#30) | The C checks it, and a point scored there shows in the score but not in the best score. No run does it: the traces and the screens of `play` and `caught` are still identical |
 | light_my_ritual | The light of the player starts at 0 in each game (#31) | The C never resets it: the second game of `timeover` starts with the 35 left of the first. The trace of `timeover` from line 6920, and 3 of its 20 screens, differ; `start` is identical |
+| retro_maze_3d | The time, the stamina and the steps are reset in each game; each menu (the title, the pause) starts at its first option (#32) | In the C a game goes on with the time and the stamina of the last, and the two menus share one option. In `menus`, the ENTER after BACK TO TITLE starts a game (the C opens the credits): its trace differs in lines 700 to 759 and from 920, and 4 of its 20 screens; `start` and `play` are identical |

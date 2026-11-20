@@ -183,7 +183,7 @@ func center (s, y, size, c) {
 
 ;; What goes on from screen to screen, as the statics of the C: the title
 ;; (where it is, how far its animation went), the option of the menus, the
-;; time and the stamina (never reset), the steps, the end.
+;; time, the stamina and the steps (reset in each game), the end.
 var y          = -128                   ;; elementPositionY
 var title      = 0                      ;; titleState (drawn)
 var option     = 0
@@ -266,6 +266,7 @@ task Title () {
         }
         await false
     } with {
+        set option = 0                          ;; relaxed: its own option
         var choice = nil
         loop on :frame {
             set choice = menu()
@@ -307,12 +308,15 @@ task Title () {
 ;; The maze, until the exit, the time or the stamina is over; SPACE pauses
 ;; it with a menu (resume, back to the title, exit); M shows the map.
 task Gameplay () {
+    ;; relaxed: the C never resets the time, the stamina and the steps
+    set seconds, stamina, steps, frames = 300, 100, 0, 0
     var next = nil
     par :any {
         loop on :frame {
             ray.update_music(music_gameplay)
             if ray.key_pressed('SPACE') {
                 set paused = !paused
+                set option = 0                  ;; relaxed: its own option
                 ray.play_sound(fx_pause)
             }
             if ray.key_pressed('M') { set minimap = !minimap }
