@@ -470,7 +470,7 @@ read: 31", "Furniture MAP elements read: 25"), and so does the port.
 
 ## light_my_ritual
 
-Same as the original on its runs `start` (1600 frames, 14 screens: the
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its runs `start` (1600 frames, 14 screens: the
 title, the player, the light refilled, a pause, S) and `timeover` (7100
 frames, 20 screens: the player lights what it can, the enemies put the
 lights out, the 99 seconds run out; the title; a second game).
@@ -482,8 +482,9 @@ Trace: frame; in the game also the player, its light, the level.
   out faster than an open route lights them; the end by light (the ritual,
   its fade, and the return to the logo with no fade) is ported, but not
   compared.
-- The light of the player is never reset: a second game starts with what
-  was left from the first (35 in the run).
+- In the C the light of the player is never reset: a second game starts
+  with what was left from the first (35 in the run). The relaxed port starts
+  each game with none.
 - The lights come from a map in an image, read by the C of the original in
   a prelude of the port.
 
@@ -692,3 +693,4 @@ stored results replaced. The deliberate differences:
 | space_invaders | The state of a game is made in each game (still identical); a wave ends when its kills reach its number (`>=`), not only when they are exactly it (`==`) | Two kills in the last frame of a wave end it, where the C would keep the wave forever. No run does it: the traces and the screens of `play` and `seed4` are still identical |
 | platformer | The jump button is reset at the start of each game (the C never resets it, so a button held into the game over could jump at the start of the next game) | No run holds it across a game: the traces and the screens of `play` and `moves` are still identical |
 | gold_fever | A game that ends does not check the home in that frame (#30) | The C checks it, and a point scored there shows in the score but not in the best score. No run does it: the traces and the screens of `play` and `caught` are still identical |
+| light_my_ritual | The light of the player starts at 0 in each game (#31) | The C never resets it: the second game of `timeover` starts with the 35 left of the first. The trace of `timeover` from line 6920, and 3 of its 20 screens, differ; `start` is identical |

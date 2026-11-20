@@ -105,6 +105,7 @@ var game = nil                          ;; the game shown, for the trace (set :o
 pin ENEMY = [[15,20,90,400], [10,20,240,800], [8,18,180,1200]]
 
 task Gameplay () {
+    set energy = 0                      ;; relaxed: the C never resets the light
     pin tex = func (n) { ray.texture("resources/textures/" ++ n ++ ".png") }
     pin background = tex("background")
     pin fore1, fore2, fore3 = tex("foreground_level_i"), tex("foreground_level_ii"), tex("foreground_level_iii")
