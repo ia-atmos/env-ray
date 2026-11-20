@@ -27,6 +27,7 @@ out = ['# Benchmark', '',
        '| Game | Run | Frames | CPU/frame C | CPU/frame Atmos | Atmos/C | fps C | fps Atmos | CPU at 60 fps C | CPU at 60 fps Atmos | Memory C | Memory Atmos | Binary C | Binary Atmos |',
        '|------|-----|-------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|----:|----:|']
 tc = ta = 0
+logic = []
 for r in rows:
     g, run, frames = r[0], r[1], r[2]
     cc, ca = float(r[4]), float(r[5])
@@ -34,6 +35,7 @@ for r in rows:
     mc, ma = r[10], r[11]
     bc, ba = r[13], r[14]
     tc += cc; ta += ca
+    logic.append((g, run[:-4], frames, cc, ca, float(r[16]), float(r[17])))
     out.append('| %s | %s | %s | %.2f | %.2f | %.2f | %s | %s | %.0f%% | %.0f%% | %s | %s | %s | %s |' % (
         g, run[:-4], frames, cc, ca, ca / cc, fc, fa, cc * 60 / 10, ca * 60 / 10, mc, ma, bc, ba))
 out += ['', 'Over the 23 games, the sum of the CPU per frame of the ports is %.2f times' % (ta / tc),
@@ -43,6 +45,25 @@ out += ['', 'Over the 23 games, the sum of the CPU per frame of the ports is %.2
         '100% at 60 fps, one core of this machine cannot draw 60 frames per',
         'second in software, with the C as with the port; with a GPU, the',
         'drawing leaves the CPU.', '',
+        '## The logic alone', '',
+        'The same runs with `RL_NODRAW=1`: the test mode of raylib rasterizes',
+        'nothing (no point, line, triangle, quad, nor clear writes a pixel) and',
+        'copies no screen, in the original and in the port alike. What is left',
+        'in a frame is the logic of the game and its calls of drawing, which',
+        'raylib still receives, batches and transforms. The time is the CPU of',
+        'the run minus the CPU of the same program run for 1 frame (its start:',
+        'the window, the assets), over the other frames, in µs; the whole frame',
+        'of the table above is beside it. The traces are the same with and',
+        'without the switch.', '',
+        '| Game | Run | Frames | Logic C (µs) | Logic Atmos (µs) | Atmos/C | Whole frame C (µs) | Whole frame Atmos (µs) |',
+        '|------|-----|-------:|----:|----:|----:|----:|----:|']
+lc = la = 0
+for g, run, frames, cc, ca, c, a in logic:
+    lc += c; la += a
+    out.append('| %s | %s | %s | %.1f | %.1f | %s | %.0f | %.0f |' % (g, run, frames, c, a, ('%.2f' % (a / c)) if c > 0 else '-', cc * 1000, ca * 1000))
+out += ['', 'Over the 23 games, the sum of the logic of the ports is %.2f times that' % (la / lc),
+        'of the originals (%.0f against %.0f µs for one frame of each game), where the' % (la, lc),
+        'whole frames are %.2f times.' % (ta / tc), '',
         '## Stress: many entities', '',
         '`tools/stress.py` builds space_invaders with a first wave of N enemies',
         '(10 in the game) in a copy of the original and of the port; each runs',

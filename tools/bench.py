@@ -8,6 +8,11 @@
 # cut at FRAMES frames: the CPU time (user + system) per frame, the frames
 # per second with no cap (wall time), the peak memory (maximum resident
 # set), and the size of the binary. Each measure is the median of REPS runs.
+#
+# Then the logic alone: the same run with RL_NODRAW (the test mode of raylib
+# rasterizes nothing and copies no screen; the calls of drawing stay, with
+# their batching), as the CPU of FRAMES frames minus the CPU of 1 frame (the
+# start of the program: its assets), over FRAMES - 1.
 
 import os, resource, statistics, subprocess, sys, time
 
@@ -50,7 +55,11 @@ def bench(g):
         cpu = statistics.median(m[0] for m in ms)
         wall = statistics.median(m[1] for m in ms)
         mem = statistics.median(m[2] for m in ms)
-        res[kind] = (cpu / frames * 1000, frames / wall, mem / 1024, os.path.getsize(exe) / 1024)
+        nod = dict(env, RL_NODRAW='1')
+        full = statistics.median(measure(exe, cwd, nod)[0] for _ in range(REPS))
+        one = statistics.median(measure(exe, cwd, dict(nod, RL_FRAMES='1'))[0] for _ in range(REPS))
+        logic = max(full - one, 0) / max(frames - 1, 1) * 1e6          # in µs per frame
+        res[kind] = (cpu / frames * 1000, frames / wall, mem / 1024, os.path.getsize(exe) / 1024, logic)
     return r, frames, res
 
 if __name__ == '__main__':
@@ -59,7 +68,7 @@ if __name__ == '__main__':
   for g in games:
       r, frames, res = bench(g)
       c, a = res['C'], res['Atmos']
-      line = '%s %s %d | %.3f %.3f | %.0f %.0f | %.1f %.1f | %.0f %.0f' % (g, r, frames, c[0], a[0], c[1], a[1], c[2], a[2], c[3], a[3])
+      line = '%s %s %d | %.3f %.3f | %.0f %.0f | %.1f %.1f | %.0f %.0f | %.1f %.1f' % (g, r, frames, c[0], a[0], c[1], a[1], c[2], a[2], c[3], a[3], c[4], a[4])
       print(line, flush=True)
       lines.append(line)
   open(ROOT + '/build/bench.txt', 'w').write('\n'.join(lines) + '\n')
