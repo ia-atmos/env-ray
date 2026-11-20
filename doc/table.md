@@ -33,7 +33,7 @@ the runs: no number here is typed by hand.
 | tetris | 577 | 340 | 4370 | 2902 | 11 | 2 | 2 (10000 frames, 26 screens) | relaxed |
 | raylife | 196 | 180 | 1506 | 1411 | 1 | 1 | 2 (1400 frames, 33 screens) | yes |
 | wave_collector | 679 | 273 | 4998 | 2247 | 7 | 1 | 3 (13723 frames, 46 screens) | yes |
-| repair | 672 | 384 | 5601 | 3847 | 5 | 1 | 2 (3350 frames, 45 screens) | yes |
+| repair | 672 | 385 | 5601 | 3855 | 5 | 1 | 2 (3350 frames, 45 screens) | relaxed |
 | cat_vs_roomba | 857 | 335 | 7312 | 3563 | 5 | 1 | 2 (13420 frames, 31 screens) | yes |
 | light_my_ritual | 901 | 281 | 7087 | 2455 | 5 | 2 | 2 (8700 frames, 34 screens) | relaxed |
 | transmission | 1125 | 652 | 6898 | 5579 | 6 | 3 | 2 (7036 frames, 37 screens) | yes |

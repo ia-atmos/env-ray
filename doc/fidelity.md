@@ -425,7 +425,7 @@ warp.
 
 ## repair
 
-Same as the original on its runs `play` (1850 frames, 30 screens: the
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its runs `play` (1850 frames, 30 screens: the
 logo, START DATE, the five buttons of re-touch, SPACE, GO DATE, the ending
 and its likes, AGAIN, the title again, ENTER through the screens) and
 `keys` (1500 frames, 15 screens, seed 2: the keyboard only).
@@ -442,9 +442,9 @@ are drawn.
   platform feeds no gestures. The port calls it as the C does.
 - The button HAIR draws `GetRandomValue(0, texHair.width/BASE_HAIR_WIDTH)`
   with no `- 1`, so it may pick a hair past the last one, which draws
-  nothing; the port keeps it.
-- The counter of the title is never reset: on a second visit its button
-  shows at once.
+  nothing; the faithful port kept it, the relaxed one draws in the range.
+- In the C the counter of the title is never reset: on a second visit its
+  button shows at once. The relaxed port resets it in each visit.
 
 ## cat_vs_roomba
 
@@ -700,3 +700,4 @@ stored results replaced. The deliberate differences:
 | light_my_ritual | The light of the player starts at 0 in each game (#31) | The C never resets it: the second game of `timeover` starts with the 35 left of the first. The trace of `timeover` from line 6920, and 3 of its 20 screens, differ; `start` is identical |
 | retro_maze_3d | The time, the stamina and the steps are reset in each game; each menu (the title, the pause) starts at its first option (#32) | In the C a game goes on with the time and the stamina of the last, and the two menus share one option. In `menus`, the ENTER after BACK TO TITLE starts a game (the C opens the credits): its trace differs in lines 700 to 759 and from 920, and 11 of its 20 screens; `start` and `play` are identical |
 | skully_escape | On entering a room, its search ends and the bounds of the player are set (#33) | In the C the flag of a search is never reset, so a search started at a door goes on when the player comes back to the room; and the bounds are those of the last room until the player moves. Both runs go the same way; the trace of `play` differs in lines 2437 to 2620 with 4 of its 24 screens, that of `death` in lines 2690 to 2873 with no screen; `start` is identical |
+| repair | The counter of the title is reset in each visit; the button HAIR draws a hair in its range (#34) | In the C the title shows its button at once on a second visit, and HAIR may draw a hair past the last one, which draws nothing. The trace of `play` differs in lines 922 to 1009, with 12 of its 30 screens (another hair, and the title with no button yet); the trace of `keys` is identical, and 2 of its 15 screens differ |

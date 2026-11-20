@@ -95,11 +95,12 @@ task LogoScreen () {
     await false
 }
 
-;; As in the C, the frames of the title are never reset: on a second visit,
-;; its button is there at once.
+;; The frames of the title, for its button. Relaxed: the C never resets
+;; them, so on a second visit its button is there at once.
 var title_frames = 0
 
 task Title () {
+    set title_frames = 0
     pin ttitle = ray.texture("resources/title.png")
     pin tlogo  = ray.texture("resources/raylib_logo.png")
     set player = generate()
@@ -182,7 +183,7 @@ task Gameplay () {
         }
     }
     spawn Once(40 + 90,  "HAIR TINT", \{ set player.colHair = HAIRS@(ray.random(0, 9)) })
-    spawn Once(40 + 180, "HAIR",      \{ set player.hair = ray.random(0, ray.texture_width(thair)//HAIR) })
+    spawn Once(40 + 180, "HAIR",      \{ set player.hair = ray.random(0, (ray.texture_width(thair)//HAIR) - 1) })
     spawn Once(40 + 270, "EYES",      \{ set player.eyes = ray.random(0, (ray.texture_width(teyes)//EYES) - 1) })
     spawn Once(40 + 360, "NOSE",      \{ set player.nose = ray.random(0, (ray.texture_width(tnose)//NOSE) - 1) })
     spawn Once(40 + 450, "LIPS",      \{ set player.mouth = ray.random(0, (ray.texture_width(tmouth)//MOUTH) - 1) })
