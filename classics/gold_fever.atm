@@ -140,7 +140,8 @@ task Play () {
     }
 
     ;; The rules, after everything moved, in the order of the C: the gold,
-    ;; the enemy, the home. A game that ends still checks the home.
+    ;; the enemy, the home. Relaxed: a game that ends does not check the home
+    ;; (the C does, and a point scored there is not in the best score).
     loop on :frame {
         if ray.check_collision_circles(player.x, player.y, 20, gold.x, gold.y, 10) {
             emit :touch.gold
@@ -149,11 +150,11 @@ task Play () {
         if dead {
             set hiscore = math.max(score, hiscore)
         }
+        until dead
         set safe = ray.check_collision_circle_rec(player.x, player.y, 20, home.x, home.y, 50, 50)
         if safe {
             emit :touch.home
         }
-        until dead
     }
 }
 

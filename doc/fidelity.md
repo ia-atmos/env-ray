@@ -110,7 +110,8 @@ As in the C:
 
 ## gold_fever
 
-Same as the original on its runs `play` (1009 frames, 19 screens: four
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, and
+still identical, on its runs `play` (1009 frames, 19 screens: four
 points with a pause, the enemy, an ENTER in the frame of the game over, a
 restart, one more point) and `caught` (360 frames, 8 screens, seed 2: the
 enemy catches the player with the gold).
@@ -122,9 +123,10 @@ another (player, enemy, gold, enemy again, home). A task that both moves and
 draws one thing cannot follow both, so the port spawns the looks first, in
 the order they are drawn, and the behaviors after them, in the order of the
 C. The checks of the gold, the enemy, and the home are one task, the last,
-which emits `:touch.gold` and `:touch.home` in the order of the C. As in the
-C, a game that ends still checks the home in that frame: a point scored
-there is not in the best score.
+which emits `:touch.gold` and `:touch.home` in the order of the C. In the C,
+a game that ends still checks the home in that frame: a point scored there
+is not in the best score. The faithful port did the same; the relaxed one
+ends the game at once.
 
 ## arkanoid
 
@@ -689,3 +691,4 @@ stored results replaced. The deliberate differences:
 | tetris | The full lines are found in every row, not only the two top ones (the C starts its loop at `j = GRID_VERTICAL_SIZE - 2 && !isEmptyRowFound`, which is 1, and never clears a line) | A full line blinks and is cleared, and counts in the lines. No run fills a line: the traces and the screens of `play` and `seed2` are still identical |
 | space_invaders | The state of a game is made in each game (still identical); a wave ends when its kills reach its number (`>=`), not only when they are exactly it (`==`) | Two kills in the last frame of a wave end it, where the C would keep the wave forever. No run does it: the traces and the screens of `play` and `seed4` are still identical |
 | platformer | The jump button is reset at the start of each game (the C never resets it, so a button held into the game over could jump at the start of the next game) | No run holds it across a game: the traces and the screens of `play` and `moves` are still identical |
+| gold_fever | A game that ends does not check the home in that frame (#30) | The C checks it, and a point scored there shows in the score but not in the best score. No run does it: the traces and the screens of `play` and `caught` are still identical |

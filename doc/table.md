@@ -21,7 +21,7 @@ the runs: no number here is typed by hand.
 |------|--------:|------------:|---------:|-------------:|----------:|-------------:|-----:|------|
 | snake | 181 | 123 | 1509 | 958 | 5 | 0 | 2 (1220 frames, 16 screens) | relaxed |
 | floppy | 143 | 119 | 1054 | 699 | 4 | 0 | 2 (2746 frames, 25 screens) | yes |
-| gold_fever | 178 | 164 | 1470 | 1239 | 6 | 1 | 2 (1369 frames, 27 screens) | yes |
+| gold_fever | 178 | 164 | 1470 | 1239 | 6 | 1 | 2 (1369 frames, 27 screens) | relaxed |
 | arkanoid | 207 | 149 | 2005 | 1312 | 4 | 0 | 2 (22977 frames, 23 screens) | yes |
 | asteroids_survival | 241 | 181 | 2262 | 1470 | 3 | 0 | 2 (4531 frames, 22 screens) | yes |
 | space_invaders | 271 | 198 | 1903 | 1297 | 9 | 1 | 2 (5477 frames, 26 screens) | relaxed |
