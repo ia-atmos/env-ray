@@ -240,7 +240,18 @@ static void rl_rtx_fin (void* p) { UnloadRenderTexture(*(RenderTexture2D*)p); fr
 static void rl_fnt_fin (void* p) { UnloadFont(*(Font*)p); free(p); }
 static void rl_snd_fin (void* p) { UnloadSound(*(Sound*)p); free(p); }
 static void rl_mus_fin (void* p) { UnloadMusicStream(*(Music*)p); free(p); }
-static void rl_shd_fin (void* p) { UnloadShader(*(Shader*)p); free(p); }
+// UnloadShader does not free the locations of a shader that fell back to
+// the default one (as with the software renderer): free them here.
+extern unsigned int rlGetShaderIdDefault (void);
+static void rl_shd_fin (void* p) {
+    Shader s = *(Shader*)p;
+    if (s.id == rlGetShaderIdDefault()) {
+        free(s.locs);
+    } else {
+        UnloadShader(s);
+    }
+    free(p);
+}
 
 static AVal rl_box (const void* v, size_t n, void (*fin)(void*), const char* kind) {
     void* p = malloc(n);
