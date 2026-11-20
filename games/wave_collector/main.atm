@@ -85,11 +85,12 @@ task LogoScreen () {
     await false
 }
 
-;; As in the C, the alpha of the title is never reset: on a second visit it
-;; is already at 1.
+;; The alpha of the title, which fades in. Relaxed: the C never resets it,
+;; so on a second visit the title is there at once.
 var title_alpha = 0
 
 task Title () {
+    set title_alpha = 0
     pin back  = ray.texture("resources/textures/background_title.png")
     pin title = ray.texture("resources/textures/title.png")
     pin logo  = ray.texture("resources/textures/logo_raylib.png")

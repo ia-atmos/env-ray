@@ -399,7 +399,7 @@ Trace: frame, mode, generations, cells, interval, camera.
 
 ## wave_collector
 
-Runs: `pause` (1500 frames, 18 screens: the logo, the title, the gameplay
+Relaxed (see "Relaxed ports"): identical up to the branch `faithful`, on its runs: `pause` (1500 frames, 18 screens: the logo, the title, the gameplay
 with the warp and a pause), `lose` (2835 frames, 14 screens: the wave
 followed for 1500 frames, then not; the synchro falls to 0; the ending, the
 title again) and `win` (9388 frames, 14 screens: the whole wave, 573 of 573
@@ -414,8 +414,9 @@ warp.
   port: 573 samples.
 - **The logo** of `games/screens.atm` first ended its bars one frame late
   (see doc/compiler.md, `watching ... until`); the screens showed it.
-- **The title** fades in only on the first visit: `titleAlpha` is never
-  reset, so the port keeps it out of the screen. The run `lose` found it.
+- **The title** fades in only on the first visit in the C: `titleAlpha`
+  is never reset (the run `lose` found it). The relaxed port fades it in on
+  each visit.
 - **The transition** fades to white in 20 frames and back in one frame
   (`(int)transAlpha <= 0` holds as soon as the alpha leaves 1), and a new
   screen starts to update in the second frame after it appears, as in the
@@ -703,3 +704,4 @@ stored results replaced. The deliberate differences:
 | skully_escape | On entering a room, its search ends and the bounds of the player are set (#33) | In the C the flag of a search is never reset, so a search started at a door goes on when the player comes back to the room; and the bounds are those of the last room until the player moves. Both runs go the same way; the trace of `play` differs in lines 2437 to 2620 with 4 of its 24 screens, that of `death` in lines 2690 to 2873 with no screen; `start` is identical |
 | repair | The counter of the title is reset in each visit; the button HAIR draws a hair in its range (#34) | In the C the title shows its button at once on a second visit, and HAIR may draw a hair past the last one, which draws nothing. The trace of `play` differs in lines 922 to 1009, with 12 of its 30 screens (another hair, and the title with no button yet); the trace of `keys` is identical, and 2 of its 15 screens differ |
 | drturtle | The best score and distance are taken at the end of the frame of the death (#43) | The C takes them at the death and goes on with the frame, so the distance shown at the end is half a unit more than the best one. The best distance in the trace differs from the death on (line 2386 of `play`, 250 of `start`), with 3 of the 9 screens of `play` and 1 of the 8 of `start` |
+| wave_collector | The title fades in on each visit (#35) | In the C it fades in only on the first visit. The traces are identical; the last 2 of the 14 screens of `lose` and of `win` (the title again) differ; `pause` is identical |
