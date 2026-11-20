@@ -352,6 +352,10 @@ static AStatus rl_input (void) {
     return st;
 }
 
+#ifndef A_TIME_US
+#define A_TIME_US 1                 // a runtime before the option of time
+#endif
+
 int main (int argc, char** argv) {
     atm_init(argc, argv);
     AStatus st = atm_main();
@@ -361,6 +365,7 @@ int main (int argc, char** argv) {
 
     int64_t prv = llround(GetTime() * 1e6);
     int64_t frames = 0;
+    int64_t clk = 0;
     while (st==A_OK && atm_alive()) {
         if (WindowShouldClose()) {
             st = rl_emit(RL_EV_QUIT, a_nil());
@@ -376,8 +381,12 @@ int main (int argc, char** argv) {
             rl_set(e, "us", a_int(us));
             st = rl_emit(RL_EV_FRAME, e);
         }
-        if (st==A_OK && us>0) {
-            st = atm_emit(a_int(us));
+        // the time, in the unit of the build (ATMOS_TIME=ms: milliseconds,
+        // with the rest kept for the next frame)
+        clk += us;
+        if (st==A_OK && clk>=A_TIME_US) {
+            st = atm_emit(a_int(clk / A_TIME_US));
+            clk %= A_TIME_US;
         }
         BeginDrawing();
         if (st == A_OK) {
