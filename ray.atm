@@ -363,8 +363,12 @@ static AStatus rl_input (void) {
     return st;
 }
 
-#ifndef A_TIME_US
-#define A_TIME_US 1                 // a runtime before the option of time
+#ifndef A_CLOCK_US                  // the unit of the clock, in microseconds
+#ifdef A_TIME_US
+#define A_CLOCK_US A_TIME_US        // its former name
+#else
+#define A_CLOCK_US 1                // a runtime before the option of time
+#endif
 #endif
 
 int main (int argc, char** argv) {
@@ -392,12 +396,12 @@ int main (int argc, char** argv) {
             rl_set(e, "us", a_int(us));
             st = rl_emit(RL_EV_FRAME, e);
         }
-        // the time, in the unit of the build (ATMOS_TIME=ms: milliseconds,
+        // the time, in the unit of the build (ATMOS_CLOCK=ms: milliseconds,
         // with the rest kept for the next frame)
         clk += us;
-        if (st==A_OK && clk>=A_TIME_US) {
-            st = atm_emit(a_int(clk / A_TIME_US));
-            clk %= A_TIME_US;
+        if (st==A_OK && clk>=A_CLOCK_US) {
+            st = atm_emit(a_int(clk / A_CLOCK_US));
+            clk %= A_CLOCK_US;
         }
         BeginDrawing();
         if (st == A_OK) {
