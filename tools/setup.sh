@@ -17,7 +17,7 @@ mkdir -p ext
 
 RAYLIB_TAG=6.2
 GAMES_REV=318688c
-ATMOS_REV=8c46149                       # main, 2026-11-20 (the suite and ASAN pass)
+ATMOS_REV=d19d40f                       # main, 2026-11-21 (the suite passes)
 
 if [ ! -d ext/raylib ]; then
     git clone -q --depth 1 --branch $RAYLIB_TAG https://github.com/raysan5/raylib ext/raylib
@@ -28,6 +28,10 @@ if [ ! -d ext/raylib-games ]; then
 fi
 if [ ! -d ext/ceu-atmos ]; then
     git clone -q https://github.com/ia-atmos/lang ext/ceu-atmos
+fi
+# the compiler at ATMOS_REV, also when the checkout is older
+if [ "$(git -C ext/ceu-atmos rev-parse HEAD)" != "$(git -C ext/ceu-atmos rev-parse -q --verify $ATMOS_REV^{commit})" ]; then
+    git -C ext/ceu-atmos cat-file -e $ATMOS_REV^{commit} 2>/dev/null || git -C ext/ceu-atmos fetch -q origin
     git -C ext/ceu-atmos checkout -q $ATMOS_REV
 fi
 
