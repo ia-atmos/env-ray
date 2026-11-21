@@ -363,14 +363,6 @@ static AStatus rl_input (void) {
     return st;
 }
 
-#ifndef A_CLOCK_US                  // the unit of the clock, in microseconds
-#ifdef A_TIME_US
-#define A_CLOCK_US A_TIME_US        // its former name
-#else
-#define A_CLOCK_US 1                // a runtime before the option of time
-#endif
-#endif
-
 int main (int argc, char** argv) {
     atm_init(argc, argv);
     AStatus st = atm_main();
