@@ -132,9 +132,10 @@ ends the game at once.
 
 ## arkanoid
 
-Same as the original on its runs `win` (21460 frames, 11 screens: the
-paddle keeps the ball for 21429 frames, until no brick is left, with all
-lives) and `lose` (1517 frames, 12 screens: a pause, eight bounces, then
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
+`faithful`, on its runs `win` (21460 frames, 11 screens: the paddle keeps
+the ball for 21429 frames, until no brick is left, with all lives; now
+17987 frames, won at 17956) and `lose` (1517 frames, 12 screens: a pause, eight bounces, then
 five falls, an ENTER in the frame of the game over, a restart).
 
 Trace: frame, phase, paddle, ball (position and speed, with 5 decimals),
@@ -142,11 +143,12 @@ lives, bricks left.
 
 - **Floats.** After a bounce on the paddle, the speed of the ball is
   `(ball.x - player.x)/40*5`, in floats of 32 bits, and the position adds
-  it in each frame: 2.98828, 0.04883. Atmos numbers are doubles, so the port
-  rounds the result of each such operation with `ray.f32`, as the C does,
-  including the sums that are only compared (`ball.x + radius >= 800`).
-  The run `win` goes through hundreds of bounces with the same positions,
-  to the last decimal of the trace.
+  it in each frame: 2.98828, 0.04883. Atmos numbers are doubles: up to the
+  branch `faithful` the port rounded the result of each such operation with
+  `ray.f32`, as the C does, including the sums that are only compared
+  (`ball.x + radius >= 800`), and `win` went through hundreds of bounces
+  with the same positions, to the last decimal of the trace. The relaxed
+  port computes in doubles.
 - In the first game, `InitGame` places the ball with a radius of 0 (it is
   set after), but the first frame places it again on the paddle, so this is
   never seen.
@@ -709,3 +711,4 @@ stored results replaced. The deliberate differences:
 | drturtle | The best score and distance are taken at the end of the frame of the death (#43) | The C takes them at the death and goes on with the frame, so the distance shown at the end is half a unit more than the best one. The best distance in the trace differs from the death on (line 2386 of `play`, 250 of `start`), with 3 of the 9 screens of `play` and 1 of the 8 of `start` |
 | wave_collector | The title fades in on each visit (#35) | In the C it fades in only on the first visit. The traces are identical; the last 2 of the 14 screens of `lose` and of `win` (the title again) differ; `pause` is identical |
 | cat_vs_roomba | A draw of 100 for the dirt of a tile is the dirtiest level, as 90 to 99 (#36) | In the C no case takes it, and the tile keeps the level it had. One tile of the runs is dirtier: 14 of the 17 screens of `play` and 9 of the 14 of `start` differ by a few pixels; the trace of `play` differs from line 6430 (the score, 10900 at the end against 10600), that of `start` is identical |
+| arkanoid | Doubles: no `ray.f32` (#44) | The ball moves on doubles, where the C rounds to floats of 32 bits. `lose` is identical; `win` differs from line 7531 of 21460, so its input was made again by `gen.py` on doubles (won at frame 17956 against 21429, all lives) |

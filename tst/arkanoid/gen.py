@@ -2,14 +2,14 @@
 # Generates the input of a game of arkanoid: launches the ball, and keeps the
 # paddle under it with an offset that changes at each bounce, so that the
 # ball leaves the paddle at many angles. The game is simulated with the
-# rules and the float arithmetic of the C; the outcome that counts is the
-# original's.
+# rules of the C and the doubles of the port (it rounded to floats as the
+# C, up to the branch `faithful`).
 #
 #   gen.py <first frame> <frames> [miss after N bounces]   prints INPUT entries
 
 import math, struct, sys
 
-f32 = lambda x: struct.unpack('f', struct.pack('f', x))[0]
+f32 = lambda x: x                 # the port computes in doubles (in the C, floats)
 W, H, R = 800, 450, 7
 
 def main():
