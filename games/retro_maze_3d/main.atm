@@ -448,14 +448,8 @@ pin SCREENS = [logo=Logo, title=Title, gameplay=Gameplay, credits=Credits, endin
 pin NUMBER  = [logo=0, title=1, credits=2, gameplay=3, ending=4]
 var screen  = :logo
 
-;; the frame: the key G (after the screen, as the C), into the texture of
-;; 640x480, then to the window
-spawn {
-    loop on :draw {
-        ray.begin_texture_mode(target)
-        ray.clear(GREEN1)
-    }
-}
+;; the frame: the key G (after the screen, as the C); the screens draw into
+;; the texture of 640x480 (a context), then it goes to the window
 spawn {
     loop on :frame {
         if ray.key_pressed('G') {
@@ -482,15 +476,21 @@ spawn {
 ;; [/trace]
 
 pin main = spawn {
-    loop {
-        pin s = spawn (SCREENS@screen)()
-        set screen = await(s)
-        until screen == :exit
+    context <:draw> ray.ctx.texture_mode(target) {
+        spawn {
+            loop on :draw {
+                ray.clear(GREEN1)
+            }
+        }
+        loop {
+            pin s = spawn (SCREENS@screen)()
+            set screen = await(s)
+            until screen == :exit
+        }
     }
 }
 spawn {
     loop on :draw {
-        ray.end_texture_mode()
         ray.clear(GREEN1)
         if gpi {
             ray.clear(0x00000000)
