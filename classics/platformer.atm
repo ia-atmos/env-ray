@@ -167,32 +167,42 @@ task Coin (x, y) {
 task Play () {
     set player = [x=f32((TILE*MW)*0.5), y=((MH*TILE) - 16) - 1, vx=0, vy=0, hsp=0, vsp=0]
     set score, jump = 0, false        ;; relaxed: the C never resets the button
-    spawn {
-        loop on :draw {
-            ray.begin_mode2d(0, 0, 0, 0, 0, SCALE)
-            ray.clear(ray.RAYWHITE)
-            loop i,t in tiles {
-                if t {
-                    ray.rectangle((i % MW)*TILE, (i // MW)*TILE, TILE, TILE, ray.GRAY)
-                }
-            }
-        }
-    }
     spawn Physics(task)
     spawn Jumper()
-    pin coins = tasks()
-    loop _,c in [[1,7],[3,5],[4,5],[5,5],[8,3],[9,3],[10,3],[13,4],[14,4],[15,4]] {
-        spawn @coins Coin(((c@0)*16) + 6, ((c@1)*16) + 6)
+    spawn {
+        ;; the world, in the 2D mode of the camera
+        context <:draw> ray.ctx.mode2d(0, 0, 0, 0, 0, SCALE) {
+            spawn {
+                loop on :draw {
+                    ray.clear(ray.RAYWHITE)
+                    loop i,t in tiles {
+                        if t {
+                            ray.rectangle((i % MW)*TILE, (i // MW)*TILE, TILE, TILE, ray.GRAY)
+                        }
+                    }
+                }
+            }
+            pin coins = tasks()
+            loop _,c in [[1,7],[3,5],[4,5],[5,5],[8,3],[9,3],[10,3],[13,4],[14,4],[15,4]] {
+                spawn @coins Coin(((c@0)*16) + 6, ((c@1)*16) + 6)
+            }
+            spawn {
+                loop on :draw {
+                    ray.rectangle(player.x - 4, (player.y - 16) + 1, 8, 16, ray.RED)
+                }
+            }
+            await :all coins
+            emit :taken
+            await false
+        }
     }
     spawn {
         loop on :draw {
-            ray.rectangle(player.x - 4, (player.y - 16) + 1, 8, 16, ray.RED)
-            ray.end_mode2d()
             val s = string.format("SCORE: %d", score)
             ray.text(s, (ray.width()//2) - (ray.measure(s,40)//2), 50, 40, ray.BLACK)
         }
     }
-    await :all coins
+    await :taken
     spawn {
         val s = "PRESS [ENTER] TO PLAY AGAIN"
         loop on :draw {
