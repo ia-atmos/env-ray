@@ -276,10 +276,10 @@ task Gameplay () {
         loop {
             await :key.dn [key='P']
             set paused = true
-            toggle play(false)
+            mute play(true)
             await :key.dn [key='P']
             set paused = false
-            toggle play(true)
+            mute play(false)
         }
     }
 

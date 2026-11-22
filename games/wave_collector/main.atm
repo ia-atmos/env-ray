@@ -258,7 +258,7 @@ task Gameplay () {
             await :key.dn [key='P']
             ray.play_sound(spause)
             ray.pause_music(music)
-            toggle logic(false)
+            mute logic(true)
             set g.paused = true
             watching :key.dn [key='P'] {
                 loop on :draw {
@@ -267,7 +267,7 @@ task Gameplay () {
             }
             ray.play_sound(spause)
             ray.resume_music(music)
-            toggle logic(true)
+            mute logic(false)
             set g.paused = false
         }
     }

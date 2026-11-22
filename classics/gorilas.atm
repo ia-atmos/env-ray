@@ -7,7 +7,7 @@
 ;; raysan5/raylib-games. The game is the same; its control is written as
 ;; sequences: `gameOver`, `pause`, `ballOnAir`, `ball.active`, and the
 ;; `active` flags of the explosions of the C became tasks, awaits, and a
-;; toggle.
+;; mute.
 
 include "classic.atm"
 

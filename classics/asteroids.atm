@@ -6,7 +6,7 @@
 ;; Ported to Atmos: an altered version of `classics/src/asteroids.c` of
 ;; raysan5/raylib-games. The game is the same; its control is written as
 ;; sequences: `gameOver`, `pause`, `victory`, the `active` flags, and
-;; `lifeSpawn` of the C became tasks, awaits, and a toggle.
+;; `lifeSpawn` of the C became tasks, awaits, and a mute.
 
 include "classic.atm"
 

@@ -129,7 +129,7 @@ task Screens (screens, first, fade) {
         if fresh {
             ;; under the fade, which goes back; the screen is drawn, and
             ;; updates from the frame after the fade is gone
-            toggle s(false) with :draw
+            mute <!:draw> s(true)
             var alpha = 1
             set pub.alpha = 1
             par :any {
@@ -145,7 +145,7 @@ task Screens (screens, first, fade) {
                 }
             }
             set pub.trans, pub.alpha = false, 0
-            toggle s(true)
+            mute s(false)
         }
         await :frame until s.pub
         if s.pub ?? :table {
@@ -154,7 +154,7 @@ task Screens (screens, first, fade) {
             set name, fresh = s.pub.to, false
         } else {
         ;; the fade, over the screen, which is drawn but no more updated
-        toggle s(false) with :draw
+        mute <!:draw> s(true)
         var alpha = 0
         set pub.trans = true
         spawn {

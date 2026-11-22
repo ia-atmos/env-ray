@@ -6,7 +6,7 @@
 ;; Ported to Atmos: an altered version of `classics/src/pang.c` of
 ;; raysan5/raylib-games. The game is the same; its control is written as
 ;; sequences: `gameOver`, `pause`, `victory`, `awake`, the `active` flags,
-;; and `lifeSpawn` of the C became tasks, awaits, and a toggle.
+;; and `lifeSpawn` of the C became tasks, awaits, and a mute.
 ;;
 ;; Its pause, game over, and victory differ from the other classics (the
 ;; texts are LIGHTGRAY, a victory freezes the game), so it does not use
@@ -203,7 +203,7 @@ task Play () {
     } with {
         loop {
             await :key.dn [key='P']
-            toggle logic(false)
+            mute logic(true)
             set phase = :pause
             watching :key.dn [key='P'] {
                 val s = "GAME PAUSED"
@@ -211,7 +211,7 @@ task Play () {
                     ray.text(s, (W//2) - (ray.measure(s,40)//2), (H//2) - 40, 40, ray.LIGHTGRAY)
                 }
             }
-            toggle logic(true)
+            mute logic(false)
             set phase = :play
         }
     }

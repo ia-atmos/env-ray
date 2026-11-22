@@ -6,7 +6,7 @@
 ;; Ported to Atmos: an altered version of `classics/src/arkanoid.c` of
 ;; raysan5/raylib-games. The game is the same; its control is written as
 ;; sequences: `gameOver`, `pause`, `ball.active`, and `brick[][].active` of
-;; the C became tasks, awaits, and a toggle.
+;; the C became tasks, awaits, and a mute.
 
 include "classic.atm"
 

@@ -641,14 +641,14 @@ loop {
     }
     if trans {
         ;; the fade out, over the new screen, which is drawn but not updated
-        toggle s(false) with :draw
+        mute <!:draw> s(true)
         loop {
             await :frame
             set alpha = f32(alpha - f32(0.02))
             until alpha <= 0
         }
         set alpha, trans, to = 0, false, -1
-        toggle s(true)
+        mute s(false)
     }
     await :frame until s.pub || trans
     if s.pub {
@@ -664,7 +664,7 @@ loop {
         }
     }
     ;; the fade in, over the old screen, which is drawn but not updated
-    toggle s(false) with :draw
+    mute <!:draw> s(true)
     loop {
         await :frame
         set alpha = f32(alpha + f32(0.02))

@@ -7,7 +7,7 @@
 ;;      task Play () { ... }        ;; one game, which ends when it is over
 ;;      await Classic(Play)
 ;;
-;; The pause stops the game but keeps it drawn (`toggle ... with :draw`).
+;; The pause stops the game but keeps it drawn (`mute <!:draw> ...`).
 ;;
 ;; From raylib-games (zlib license): the shared part of the classics.
 
@@ -26,7 +26,7 @@ task Classic (Play) {
             spawn {
                 loop {
                     await :key.dn [key='P']
-                    toggle play(false) with :draw
+                    mute <!:draw> play(true)
                     set phase = :pause
                     watching :key.dn [key='P'] {
                         val s = "GAME PAUSED"
@@ -34,7 +34,7 @@ task Classic (Play) {
                             ray.text(s, (ray.width()//2) - (ray.measure(s,40)//2), (ray.height()//2) - 40, 40, ray.GRAY)
                         }
                     }
-                    toggle play(true)
+                    mute play(false)
                     set phase = :play
                 }
             }

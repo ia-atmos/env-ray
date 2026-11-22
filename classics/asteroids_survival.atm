@@ -5,7 +5,7 @@
 ;;
 ;; Ported to Atmos: an altered version of `classics/src/asteroids_survival.c`
 ;; of raysan5/raylib-games. The game is the same; its control is written as
-;; sequences: `gameOver` and `pause` of the C became tasks and a toggle.
+;; sequences: `gameOver` and `pause` of the C became tasks and a mute.
 
 include "classic.atm"
 

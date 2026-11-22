@@ -6,7 +6,7 @@
 ;; Ported to Atmos: an altered version of `classics/src/floppy.c` of
 ;; raysan5/raylib-games. The game is the same; its control is written as
 ;; sequences: `gameOver`, `pause`, `superfx`, and `tubes[].active` of the C
-;; became tasks, awaits, and a toggle.
+;; became tasks, awaits, and a mute.
 
 include "classic.atm"
 
