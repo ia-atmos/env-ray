@@ -110,7 +110,7 @@ task Logic (game, bigs, mediums, smalls) {
                 set score += b.points
                 popup(b.x, b.y, b.points)
                 if next {
-                    loop _ in 2 {
+                    loop in 2 {
                         val vx = if (#next % 2) == 0 => -2 => 2
                         spawn @next Ball([x=b.x, y=b.y, vx=vx, vy=vy], r, points, color, gravity, -1)
                     }
@@ -167,7 +167,7 @@ task Play () {
     pin mediums = tasks()
     pin smalls = tasks()
     var vx, vy = 0, 0
-    loop _ in 2 {
+    loop in 2 {
         val x = ray.random(40, W - 40)
         val y = ray.random(40, H//2)
         loop {

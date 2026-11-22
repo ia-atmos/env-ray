@@ -153,10 +153,10 @@ task Play () {
     }
     spawn Ship()
     pin meteors = tasks()
-    loop _ in 8 {
+    loop in 8 {
         spawn @meteors Meteor(task, meteor(), 20, ray.GRAY)
     }
-    loop _ in 16 {
+    loop in 16 {
         spawn @meteors Meteor(task, meteor(), 10, ray.DARKGRAY)
     }
     spawn {

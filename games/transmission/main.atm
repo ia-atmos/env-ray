@@ -245,11 +245,11 @@ task LogoScreen () {
             ray.draw_texture(cw, (W//2) - (ray.texture_width(cw)//2), (H//2) - (ray.texture_height(cw)//2), ray.fade(ray.WHITE, alpha))
         }
     }
-    loop _ in 201 {
+    loop in 201 {
         await :frame
         set alpha = math.min(f32(alpha + f32(0.02)), 1)
     }
-    loop _ in 101 {
+    loop in 101 {
         await :frame
         set alpha = f32(alpha - f32(0.02))
     }
@@ -274,12 +274,12 @@ task Title () {
         }
     }
     par :any {
-        loop _ in 12 {
+        loop in 12 {
             await(15, :frame)
             set tl += 1
             ray.play_sound(typing)
         }
-        loop _ in 7 {
+        loop in 7 {
             await(15, :frame)
             set ml += 1
             ray.play_sound(typing)

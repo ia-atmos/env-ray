@@ -64,7 +64,7 @@ task Logo (next, bars, written) {
     ;; the fade 201 frames after them
     var letters, alpha, powered = 0, 1, false
     par :any {
-        loop _ in 10 {
+        loop in 10 {
             await(12, :frame)
             set letters += 1
         }

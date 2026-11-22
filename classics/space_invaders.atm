@@ -170,7 +170,7 @@ task Play () {
         loop {
             watching :rearm {
                 loop {
-                    loop _ in 4 {
+                    loop in 4 {
                         await :frame until ray.key_down('SPACE')
                     }
                     set g.fire = [x=g.player.x, y=g.player.y + 5]
@@ -179,7 +179,7 @@ task Play () {
         }
     }
     pin shots = tasks(50)
-    loop _ in 50 {
+    loop in 50 {
         spawn @shots Shot(g, task)
     }
     spawn {

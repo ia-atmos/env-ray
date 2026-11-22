@@ -188,11 +188,11 @@ task Play () {
 
     spawn Ship()
     pin shots = tasks(10)
-    loop _ in 10 {
+    loop in 10 {
         spawn @shots Shot()
     }
     pin bigs = tasks()
-    loop _ in 4 {
+    loop in 4 {
         spawn @bigs Meteor(task, meteor(), 40, ray.DARKGRAY)
     }
     pin mediums = tasks()
@@ -204,7 +204,7 @@ task Play () {
     ;; one in two small ones, in the direction of the shot
     val game = task
     pin split = func (pool, m, rot, r) {
-        loop _ in 2 {
+        loop in 2 {
             val a = f32(rot * DEG2RAD)
             val sign = if (#pool % 2) == 0 => -1 => 1
             spawn @pool Meteor(game, [x=m.x, y=m.y, vx=f32((math.cos(a)*2)*sign), vy=f32((math.sin(a)*2)*sign)], r, ray.GRAY)

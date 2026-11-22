@@ -86,7 +86,7 @@ task Play () {
     ;; the buildings: a width, a height, and a gray, each from the left
     val mean = f32(f32(W/15) + 1)
     var x = 0
-    loop _ in 15 {
+    loop in 15 {
         val w = ray.random(math.floor(f32(f32(f32(mean*85)/100) + 1)), math.floor(f32(f32(mean*130)/100)))
         val h = ray.random(20, 60)
         val c = ray.random(120, 200)
