@@ -18,7 +18,6 @@ Each has the option recommended by this session.
 
 | # | Decision | Recommended |
 |---|----------|-------------|
-| #1 | The remotes: this repository is now `ia-atmos/env-ray`, the compiler `ia-atmos/lang` (the old addresses redirect; the names in `README.md`, `doc/compiler.md`, `tools/setup.sh` are updated). The remote of this checkout and of `ext/ceu-atmos` still name the old addresses: changing a remote is refused by the permissions of this session (auto mode) | The author allows it, or runs `git remote set-url origin https://github.com/ia-atmos/env-ray` and `git -C ext/ceu-atmos remote set-url origin https://github.com/ia-atmos/lang`. Not urgent: pushes still go through |
 | #44 | The build option `ATMOS_FLOAT=32` of the compiler (formerly `ATMOS_REAL=float`; in lang main since d19d40f; a real is a C float) against the rounding by hand with `ray.f32`. Tried on arkanoid (2026-11-20, lang c4e99c4, not merged): with float reals and its 13 calls of `ray.f32` removed, both runs are identical to the original (`lose`, 1517 frames, and `win`, 21460 frames; two screens checked); with the default doubles the same file diverges at line 7531 of `win`. The port as it is also stays identical with float reals. `ray.atm` was checked under the three options: the time is now emitted in the unit of the build (it was always microseconds), and `tst/env` passes under `ATMOS_FLOAT=32`, `ATMOS_INTEGER=32` and `ATMOS_CLOCK=ms` (formerly `ATMOS_REAL`, `ATMOS_INT`, `ATMOS_TIME`), trace and screen. To watch: a color (0xRRGGBBAA) computed as a real loses bits with float reals (drturtle adds a real to one); `sin` and `cos` where the C mixes doubles | Waiting for the author to decide which options each environment supports (atmos-float#14). Then: build the ports with float reals, and drop `ray.f32` game by game where the runs stay identical. Reported to atmos-float |
 | #5 | The original of koala_seasons reads the date (`time`), so its runs are not repeatable; the test mode fixes it, by a patch of the original (`tools/original.patch`) and the same in the port | Keep it, as written in `doc/fidelity.md` |
 | #21 | Lessmilk (`ia-atmos/ray-lessmilk`) has no patch of its own to merge: its binding is `raylib.atm` of 4360cb2 with `pin rl`, and its test patch is ours. It stays on compiler f3389f6 and binding 4360cb2 until a case of pin is settled by the compiler session (16 of its 33 runs fail on 1746969), then it moves to `ray.atm`, `atmos-ray` and the vocabulary of events at once | Nothing to do here; Lessmilk will tell |
@@ -53,6 +52,8 @@ Each has the option recommended by this session.
 | #18 | The new documents: `doc/case-study.md`, `doc/bench.md`, `launcher.atm`, `tools/compare-all.sh` |
 
 ## D. Older
+
+Closed as won't do: #1 (the remotes still name the old addresses, which redirect; the author, 2026-11-22).
 
 | # | Item |
 |---|------|
