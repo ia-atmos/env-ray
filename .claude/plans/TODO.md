@@ -37,7 +37,7 @@ Each has the option recommended by this session.
 | #40 | just_do: done stays done (a second visit to a level skips the play); the key 9 shows a level never initialized | Leave: it reads as a choice of the original, not as a slip |
 | #41 | transmission: the words of the message keep the tail of a longer word of the last mission (`strncpy` with no terminator) | Leave: it is in the C of the original that the port reuses in a prelude |
 | #42 | floppy: no wall at the top of the screen (floppy flies over the tubes and scores) | Leave: a wall changes the game, and the run `top` exists to show this |
-| #46 | `context` (atmos-context, issue 21): platformer and retro_maze_3d rewritten with `context ray.ctx.mode2d/texture_mode(...)` on the branch `exp-context` (d4f30e3, lang b71fbe4, pushed 2026-11-22, not to merge); 5 of 5 runs identical; what does not fit reported (the inline block, pools inside, enter/leave on every event) | Waiting for atmos-context; the branch predates `mute` (f416c03) |
+| #46 | `context` (atmos-context, issue 21): platformer and retro_maze_3d rewritten with `context ray.ctx.mode2d/texture_mode(...)` on the branch `exp-context` (d4f30e3, lang b71fbe4, pushed 2026-11-22, not to merge); 5 of 5 runs identical; what does not fit reported (the inline block, pools inside, enter/leave on every event) | Misfit 3 answered on lang 152cba6: `context <:draw> X {...}` enters only during a `:draw`. Optional: re-measure the enters on the branch (it predates `mute`, f416c03) |
 | #11 | Differences that no run shows, kept as documented: snake (two keys in one frame), gold_fever (ENTER in the frame of the last coin), skully_escape (a door taken during the 80 frames of a death) | See `doc/fidelity.md` |
 
 ## C. Reported and not acknowledged
