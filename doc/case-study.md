@@ -168,7 +168,7 @@ The slots remain (the port keeps their order, which the C makes
 observable: the first free slot takes the shot), but each slot is a task,
 and its flag is where the task is.
 
-## 4. Pause and game over become a toggle and a block
+## 4. Pause and game over become a mute and a block
 
 The 12 classics share the same frame: P pauses, the end of the game shows
 "PRESS [ENTER] TO PLAY AGAIN". In C, two flags wrap every update:
@@ -193,7 +193,7 @@ else
 ```
 
 The port writes it once, for the 12 games, in `classics/classic.atm`: a
-game is a task that ends when it is over; P toggles it (it stops, but is
+game is a task that ends when it is over; P mutes it but for `:draw` (it stops, but is
 still drawn); the end awaits ENTER.
 
 ```
@@ -203,11 +203,11 @@ loop {
         spawn {
             loop {
                 await :key.dn [key='P']
-                toggle play(false) with :draw
+                mute <!:draw> play(true)
                 watching :key.dn [key='P'] {
                     ... "GAME PAUSED" ...
                 }
-                toggle play(true)
+                mute play(false)
             }
         }
         await(play)
@@ -287,19 +287,19 @@ static void UpdateTransition(void)
 }
 ```
 
-In `screens.atm`, the old screen is toggled off (drawn, not updated), the
-alpha goes up, the next screen starts toggled off, the alpha goes down,
-and the next screen is toggled on:
+In `screens.atm`, the old screen is muted but for `:draw` (drawn, not updated), the
+alpha goes up, the next screen starts muted, the alpha goes down,
+and the next screen gets the events back:
 
 ```
-toggle s(false) with :draw
+mute <!:draw> s(true)
 loop {
     await :frame
     set alpha = ray.f32(alpha + f.inc)
     until f.into(alpha)
 }
-... (the next screen, toggled off; the alpha goes back)
-toggle s(true)
+... (the next screen, muted; the alpha goes back)
+mute s(false)
 ```
 
 Two games (just_do, koala_seasons) init the next screen when the

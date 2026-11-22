@@ -16,7 +16,7 @@ screen) should become an `await`, a block, or a task.
 | `screenWidth`, `screenHeight` | constant | `W`, `H` |
 | `framesCounter` | control: one step every 5 frames of play | `await(5, :frame)` in the loop of the snake; the pause stops it with the rest of the logic |
 | `gameOver` | control: tested at the top of `UpdateGame` | the task `Logic` ends, and `Play` with it; `Classic` awaits it, shows "PRESS [ENTER]", and starts another |
-| `pause` | control: tested around the logic | `toggle play(false) with :draw` between two `P`, in `Classic`; the text is a task that lives while paused |
+| `pause` | control: tested around the logic | `mute <!:draw> play(true)` between two `P`, in `Classic`; the text is a task that lives while paused |
 | `allowMove` | control: one turn per move | the task of turns awaits `:moved`, then one valid key |
 | `fruit.active` | control: a new fruit is needed | the task of the fruit: placed, then awaits being eaten |
 | `fruit.position` | drawn | `g.fruit`, the state of the game (`Play`) |
@@ -37,7 +37,7 @@ which the game never reads.
 |---|------|------|
 | `screenWidth`, `screenHeight` | constant | `W`, `H` |
 | `gameOver` | control: tested at the top of `UpdateGame` | the task `Play` ends on `:over`; `Classic` awaits it |
-| `pause` | control | `toggle play(false) with :draw`: the play stops but is still drawn |
+| `pause` | control | `mute <!:draw> play(true)`: the play stops but is still drawn |
 | `superfx` | control: a flash, set in the update, cleared in the drawing | a task: `await :scored`, then `await :draw`, then one white rectangle |
 | `tubes[].active` | control: a pair still to score | the task `Tube`: a loop until floppy passes it, one `:scored`, then a loop behind it |
 | `tubes[].rec`, `tubesPos[]` | data: two rectangles per pair, and their position | `x`, `ytop`, `ybot`, local to each `Tube` |
@@ -55,7 +55,7 @@ Left in the port for the trace only: `phase`.
 |---|------|------|
 | `screenWidth`, `screenHeight` | constant | `W`, `H` |
 | `gameOver` | control | the rules of `Play` end it (`until dead`), after the home of that frame is checked, as in the C |
-| `pause` | control | `toggle play(false) with :draw` |
+| `pause` | control | `mute <!:draw> play(true)` |
 | `follow` | control: the enemy chases from anywhere, and a red frame is drawn | the phase between `:picked` and `:stored`, in the enemy and in the task of the red frame |
 | `points.active` | control: the gold is out, to be picked | the task of the gold: awaits `:touch.gold`, then `:touch.home`; the gold is drawn by a task that lives until `:picked` |
 | `home.active` | control: set when the gold is picked, never read | gone |
@@ -210,7 +210,7 @@ the game), so it does not use `Classic`.
 |---|------|------|
 | `screenWidth`, `screenHeight` | constant | `W`, `H` |
 | `gameOver` | control | `Logic` returns `:over`; the main `loop` shows "PRESS [ENTER]" |
-| `pause` | control | `toggle logic(false)`; the balls stop since they move on `:move`, which the logic emits |
+| `pause` | control | `mute logic(true)`; the balls stop since they move on `:move`, which the logic emits |
 | `victory` | control: the game freezes, still drawn | `Logic` returns `:won`; `Play` then draws "YOU WIN!" over the game until ENTER |
 | `framesCounter`, `lose`, `awake` | control, never read | gone |
 | `shoot[].active` | control: one shot at a time | `shot`, nil when there is none |
@@ -296,7 +296,7 @@ awaits and loops there.
 | `finishScreen` (each screen) | control | the screen sets its `pub` to the next one |
 | `framesCounter` (title, ending) | control: a text that blinks from a frame on | `Blink`: an await, then 40 frames on and 40 off |
 | `framesCounter` (gameplay) | control, never read | gone |
-| `pause` | control | `toggle logic(false)`; "WAVE PAUSED" is a task that lives while paused |
+| `pause` | control | `mute logic(true)`; "WAVE PAUSED" is a task that lives while paused |
 | `endingStatus` | data: the result, read by the ending | `ending` |
 | `samples[].active` | control: a sample that passed the player is a miss only once | **left**: `s.on` |
 | `samples[].collected` | drawn | `s.got` |
