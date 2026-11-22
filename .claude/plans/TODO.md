@@ -35,7 +35,6 @@ Each has the option recommended by this session.
 | #40 | just_do: done stays done (a second visit to a level skips the play); the key 9 shows a level never initialized | Leave: it reads as a choice of the original, not as a slip |
 | #41 | transmission: the words of the message keep the tail of a longer word of the last mission (`strncpy` with no terminator) | Leave: it is in the C of the original that the port reuses in a prelude |
 | #42 | floppy: no wall at the top of the screen (floppy flies over the tubes and scores) | Leave: a wall changes the game, and the run `top` exists to show this |
-| #46 | `context` (atmos-context, issue 21, #20): platformer and retro_maze_3d with `context <:draw> ray.ctx.mode2d/texture_mode(...)`. First on `exp-context` (d4f30e3, lang b71fbe4, pushed, not to merge); redone on main with the filter on the local branch `ctx2` (fa9e30d, lang d5323ce, 2026-11-22): platformer identical with 1 enter per frame; retro_maze_3d fails, since `await(s)` gives nil inside a filtered context (minimal case reported). Misfits 1, 2, 4 still bite | Waiting for a fix of the compiler; then rerun, and merge into main if all runs stay identical (approved by the author via atmos-context) |
 | #11 | Differences that no run shows, kept as documented: snake (two keys in one frame), gold_fever (ENTER in the frame of the last coin), skully_escape (a door taken during the 80 frames of a death) | See `doc/fidelity.md` |
 
 ## C. Reported and not acknowledged
@@ -53,6 +52,7 @@ Each has the option recommended by this session.
 ## D. Older
 
 Closed as won't do: #1 (the remotes still name the old addresses, which redirect; the author, 2026-11-22).
+Done: #46 (`context <:draw>` in platformer and retro_maze_3d, in main since ba8a8b6, lang 656e7eb; runs identical, 1 enter per frame; misfits 1, 2, 4 reported to atmos-context).
 Closed as decided: #5 (koala_seasons keeps the date fixed by the patch of the original in the test mode, as in `doc/fidelity.md`; the author, 2026-11-22).
 
 | # | Item |
