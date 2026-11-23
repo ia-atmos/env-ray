@@ -12,7 +12,6 @@
 val TILE    = 16
 val MW, MH  = 20, 12            ;; the map, in tiles
 val SCALE   = 2
-val f32     = ray.f32
 
 ray.window [title="classic game: platformer", width=TILE*MW*SCALE, height=TILE*MH*SCALE, fps=60]
 
@@ -50,12 +49,12 @@ func sign (x) {
 }
 
 ;; The steps of the C, on floats.
-val MAXSPD  = f32(f32(1.5625)*60)
-val ACC     = f32(f32(f32(0.118164)*60)*60)
-val DCC     = f32(f32(f32(0.113281)*60)*60)
-val GRAVITY = f32(f32(f32(0.363281)*60)*60)
-val IMPULSE = f32(f32(-6.5625)*60)
-val RELEASE = f32(IMPULSE*f32(0.2))
+val MAXSPD  = 1.5625*60
+val ACC     = (0.118164*60)*60
+val DCC     = (0.113281*60)*60
+val GRAVITY = (0.363281*60)*60
+val IMPULSE = -6.5625*60
+val RELEASE = IMPULSE*0.2
 
 pin var player = [x=0, y=0, vx=0, vy=0, hsp=0, vsp=0]
 var jump   = false              ;; the button, latched until released or used (reset in each game)
@@ -80,26 +79,26 @@ task Physics (game) {
         ;; the horizontal speed
         val dir = (if right => 1 => 0) - (if left => 1 => 0)
         if dir != 0 {
-            set player.vx = f32(player.vx + f32(f32(dir*ACC)*delta))
+            set player.vx = player.vx + ((dir*ACC)*delta)
             set player.vx = math.max(-MAXSPD, math.min(player.vx, MAXSPD))
         } else {
-            val d = f32(DCC*delta)
+            val d = DCC*delta
             ifs {
                 math.abs(player.vx) < d => { set player.vx = 0 }
-                player.vx > 0 => { set player.vx = f32(player.vx - d) }
-                else => { set player.vx = f32(player.vx + d) }
+                player.vx > 0 => { set player.vx = player.vx - d }
+                else => { set player.vx = player.vx + d }
             }
         }
         ;; the jump, then gravity
         emit @game :gravity [grounded=grounded]
-        set player.vy = f32(player.vy + f32(GRAVITY*delta))
+        set player.vy = player.vy + (GRAVITY*delta)
         if player.vy > -IMPULSE {
             set player.vy = -IMPULSE
         }
         ;; the blocks, to the side, then above or below
         pin steps = func () {
-            val xv = f32(f32(player.vx*delta) + player.hsp)
-            val yv = f32(f32(player.vy*delta) + player.vsp)
+            val xv = (player.vx*delta) + player.hsp
+            val yv = (player.vy*delta) + player.vsp
             return (math.floor(math.abs(xv)) * sign(xv)), (math.floor(math.abs(yv)) * sign(yv))
         }
         do {
@@ -128,8 +127,8 @@ task Physics (game) {
         }
         ;; the move, by whole pixels; the rest is kept for the next frame
         val xsp, ysp = steps()
-        set player.hsp = f32(f32(player.vx*delta) - xsp)
-        set player.vsp = f32(f32(player.vy*delta) - ysp)
+        set player.hsp = (player.vx*delta) - xsp
+        set player.vsp = (player.vy*delta) - ysp
         set player.x = math.max(0, math.min(player.x + xsp, MW*TILE))
         set player.y = math.max(0, math.min(player.y + ysp, MH*TILE))
     }
@@ -155,7 +154,7 @@ task Jumper () {
 
 ;; A coin: taken when the player touches it.
 task Coin (x, y) {
-    watching :frame until ray.check_collision_recs(f32(player.x - 4), f32((player.y - 16) + 1), 8, 16, x, y, 4, 4) {
+    watching :frame until ray.check_collision_recs(player.x - 4, (player.y - 16) + 1, 8, 16, x, y, 4, 4) {
         loop on :draw {
             ray.rectangle(x, y, 4, 4, ray.GOLD)
         }
@@ -165,7 +164,7 @@ task Coin (x, y) {
 
 ;; One game: ends with ENTER, once the coins are taken.
 task Play () {
-    set player = [x=f32((TILE*MW)*0.5), y=((MH*TILE) - 16) - 1, vx=0, vy=0, hsp=0, vsp=0]
+    set player = [x=(TILE*MW)*0.5, y=((MH*TILE) - 16) - 1, vx=0, vy=0, hsp=0, vsp=0]
     set score, jump = 0, false        ;; relaxed: the C never resets the button
     spawn Physics(task)
     spawn Jumper()
