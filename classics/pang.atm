@@ -13,10 +13,9 @@
 ;; classic.atm.
 
 val W, H    = 800, 450
-val f32     = ray.f32
-val DEG2RAD = f32(f32(3.14159265358979323846) / 180)
-val SHIP_H  = f32(10 / ray.tanf(f32(20*DEG2RAD)))
-val GRAVITY = f32(0.25)
+val DEG2RAD = 3.14159265358979323846 / 180
+val SHIP_H  = 10 / ray.tanf(20*DEG2RAD)
+val GRAVITY = 0.25
 
 ray.window [title="classic game: pang", width=W, height=H, fps=60]
 
@@ -36,7 +35,7 @@ spawn {
         loop _,p in popups {
             if p.alpha > 0 {
                 set p.y -= 2
-                set p.alpha = f32(p.alpha - f32(0.02))
+                set p.alpha = p.alpha - 0.02
             }
             if p.alpha < 0 {
                 set p.alpha = 0
@@ -62,19 +61,19 @@ task Ball (b, r, points, color, gravity, top) {
     set pub.r, pub.points = r, points
     par :any {
         loop on :move {
-            set b.x = f32(b.x + b.vx)
-            set b.y = f32(b.y + b.vy)
+            set b.x = b.x + b.vx
+            set b.y = b.y + b.vy
             if ((b.x + r) >= W) || ((b.x - r) <= 0) {
                 set b.vx = -b.vx
             }
             if (b.y - r) <= 0 {
-                set b.vy = f32(b.vy * top)
+                set b.vy = b.vy * top
             }
             if (b.y + r) >= H {
                 set b.vy = -b.vy
                 set b.y = H - r
             }
-            set b.vy = f32(b.vy + gravity)
+            set b.vy = b.vy + gravity
         }
     } with {
         loop on :draw {
@@ -129,7 +128,7 @@ task Logic (game, bigs, mediums, smalls) {
         }
         ;; the shot: fired with SPACE, if none is out; lives 120 frames
         if ray.key_pressed('SPACE') && !shot {
-            set shot = [x=player.x, y=f32(player.y - SHIP_H), lx=player.x, ly=player.y, life=0]
+            set shot = [x=player.x, y=player.y - SHIP_H, lx=player.x, ly=player.y, life=0]
         }
         if shot {
             set shot.life += 1
@@ -139,15 +138,15 @@ task Logic (game, bigs, mediums, smalls) {
             }
         }
         ;; a ball on the player ends the game
-        pin c = [x=player.x, y=f32(player.y - f32(SHIP_H/2))]
+        pin c = [x=player.x, y=player.y - (SHIP_H/2)]
         if touches(bigs, c) || touches(mediums, c) || touches(smalls, c) {
             return :over
         }
         ;; the balls move
         emit @game :move
         ;; the shot against the balls
-        if shot { hits(bigs, mediums, 20, 100, ray.GRAY, f32(GRAVITY + f32(0.12)), 2) }
-        if shot { hits(mediums, smalls, 10, 50, ray.GRAY, f32(GRAVITY + f32(0.25)), -2) }
+        if shot { hits(bigs, mediums, 20, 100, ray.GRAY, GRAVITY + 0.12, 2) }
+        if shot { hits(mediums, smalls, 10, 50, ray.GRAY, GRAVITY + 0.25, -2) }
         if shot { hits(smalls, nil) }
         until destroyed == 14, :won
     }
@@ -175,13 +174,13 @@ task Play () {
             set vx = ray.random(-2, 2)
             set vy = ray.random(-2, 2)
         }
-        spawn @bigs Ball([x=x, y=y, vx=vx, vy=vy], 40, 200, ray.DARKGRAY, GRAVITY, f32(-1.5))
+        spawn @bigs Ball([x=x, y=y, vx=vx, vy=vy], 40, 200, ray.DARKGRAY, GRAVITY, -1.5)
     }
     ;; the looks of the player, the shot, the popups, and the score; the
     ;; balls draw themselves, before them, in their pools
     spawn {
         loop on :draw {
-            ray.triangle(player.x, f32(player.y - SHIP_H), f32(player.x - 10), player.y, f32(player.x + 10), player.y, ray.MAROON)
+            ray.triangle(player.x, player.y - SHIP_H, player.x - 10, player.y, player.x + 10, player.y, ray.MAROON)
         }
     }
     spawn {
