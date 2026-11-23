@@ -14,7 +14,6 @@ include "../screens.atm"
 include "atlas.atm"
 
 val W, H = 1280, 720
-val f32  = ray.f32
 
 func int (x) {                          ;; (int) of the C: towards zero
     if x < 0 => math.ceil(x) => math.floor(x)
@@ -108,7 +107,7 @@ pin screens = spawn {
             mute <!:draw> s(true)
             loop {
                 await :frame
-                set alpha = f32(alpha - f32(0.05))
+                set alpha = alpha - 0.05
                 until alpha <= 0
             }
             set alpha, trans, to = 0, false, -1
@@ -125,7 +124,7 @@ pin screens = spawn {
             mute <!:draw> s(true)
             loop {
                 await :frame
-                set alpha = f32(alpha + f32(0.05))
+                set alpha = alpha + 0.05
                 until alpha >= 1
             }
             set alpha, current = 1, to

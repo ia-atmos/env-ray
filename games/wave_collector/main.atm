@@ -45,7 +45,6 @@ static AVal wc_samples (float px, int height) {
 ```
 
 val W, H = 1280, 720
-val f32  = ray.f32
 
 ray.window [title="WAVE COLLECTOR [GGJ17]", width=W, height=H, fps=60]
 ray.audio_init()
@@ -104,7 +103,7 @@ task Title () {
     }
     spawn Blink(200, "mouse click to start", 325, 500)
     loop on :frame {
-        set title_alpha = math.min(f32(title_alpha + f32(0.005)), 1)
+        set title_alpha = math.min(title_alpha + 0.005, 1)
         if ray.mouse_pressed(0) {
             ray.play_sound(start)
             ray.stop_music(music)
@@ -156,9 +155,9 @@ task Gameplay () {
     ray.sound_volume(spause, 0.5)
     set ending = 0
     pin g = [
-        x = f32((200 + f32(80/2)) - (ray.texture_width(tplay)//2)),
-        y = f32((160 + f32(400/2)) - (ray.texture_height(tplay)//2)),
-        warp = 395, synchro = f32(0.2), combo = 0, max = 0,
+        x = (200 + (80/2)) - (ray.texture_width(tplay)//2),
+        y = (160 + (400/2)) - (ray.texture_height(tplay)//2),
+        warp = 395, synchro = 0.2, combo = 0, max = 0,
         collected = 0, current = 0, speed = 7, paused = false,
     ]
     set :out game = g                   ;; [trace]: nil again when the gameplay ends
@@ -210,15 +209,15 @@ task Gameplay () {
                 (g.y + 60) > 560 => { set g.y = 500 }
             }
             loop i,s in samples {
-                set s.x = f32(s.x - g.speed)
+                set s.x = s.x - g.speed
                 if !s.got && ray.check_collision_circle_rec(s.x, s.y, 6, math.floor(g.x), math.floor(g.y), 20, 60) {
                     set s.got = true
                     set g.collected += 1
-                    set g.synchro = f32(g.synchro + 0.02)
+                    set g.synchro = g.synchro + 0.02
                     set g.combo += 1
                     set g.max = math.max(g.max, g.combo)
                     set g.synchro = math.min(g.synchro, 1)
-                    ray.sound_pitch(son, f32(f32(s.v*f32(1.4)) + f32(0.7)))
+                    ray.sound_pitch(son, (s.v*1.4) + 0.7)
                     ray.play_sound(son)
                 }
                 if (s.x - 6) < g.x {
@@ -226,7 +225,7 @@ task Gameplay () {
                     if s.on {
                         set s.on = false
                         if !s.got {
-                            set g.synchro = f32(g.synchro - f32(0.05))
+                            set g.synchro = g.synchro - 0.05
                             ray.play_sound(soff)
                             set g.combo = 0
                         }
@@ -235,12 +234,12 @@ task Gameplay () {
             }
             if ray.key_down('SPACE') && (g.warp > 0) {
                 set g.warp = math.max(g.warp - 1, 0)
-                set g.speed = math.max(f32(g.speed - f32(0.1)), 3)
+                set g.speed = math.max(g.speed - 0.1, 3)
             } else {
                 set g.warp = math.min(g.warp + 1, 395)
-                set g.speed = math.min(f32(g.speed + f32(0.1)), 7)
+                set g.speed = math.min(g.speed + 0.1, 7)
             }
-            ray.music_pitch(music, f32(g.speed/7))
+            ray.music_pitch(music, g.speed/7)
             if g.current >= (total - 1) {
                 set ending = 1
             }
@@ -279,26 +278,26 @@ task Gameplay () {
             ray.text_ex(font, string.format("Combo: %02d [max: %02d]", g.combo, g.max), 200, 170, FS//2, -2, ray.SKYBLUE)
             ray.rectangle(99, 622, 395, 32, ray.fade(ray.RAYWHITE, 0.8))
             val c = ifs {
-                g.synchro <= f32(0.3) => ray.fade(ray.RED, 0.8)
-                g.synchro <= f32(0.8) => ray.fade(ray.ORANGE, 0.8)
+                g.synchro <= 0.3 => ray.fade(ray.RED, 0.8)
+                g.synchro <= 0.8 => ray.fade(ray.ORANGE, 0.8)
                 g.synchro < 1         => ray.fade(ray.LIME, 0.8)
                 else                  => ray.fade(ray.GREEN, 0.9)
             }
-            ray.rectangle(99, 622, f32(g.synchro*395), 32, c)
+            ray.rectangle(99, 622, g.synchro*395, 32, c)
             ray.rectangle_lines(99, 622, 395, 32, ray.MAROON)
-            ray.text_ex(font, string.format("%02d%%", math.floor(f32(g.synchro*100))), 99 + 390, 600, FS, -2,
+            ray.text_ex(font, string.format("%02d%%", math.floor(g.synchro*100)), 99 + 390, 600, FS, -2,
                 if g.synchro == 1 => ray.GREEN => ray.SKYBLUE)
             ray.rectangle(754, 622, 395, 32, ray.fade(ray.RAYWHITE, 0.8))
             ray.rectangle(754, 622, g.warp, 32, ray.fade(ray.SKYBLUE, 0.8))
             ray.rectangle_lines(754, 622, 395, 32, ray.DARKGRAY)
-            ray.text_ex(font, string.format("%02d%%", math.floor(f32(f32(g.warp/f32(395))*100))), 754 + 390, 600, FS, -2, ray.SKYBLUE)
+            ray.text_ex(font, string.format("%02d%%", math.floor((g.warp/395)*100)), 754 + 390, 600, FS, -2, ray.SKYBLUE)
             ;; the map of the wave, in a texture
             ray.begin_texture_mode(target)
             ray.clear(ray.BLANK)
-            val inc = f32((1280 - 64) / total)
+            val inc = (1280 - 64) / total
             loop i in total - 1 {
                 val a, b = samples@i, samples@(i + 1)
-                ray.line_v(f32(i*inc), f32(52.5 + f32(a.v*105)), f32((i + 1)*inc), f32(52.5 + f32(b.v*105)),
+                ray.line_v(i*inc, 52.5 + (a.v*105), (i + 1)*inc, 52.5 + (b.v*105),
                     if i < g.current => ray.GRAY => ray.MAROON)
             }
             ray.end_texture_mode()

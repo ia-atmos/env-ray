@@ -77,7 +77,7 @@ task Logo (next, bars, written) {
         } with {
             await(201, :frame)
             loop {
-                set alpha = ray.f32(alpha - ray.f32(0.02))
+                set alpha = alpha - 0.02
                 if alpha <= 0 {
                     set alpha = 0
                     set pub = next
@@ -105,13 +105,13 @@ task Logo (next, bars, written) {
 ;; and the end of the fade in, the step and the end of the fade out.
 pin FADE_WHITE = [                      ;; wave_collector and others
     color = ray.RAYWHITE,
-    inc = ray.f32(0.05), into = \{ math.floor(it) >= 1 },
-    dec = ray.f32(0.05), back = \{ math.floor(it) <= 0 },  ;; (int)alpha: one frame
+    inc = 0.05, into = \{ math.floor(it) >= 1 },
+    dec = 0.05, back = \{ math.floor(it) <= 0 },  ;; (int)alpha: one frame
 ]
 pin FADE_BLACK = [                      ;; repair and others
     color = ray.BLACK,
-    inc = ray.f32(0.05), into = \{ it > ray.f32(1.01) },
-    dec = ray.f32(0.02), back = \{ it < ray.f32(-0.01) },
+    inc = 0.05, into = \{ it > 1.01 },
+    dec = 0.02, back = \{ it < -0.01 },
 ]
 
 ;; The screens, by name, from the first one, with a fade (FADE_WHITE by
@@ -135,7 +135,7 @@ task Screens (screens, first, fade) {
             par :any {
                 loop {
                     await :frame
-                    set alpha = ray.f32(alpha - f.dec)
+                    set alpha = alpha - f.dec
                     set pub.alpha = alpha
                     until f.back(alpha)
                 }
@@ -164,7 +164,7 @@ task Screens (screens, first, fade) {
         }
         loop {
             await :frame
-            set alpha = ray.f32(alpha + f.inc)
+            set alpha = alpha + f.inc
             set pub.alpha = alpha
             until f.into(alpha)
         }

@@ -15,7 +15,6 @@
 include "../screens.atm"
 
 val W, H = 1280, 720
-val f32  = ray.f32
 
 ray.window [title="JUST DO [GGJ15]", width=W, height=H, fps=60]
 ray.audio_init()
@@ -139,7 +138,7 @@ func init02 () {
 }
 func update02 () {
     val L = L02
-    set L.x, L.y = f32(L.x + L.vx), f32(L.y + L.vy)
+    set L.x, L.y = L.x + L.vx, L.y + L.vy
     if ((L.x - 40) <= 0) || ((L.x + 40) >= W) { set L.vx = -L.vx }
     if ((L.y - 40) <= 0) || ((L.y + 40) >= H) { set L.vy = -L.vy }
     val x, y = mx(), my()
@@ -160,8 +159,8 @@ func update02 () {
             if (L.hy + 50) >= H { set L.hy = H - 50 }
         }
     }
-    val dx, dy = f32(L.x - L.hx), f32(L.y - L.hy)
-    if f32(math.sqrt(f32(f32(dx * dx) + f32(dy * dy)))) < 20 {
+    val dx, dy = L.x - L.hx, L.y - L.hy
+    if math.sqrt((dx * dx) + (dy * dy)) < 20 {
         set L.done = true
     }
 }
@@ -644,7 +643,7 @@ loop {
         mute <!:draw> s(true)
         loop {
             await :frame
-            set alpha = f32(alpha - f32(0.02))
+            set alpha = alpha - 0.02
             until alpha <= 0
         }
         set alpha, trans, to = 0, false, -1
@@ -667,7 +666,7 @@ loop {
     mute <!:draw> s(true)
     loop {
         await :frame
-        set alpha = f32(alpha + f32(0.02))
+        set alpha = alpha + 0.02
         until alpha >= 1
     }
     set alpha, current = 1, to

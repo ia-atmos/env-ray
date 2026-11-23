@@ -10,7 +10,6 @@
 include "../screens.atm"
 
 val W, H = 1280, 720
-val f32  = ray.f32
 val TILE, TX, TY = 36, 32, 17
 val OX, OY = 70, 70                     ;; the room
 
@@ -64,8 +63,8 @@ task Title () {
             ray.draw_texture(troomba, rx, 320, ray.WHITE)
             if vs {
                 val w, h = ray.texture_width(tvs), ray.texture_height(tvs)
-                ray.draw_texture_pro(tvs, 0, 0, w, h, W//2, 300, f32(w*vs.scale), f32(h*vs.scale),
-                    f32((w//2)*vs.scale), f32((h//2)*vs.scale), 0, ray.fade(ray.WHITE, vs.alpha))
+                ray.draw_texture_pro(tvs, 0, 0, w, h, W//2, 300, w*vs.scale, h*vs.scale,
+                    (w//2)*vs.scale, (h//2)*vs.scale, 0, ray.fade(ray.WHITE, vs.alpha))
             }
         }
     }
@@ -79,8 +78,8 @@ task Title () {
         set vs = [scale=10, alpha=0]
         loop in 161 {
             await :frame
-            set vs.scale = math.max(f32(vs.scale - f32(0.1)), 1)
-            set vs.alpha = math.min(f32(vs.alpha + f32(0.01)), 1)
+            set vs.scale = math.max(vs.scale - 0.1, 1)
+            set vs.alpha = math.min(vs.alpha + 0.01, 1)
         }
         await(30, :frame)
         loop {
@@ -230,7 +229,7 @@ task Gameplay () {
                 set left += t.state
             }
         }
-        f32(f32((total - left) / f32(total)) * 100)
+        (((total - left) / total) * 100)
     }
 
     ;; the looks
@@ -298,8 +297,8 @@ task Gameplay () {
     var tx, ty = 0, 0                   ;; where the cat goes
     loop on :frame {
         val mx, my = ray.mouse_x(), ray.mouse_y()
-        set g.mx = math.floor(f32(f32(mx - OX) / TILE))
-        set g.my = math.floor(f32(f32(my - OY) / TILE))
+        set g.mx = math.floor((mx - OX) / TILE)
+        set g.my = math.floor((my - OY) / TILE)
         val px, py = g.rx, g.ry
         ifs {
             ray.key_down('D') => { set g.rx += 4 }
@@ -319,7 +318,7 @@ task Gameplay () {
         loop _,t in tiles {
             if t.state > 0 {
                 val _x, _y, w, h = ray.collision_rec(t.x, t.y, 36, 36, g.rx - (rw//2), g.ry - (rh//2), rw, rh)
-                if f32(w*h) > (28*28) {
+                if (w*h) > (28*28) {
                     set t.counter -= 1
                     if t.counter < 0 {
                         set t.state -= 1
@@ -342,7 +341,7 @@ task Gameplay () {
         loop _,p in popups {
             if p.on {
                 set p.y -= 2
-                set p.alpha = f32(p.alpha - f32(0.015))
+                set p.alpha = p.alpha - 0.015
                 if p.alpha < 0 {
                     set p.on = false
                 }
@@ -368,8 +367,8 @@ task Gameplay () {
         if walking {
             if ray.check_collision_point_circle(g.cx, g.cy, tx, ty, 3) {
                 set walking = false
-                val ctx = math.floor(f32(f32(f32(g.cx - (ray.texture_width(tcat)//2)) - OX) / TILE)) + 1
-                val cty = math.floor(f32(f32(f32(f32(g.cy - (ray.texture_height(tcat)//2)) - 10) - OY) / TILE)) + 1
+                val ctx = math.floor(((g.cx - (ray.texture_width(tcat)//2)) - OX) / TILE) + 1
+                val cty = math.floor((((g.cy - (ray.texture_height(tcat)//2)) - 10) - OY) / TILE) + 1
                 if COLMAP@((g.my*TX) + g.mx) == 3 {
                     loop y in (cty - 2, cty + 2) {
                         loop x in (ctx - 2, ctx + 2) {
@@ -386,9 +385,9 @@ task Gameplay () {
                     }
                 }
             } else {
-                val nx, ny = ray.normalize(f32(tx - g.cx), f32(ty - g.cy))
-                set g.cx = f32(g.cx + f32(3*nx))
-                set g.cy = f32(g.cy + f32(3*ny))
+                val nx, ny = ray.normalize(tx - g.cx, ty - g.cy)
+                set g.cx = g.cx + (3*nx)
+                set g.cy = g.cy + (3*ny)
             }
         }
     }
@@ -403,8 +402,8 @@ spawn {
 
 pin FADE = [
     color = ray.BLACK,
-    inc = f32(0.02), into = \{ it > f32(1.01) },
-    dec = f32(0.02), back = \{ it < f32(-0.01) },
+    inc = 0.02, into = \{ it > 1.01 },
+    dec = 0.02, back = \{ it < -0.01 },
 ]
 pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay, ending=Ending], :logo, FADE)
 

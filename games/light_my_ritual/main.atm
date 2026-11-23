@@ -43,7 +43,6 @@ static AVal lmr_lights (void) {
 ```
 
 val W, H = 1280, 720
-val f32  = ray.f32
 
 ray.window [title="LIGHT MY RITUAL! [GGJ16]", width=W, height=H, fps=60]
 ray.audio_init()
@@ -90,7 +89,7 @@ task Title () {
         }
     }
     loop on :frame {
-        set title_alpha = math.min(f32(title_alpha + f32(0.005)), 1)
+        set title_alpha = math.min(title_alpha + 0.005, 1)
         until ray.key_pressed('ENTER') || ray.mouse_pressed(0)
     }
     ray.play_sound(start)
@@ -148,7 +147,7 @@ task Gameplay () {
             set e.target = ray.random(0, #(lights@level) - 1)
             val t = lights@level@(e.target)
             set e.tx, e.ty = t.x, t.y
-            set e.speed = f32(ray.random(spec@0, spec@1) / f32(10))
+            set e.speed = ray.random(spec@0, spec@1) / 10
             set e.delay = ray.random(spec@2, spec@3)
         }
     }
@@ -186,7 +185,7 @@ task Gameplay () {
                 set stopped = !stopped
             }
             if ray.check_collision_circles(p.x, p.y, 20, W//2, H//2, 50) {
-                set energy = f32(energy + f32(0.2))
+                set energy = energy + 0.2
                 set p.color = ray.color(255, 255, 100, 255)
             } else {
                 set p.color = ray.WHITE
@@ -199,7 +198,7 @@ task Gameplay () {
                         if level == 0 {
                             set lt.frame = 1
                         }
-                        set energy = f32(energy - lt.energy)
+                        set energy = energy - lt.energy
                         ray.play_sound(fxon)
                     }
                 }
@@ -222,13 +221,13 @@ task Gameplay () {
                     if !e.on { set e.counter += 1 }
                     if e.counter > e.delay { set e.on = true }
                     if e.on {
-                        var dx, dy = f32(e.tx - e.x), f32(e.ty - e.y)
-                        var len = f32(math.sqrt(f32(f32(dx*dx) + f32(dy*dy))))
+                        var dx, dy = e.tx - e.x, e.ty - e.y
+                        var len = math.sqrt((dx*dx) + (dy*dy))
                         if len == 0 { set len = 1 }
-                        val il = f32(1/len)
-                        set dx, dy = f32(dx*il), f32(dy*il)
-                        set e.x = f32(e.x + f32(dx*e.speed))
-                        set e.y = f32(e.y + f32(dy*e.speed))
+                        val il = 1/len
+                        set dx, dy = dx*il, dy*il
+                        set e.x = e.x + (dx*e.speed)
+                        set e.y = e.y + (dy*e.speed)
                         if level < 3 {
                             val lt = lights@level@(e.target)
                             if ray.check_collision_circles(e.x, e.y, e.r, e.tx, e.ty, lt.r) {
@@ -262,8 +261,8 @@ task Gameplay () {
                 loop _,e in enemies { reset(e) }
             }
             set shown.level = level
-            set ritual_time = f32(frames / f32(60))
-            if f32(99 - ritual_time) <= 0 {
+            set ritual_time = frames / 60
+            if (99 - ritual_time) <= 0 {
                 set ritual_time = 99
                 break :time
             }
@@ -321,9 +320,9 @@ task Gameplay () {
                         ray.draw_texture_rec(tenemy, 0, 0, 64, 64, e.x - 32, e.y - 32, ray.WHITE)
                     }
                 }
-                ray.text_ex(font, string.format("%02.2f", f32(99 - ritual_time)), 560, 20, FS, 0, ray.WHITE)
+                ray.text_ex(font, string.format("%02.2f", 99 - ritual_time), 560, 20, FS, 0, ray.WHITE)
                 ray.rectangle(20, 30, 400, 20, ray.GRAY)
-                ray.rectangle(20, 30, f32(f32(400*energy) / 40), 20, ray.GOLD)
+                ray.rectangle(20, 30, (400*energy) / 40, 20, ray.GOLD)
                 ray.rectangle_lines(20, 30, 400, 20, ray.LIGHTGRAY)
                 ray.text(string.format("%03.0f", energy), 430, 30, 20, ray.WHITE)
                 ray.rectangle(W - 40, 30, 20, 660, ray.GRAY)
@@ -364,8 +363,8 @@ task Gameplay () {
     spawn {
         loop on :frame {
             if ritual {
-                set ritual = f32(ritual + f32(0.02))
-                ray.music_volume(tmusic, f32(1 - ritual))
+                set ritual = ritual + 0.02
+                ray.music_volume(tmusic, 1 - ritual)
                 if ritual > 1 {
                     set pub = [to=:logo, now=true]
                 }
@@ -385,8 +384,8 @@ spawn {
 
 pin FADE = [
     color = ray.BLACK,
-    inc = f32(0.05), into = \{ it >= 1 },
-    dec = f32(0.05), back = \{ it <= 0 },
+    inc = 0.05, into = \{ it >= 1 },
+    dec = 0.05, back = \{ it <= 0 },
 ]
 pin screens = spawn Screens([logo=LogoScreen, title=Title, gameplay=Gameplay], :logo, FADE)
 

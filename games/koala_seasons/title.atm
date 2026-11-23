@@ -32,7 +32,7 @@ pin T = [
 ]
 
 ;; (float)GetRandomValue(a, b)/10
-func rnd10 (a, b) { f32(ray.random(a, b) / 10) }
+func rnd10 (a, b) { ray.random(a, b) / 10 }
 
 func title_init () {
     set T.frames = 0
@@ -46,19 +46,19 @@ func title_init () {
     loop j in 128 {
         val sn, bs, pt, bp = T.snow.ps@j, T.back_snow.ps@j, T.planetree.ps@j, T.back_planetree.ps@j
         set sn.active, sn.x, sn.y, sn.size, sn.rot, sn.color, sn.alpha = false, 0, 0, rnd10(3, 9), ray.random(0, 360), ray.WHITE, 1
-        set bs.active, bs.x, bs.y, bs.size, bs.rot, bs.color, bs.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, f32(0.7)
+        set bs.active, bs.x, bs.y, bs.size, bs.rot, bs.color, bs.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, 0.7
         set pt.active, pt.x, pt.y, pt.size, pt.rot, pt.color, pt.alpha = false, 0, 0, rnd10(3, 9), ray.random(0, 360), ray.WHITE, 1
-        set bp.active, bp.x, bp.y, bp.size, bp.rot, bp.color, bp.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, f32(0.7)
+        set bp.active, bp.x, bp.y, bp.size, bp.rot, bp.color, bp.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, 0.7
         val dn, db = T.dandelion.ps@j, T.dandelion_back.ps@j
         set dn.active, dn.x, dn.y, dn.size, dn.rot, dn.color, dn.alpha = false, 0, 0, rnd10(3, 9), 0, ray.WHITE, 1
         set dn.phy = ray.random(0, 180)
-        set db.active, db.x, db.y, db.size, db.rot, db.color, db.alpha = false, 0, 0, rnd10(2, 8), 0, ray.WHITE, f32(0.7)
+        set db.active, db.x, db.y, db.size, db.rot, db.color, db.alpha = false, 0, 0, rnd10(2, 8), 0, ray.WHITE, 0.7
         set db.phy = ray.random(0, 180)
         val fl, bf, rn, br = T.flower.ps@j, T.back_flower.ps@j, T.rain.ps@j, T.back_rain.ps@j
         set fl.active, fl.x, fl.y, fl.size, fl.rot, fl.color, fl.alpha = false, 0, 0, rnd10(3, 9), ray.random(0, 360), ray.WHITE, 1
-        set bf.active, bf.x, bf.y, bf.size, bf.rot, bf.color, bf.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, f32(0.7)
+        set bf.active, bf.x, bf.y, bf.size, bf.rot, bf.color, bf.alpha = false, 0, 0, rnd10(2, 8), ray.random(0, 360), ray.WHITE, 0.7
         set rn.active, rn.x, rn.y, rn.size, rn.rot, rn.color, rn.alpha = false, 0, 0, rnd10(3, 9), -20, ray.WHITE, 1
-        set br.active, br.x, br.y, br.size, br.rot, br.color, br.alpha = false, 0, 0, rnd10(2, 8), -20, ray.WHITE, f32(0.7)
+        set br.active, br.x, br.y, br.size, br.rot, br.color, br.alpha = false, 0, 0, rnd10(2, 8), -20, ray.WHITE, 0.7
     }
     loop j in 1024 {
         val p = T.rain_storm.ps@j
@@ -81,20 +81,20 @@ func title_init () {
 
 ;; BounceEaseOut of the C, in floats
 func bounce (t, b, c, d) {
-    var t = f32(t / d)
-    if t < f32(1 / f32(2.75)) {
-        f32(f32(c * f32(f32(f32(7.5625) * t) * t)) + b)
+    var t = t / d
+    if t < (1 / 2.75) {
+        (c * ((7.5625 * t) * t)) + b
     } else {
-        if t < f32(2 / f32(2.75)) {
-            set t = f32(t - f32(f32(1.5) / f32(2.75)))
-            f32(f32(c * f32(f32(f32(f32(7.5625) * t) * t) + f32(0.75))) + b)
+        if t < (2 / 2.75) {
+            set t = t - (1.5 / 2.75)
+            ((c * (((7.5625 * t) * t) + 0.75)) + b)
         } else {
             if t < (2.5 / 2.75) {
-                set t = f32(t - f32(f32(2.25) / f32(2.75)))
-                f32(f32(c * f32(f32(f32(f32(7.5625) * t) * t) + f32(0.9375))) + b)
+                set t = t - (2.25 / 2.75)
+                ((c * (((7.5625 * t) * t) + 0.9375)) + b)
             } else {
-                set t = f32(t - f32(f32(2.625) / f32(2.75)))
-                f32(f32(c * f32(f32(f32(f32(7.5625) * t) * t) + f32(0.984375))) + b)
+                set t = t - (2.625 / 2.75)
+                ((c * (((7.5625 * t) * t) + 0.984375)) + b)
             }
         }
     }
@@ -125,36 +125,36 @@ func fall (s, n, dy, dx, drot) {
     loop i in n {
         val p = s.ps@i
         if p.active {
-            set p.y = f32(p.y + dy)
-            set p.x = f32(p.x - dx)
-            if drot { set p.rot = f32(p.rot + drot) }
+            set p.y = p.y + dy
+            set p.x = p.x - dx
+            if drot { set p.rot = p.rot + drot }
             if p.y >= H { set p.active = false }
         }
     }
 }
 ;; the rotation of a dandelion: -(30*sin(2*PI/120*frame + phase) + 30)
-val PI2_120 = f32(f32(2 * f32(math.pi)) / 120)
+val PI2_120 = (2 * math.pi) / 120
 func dandelion_rot (frame, phy) {
-    -((30 * math.sin(f32(f32(PI2_120 * frame) + phy))) + 30)
+    -((30 * math.sin((PI2_120 * frame) + phy)) + 30)
 }
 func update_rays (s, dx) {
     loop _,r in s.ps {
         if r.active {
-            set r.x = f32(r.x - dx)
+            set r.x = r.x - dx
             if r.fading {
-                set r.alpha = f32(r.alpha - f32(0.01))
+                set r.alpha = r.alpha - 0.01
                 if r.alpha <= 0 {
                     set r.alpha = 0
-                    set r.delay = f32(r.delay + 1)
+                    set r.delay = r.delay + 1
                     if r.delay >= 30 {
                         set r.active, r.delay, r.fading = false, 0, false
                     }
                 }
             } else {
-                set r.alpha = f32(r.alpha + f32(0.01))
-                if r.alpha >= f32(0.5) {
-                    set r.alpha = f32(0.5)
-                    set r.delay = f32(r.delay + 1)
+                set r.alpha = r.alpha + 0.01
+                if r.alpha >= 0.5 {
+                    set r.alpha = 0.5
+                    set r.delay = r.delay + 1
                     if r.delay >= 30 {
                         set r.delay, r.fading = 0, true
                     }
@@ -176,7 +176,7 @@ func title_update () {
     set T.global += 1
     if T.frames < 120 {
         set T.value1 = bounce(T.frames, -100, 200, 120)
-        set T.value2 = bounce(T.frames, 700, f32(320 - 700), 120)
+        set T.value2 = bounce(T.frames, 700, 320 - 700, 120)
     }
     set T.this += 1
     if T.this >= 40 {
@@ -287,15 +287,15 @@ func title_update () {
     loop i in 128 {
         val d, b = T.dandelion.ps@i, T.dandelion_back.ps@i
         if d.active {
-            set d.y = f32(d.y + 2.5)
-            set d.x = f32(d.x - 2)
-            set d.rot = f32(dandelion_rot(T.global, d.phy))
+            set d.y = d.y + 2.5
+            set d.x = d.x - 2
+            set d.rot = dandelion_rot(T.global, d.phy)
             if d.y >= H { set d.active = false }
         }
         if b.active {
-            set b.y = f32(b.y + 2)
-            set b.x = f32(b.x - 3)
-            set b.rot = f32(dandelion_rot(T.global, d.phy))
+            set b.y = b.y + 2
+            set b.x = b.x - 3
+            set b.rot = dandelion_rot(T.global, d.phy)
             if b.y >= H { set b.active = false }
         }
     }
@@ -306,10 +306,10 @@ func title_update () {
     loop i in 1024 {
         val p = rs.ps@i
         if p.active {
-            set p.y = f32(p.y + 12)
-            set p.x = f32(p.x - 15)
+            set p.y = p.y + 12
+            set p.x = p.x - 15
             if p.y >= H { set p.active = false }
-            if !rs.active { set p.alpha = f32(p.alpha - 0.01) }
+            if !rs.active { set p.alpha = p.alpha - 0.01 }
         }
     }
     fall(T.snow_storm, 256, 12, 15, 0.5)
@@ -404,11 +404,11 @@ func title_draw () {
     draw_rect(atlas2, g0, 0, 637, g0.w * 2, g0.h * 2, T.c0)
     ray.end_shader_mode()
     val tt = ATLAS01.title_titletext
-    val tx = f32(f32(W * f32(0.49)) - (tt.w / 2))
+    val tx = (W * 0.49) - (tt.w / 2)
     ray.draw_texture_pro(atlas1, tt.x, tt.y, tt.w, 230, tx, T.value1, tt.w, 235, 0, 0, 0, ray.WHITE)
     ray.draw_texture_pro(atlas1, tt.x, tt.y + 232, tt.w, 116, tx, T.value2, tt.w, 116, 0, 0, 0, ray.WHITE)
     if (((T.frames // 60) % 2) == 1) && (T.frames >= 120) {
-        ray.text_ex(font, "Press to play", f32((W // 2) - f32(T.text_w / 2)), f32((H // 2) + f32(T.text_h * 2)), SIZE, 2, 0xF7EFD1FF)
+        ray.text_ex(font, "Press to play", (W // 2) - (T.text_w / 2), (H // 2) + (T.text_h * 2), SIZE, 2, 0xF7EFD1FF)
     }
     loop i in 128 {
         val p1, p2, p3, p4, p5 = T.snow.ps@i, T.planetree.ps@i, T.dandelion.ps@i, T.flower.ps@i, T.rain.ps@i

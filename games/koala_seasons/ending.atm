@@ -18,7 +18,7 @@ pin SEASON_ROT  = [225, 135, 45, 315]
 
 ;; LinearEaseIn of the C, in floats
 func ease (t, b, c, d) {
-    f32(f32(f32(c * t) / d) + b)
+    ((c * t) / d) + b
 }
 
 func ending_init () {
@@ -33,9 +33,9 @@ func ending_init () {
         set p.active = false
         set p.x = ray.random(-20, 20)
         set p.y = ray.random(-20, 20)
-        set p.sx = f32(ray.random(-500, 500) / 100)
-        set p.sy = f32(ray.random(-500, 500) / 100)
-        set p.size = f32(ray.random(3, 10) / 5)
+        set p.sx = ray.random(-500, 500) / 100
+        set p.sy = ray.random(-500, 500) / 100
+        set p.size = ray.random(3, 10) / 5
         set p.rot = ray.random(0, 360)
         set p.alpha = 1
     }
@@ -47,10 +47,10 @@ func ending_init () {
     loop i in 128 { set E.active@i = false }
 }
 
-pin PLAY = [x=f32(W * 0.871), y=f32(H * 0.096), w=123, h=123]
-pin SHOP = [x=f32(W * 0.871), y=f32(H * 0.303), w=123, h=123]
-pin TROPHY = [x=f32(W * 0.871), y=f32(H * 0.513), w=123, h=123]
-pin SHARE = [x=f32(W * 0.871), y=f32(H * 0.719), w=123, h=123]
+pin PLAY = [x=W * 0.871, y=H * 0.096, w=123, h=123]
+pin SHOP = [x=W * 0.871, y=H * 0.303, w=123, h=123]
+pin TROPHY = [x=W * 0.871, y=H * 0.513, w=123, h=123]
+pin SHARE = [x=W * 0.871, y=H * 0.719, w=123, h=123]
 func mouse_in (r) {
     ray.check_collision_point_rec(ray.mouse_x(), ray.mouse_y(), r.x, r.y, r.w, r.h)
 }
@@ -70,7 +70,7 @@ task Counts () {
         var over = false
         if seasons > 0 {
             set E.seasons = int(ease(E.frames, 0, seasons, 90))
-            set E.clock = ease(E.frames, E.init_rot, f32(-f32(E.final_rot - E.init_rot)), 90)
+            set E.clock = ease(E.frames, E.init_rot, -(E.final_rot - E.init_rot), 90)
             if E.frames >= 90 {
                 set E.frames, over = 0, true
             }
@@ -98,7 +98,7 @@ task Counts () {
                     }
                     loop _,p in E.leafs {
                         if !p.active {
-                            set p.x, p.y = f32(W * 0.46), f32(H * 0.32)
+                            set p.x, p.y = W * 0.46, H * 0.32
                             set p.alpha, p.active = 1, true
                         }
                     }
@@ -174,11 +174,11 @@ task Ending () {
     loop on :frame {
         loop _,p in E.leafs {
             if p.active {
-                set p.x = f32(p.x + p.sx)
-                set p.y = f32(p.y + p.sy)
-                set p.rot = f32(p.rot + 6)
-                set p.alpha = f32(p.alpha - f32(0.03))
-                set p.size = f32(p.size - 0.004)
+                set p.x = p.x + p.sx
+                set p.y = p.y + p.sy
+                set p.rot = p.rot + 6
+                set p.alpha = p.alpha - 0.03
+                set p.size = p.size - 0.004
                 if p.size <= 0 { set p.size = 0 }
                 if p.alpha <= 0 {
                     set p.alpha, p.active = 0, false
@@ -257,11 +257,11 @@ func ending_draw () {
     pro(ATLAS01.ending_button_shop, W * 0.871, H * 0.303, E.shop_color)
     pro(ATLAS01.ending_button_trophy, W * 0.871, H * 0.513, E.trophy_color)
     pro(ATLAS01.ending_button_share, W * 0.871, H * 0.719, E.share_color)
-    ray.text_ex(font, string.format("%03d", E.seasons), f32(W * f32(0.73)), f32(H * f32(0.14)), SIZE, 1, ray.WHITE)
-    ray.text_ex(font, string.format("%03d", E.leaves), f32(W * f32(0.73)), f32(H * f32(0.29)), SIZE, 1, ray.WHITE)
-    ray.text_ex(font, string.format("%04d", E.score), f32(W * f32(0.715)), f32(H * f32(0.426)), SIZE, 1, ray.WHITE)
+    ray.text_ex(font, string.format("%03d", E.seasons), W * 0.73, H * 0.14, SIZE, 1, ray.WHITE)
+    ray.text_ex(font, string.format("%03d", E.leaves), W * 0.73, H * 0.29, SIZE, 1, ray.WHITE)
+    ray.text_ex(font, string.format("%04d", E.score), W * 0.715, H * 0.426, SIZE, 1, ray.WHITE)
     ray.text_ex(font, string.format("%s %d - %s %d", E.init_text, initYears, E.final_text, E.final_years),
-        f32(W * f32(0.1)), f32(H * f32(0.7)), SIZE / 2, 1, ray.WHITE)
+        W * 0.1, H * 0.7, SIZE / 2, 1, ray.WHITE)
     loop i in 128 {
         if E.active@i {
             val h = HEADS@(killHistory@i)
@@ -273,7 +273,7 @@ func ending_draw () {
     val lines = DEATHS@killer
     if lines {
         loop k,t in lines {
-            ray.text_ex(font, t, f32(W * f32(0.13)), f32(H * f32(if k == 0 => 0.78 => 0.83)), SIZE / 2, 1, ray.WHITE)
+            ray.text_ex(font, t, W * 0.13, H * (if k == 0 => 0.78 => 0.83), SIZE / 2, 1, ray.WHITE)
         }
     }
 }

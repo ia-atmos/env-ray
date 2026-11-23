@@ -194,7 +194,6 @@ static AVal tm_ending (int cur) {
 ```
 
 val W, H = 1280, 720
-val f32  = ray.f32
 
 ray.window [title="transmission mission [GGJ18]", width=W, height=H, fps=60]
 ray.audio_init()
@@ -208,7 +207,7 @@ pin tbutton = ray.texture("resources/textures/title_ribbon.png")
 ;; the button of every screen, at the bottom right
 val BW, BH = ray.texture_width(tbutton), ray.texture_height(tbutton)
 val BX, BY = W - BW, (H - BH) - 50
-var button_fade = f32(0.8)
+var button_fade = 0.8
 var mission = 0                         ;; currentMission
 val MISSIONS = 4
 
@@ -221,15 +220,15 @@ func button_pressed (fx) {
             return true
         }
     } else {
-        set button_fade = f32(0.8)
+        set button_fade = 0.8
     }
     false
 }
 func draw_button (text) {
     ray.draw_texture_pro(tbutton, 0, 0, BW, BH, BX, BY, BW, BH, 0, 0, 0, ray.fade(ray.WHITE, button_fade))
     val mx, my = ray.measure_ex(font_mission, text, 30, 0)
-    val cx, cy = f32(BX + f32(BW/2)), f32(BY + f32(BH/2))
-    ray.text_ex(font_mission, text, f32(f32(cx - f32(mx/2)) + 10), f32(f32(cy - f32(my/2)) - 10), 30, 0, ray.WHITE)
+    val cx, cy = BX + (BW/2), BY + (BH/2)
+    ray.text_ex(font_mission, text, (cx - (mx/2)) + 10, (cy - (my/2)) - 10, 30, 0, ray.WHITE)
 }
 
 ;; The logo of raylib, then the logo of the team: 200 frames in, 100 out.
@@ -247,11 +246,11 @@ task LogoScreen () {
     }
     loop in 201 {
         await :frame
-        set alpha = math.min(f32(alpha + f32(0.02)), 1)
+        set alpha = math.min(alpha + 0.02, 1)
     }
     loop in 101 {
         await :frame
-        set alpha = f32(alpha - f32(0.02))
+        set alpha = alpha - 0.02
     }
     set pub = :title
     await false
@@ -306,10 +305,10 @@ task Mission () {
     pin backline = ray.texture("resources/textures/mission_backline.png")
     pin transmit = ray.sound("resources/audio/fx_message.ogg")
     pin mmusic   = ray.music("resources/audio/music_mission.ogg")
-    set button_fade = f32(0.8)
+    set button_fade = 0.8
     ray.play_music(mmusic)
     pin m = `:value tm_mission(RL_I($mission), $font_mission)`
-    val ky = f32(f32(245 + m.h) + 60)
+    val ky = (245 + m.h) + 60
     var fade, length, number, keyword, blink = 0, 0, false, false, true
     var done = false                    ;; writeEnd
     var c = 0                           ;; the frames of the current wait (the C keeps them after a skip)
@@ -346,7 +345,7 @@ task Mission () {
         loop {
             await :frame
             set c += 1
-            set fade = f32(fade + f32(0.02))
+            set fade = fade + 0.02
             until (c % 30) == 0
         }
         set c, number, show_button = 0, true, true
@@ -485,8 +484,8 @@ task Gameplay () {
                 }
             }
             if wd.picked {
-                set wd.rec.x = f32(ray.mouse_x() - f32(wd.rec.w/2))
-                set wd.rec.y = f32(ray.mouse_y() - f32(wd.rec.h/2))
+                set wd.rec.x = ray.mouse_x() - (wd.rec.w/2)
+                set wd.rec.y = ray.mouse_y() - (wd.rec.h/2)
             }
         }
         set can_send = true
@@ -509,14 +508,14 @@ task Ending () {
     pin e = `:value tm_ending(RL_I($mission))`
     val paper = e.paper
     val fnews = e.font
-    var rotation, scale = f32(0.1), f32(0.05)
+    var rotation, scale = 0.1, 0.05
     var ready = false
     spawn {
         loop on :draw {
             ray.draw_texture(back, 0, 0, ray.WHITE)
             val pw, ph = ray.texture_width(paper), ray.texture_height(paper)
-            ray.draw_texture_pro(paper, 0, 0, pw, ph, W//2, H//2, f32(pw*scale), f32(ph*scale),
-                f32(f32(pw*scale)/2), f32(f32(ph*scale)/2), rotation, ray.WHITE)
+            ray.draw_texture_pro(paper, 0, 0, pw, ph, W//2, H//2, pw*scale, ph*scale,
+                (pw*scale)/2, (ph*scale)/2, rotation, ray.WHITE)
             ray.draw_texture_ex(vignette, 0, 0, 0, 2, ray.WHITE)
             ray.text_ex(fnews, e.headline, 10, 10, ray.font_size(fnews), 0, ray.RAYWHITE)
             ;; (as in the C, with the mission of now, which ENTER already moved on)
@@ -538,8 +537,8 @@ task Ending () {
     ;; it spins and grows; once whole, the button, from that same frame
     loop on :frame {
         if !ready {
-            set rotation = f32(rotation + 18)
-            set scale = f32(scale + f32(0.0096))
+            set rotation = rotation + 18
+            set scale = scale + 0.0096
             if scale >= 1 {
                 set scale, ready = 1, true
             }
@@ -579,7 +578,7 @@ spawn {
 
 pin FADE = [
     color = ray.BLACK,
-    inc = f32(0.02), into = \{ it > f32(1.01) },
-    dec = f32(0.02), back = \{ it < f32(-0.01) },
+    inc = 0.02, into = \{ it > 1.01 },
+    dec = 0.02, back = \{ it < -0.01 },
 ]
 await Screens([logo=LogoScreen, title=Title, mission=Mission, gameplay=Gameplay, ending=Ending], :logo, FADE)

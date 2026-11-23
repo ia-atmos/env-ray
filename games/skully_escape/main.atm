@@ -17,7 +17,6 @@
 include "../screens.atm"
 
 val W, H = 1280, 720
-val f32  = ray.f32
 
 ray.window [title="SKULLY ESCAPE [KING GAMEJAM 2015]", width=W, height=H, fps=60]
 ray.audio_init()
@@ -133,7 +132,7 @@ func player_update () {
     set P.fy = ((P.seq - 1) * ray.texture_height(skully)) // 6
     set P.bounds = [x=P.x + 50, y=P.y - 60, w=100, h=300]
     if P.pointer {
-        set P.palpha = f32(P.palpha - f32(0.1))
+        set P.palpha = P.palpha - 0.1
         if P.palpha <= 0 {
             set P.palpha, P.pointer = 0, false
         }
@@ -500,7 +499,7 @@ task LogoScreen () {
     var count, a = 200, 1
     loop {
         set count += 1
-        set a = f32(a - f32(0.02))
+        set a = a - 0.02
         until a <= 0
     }
     var alpha = 0
@@ -512,13 +511,13 @@ task LogoScreen () {
     }
     loop {
         await :frame
-        set alpha = f32(alpha + f32(0.02))
+        set alpha = alpha + 0.02
         until alpha >= 1
     }
     await(361 - count, :frame)        ;; until the count of the C is over 360
     loop {
         await :frame
-        set alpha = f32(alpha - f32(0.02))
+        set alpha = alpha - 0.02
         until alpha <= 0
     }
     await :frame
@@ -551,7 +550,7 @@ task Title () {
     }
     spawn Blink("PRESS ENTER to START")
     loop on :frame {
-        set title_alpha = math.min(f32(title_alpha + f32(0.005)), 1)
+        set title_alpha = math.min(title_alpha + 0.005, 1)
         until ray.key_pressed('ENTER') || ray.mouse_pressed(0)
     }
     set pub = :attic
@@ -571,7 +570,7 @@ task Ending () {
     }
     spawn Blink("PRESS ENTER or CLICK")
     loop on :frame {
-        set ending_alpha = math.min(f32(ending_alpha + f32(0.005)), 1)
+        set ending_alpha = math.min(ending_alpha + 0.005, 1)
         until ray.key_pressed('ENTER') || ray.mouse_pressed(0)
     }
     set pub = :title
@@ -609,8 +608,8 @@ spawn {
 
 pin FADE = [
     color = ray.BLACK,
-    inc = f32(0.05), into = \{ it >= 1 },
-    dec = f32(0.05), back = \{ it <= 0 },
+    inc = 0.05, into = \{ it >= 1 },
+    dec = 0.05, back = \{ it <= 0 },
 ]
 pin screens = spawn Screens([
     logo=LogoScreen, title=Title, attic=Attic, aisle01=Aisle01, aisle02=Aisle02,

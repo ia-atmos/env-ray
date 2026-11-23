@@ -11,7 +11,6 @@
 include "../screens.atm"
 
 val W, H = 1280, 720
-val f32  = ray.f32
 
 ray.window [title="RE-PAIR [GGJ2020]", width=W, height=H, fps=60]
 ray.audio_init()
@@ -83,7 +82,7 @@ func button (x, y, w, h, text, forced) {
         }
     }
     ray.draw_texture_npatch(npatch, 80*state, 0, 80, ray.texture_height(npatch), 24, 24, 24, 24, x, y, w, h, ray.WHITE)
-    ray.text_ex(font, text, f32(f32(x + f32(w/2)) - f32(tw/2)), f32(f32(f32(y + f32(h/2)) - f32(th/2)) + 4), FS, 1, TEXT_COLORS@state)
+    ray.text_ex(font, text, (x + (w/2)) - (tw/2), ((y + (h/2)) - (th/2)) + 4, FS, 1, TEXT_COLORS@state)
     pressed
 }
 
@@ -251,7 +250,7 @@ task Ending () {
     loop _,k in parts { set match_value += likes@k }
     val m = match_value
     loop on :draw {
-        ray.text_ex(font, string.format("MATCH: %d%%", math.floor(f32(f32(m/f32(500))*100))), 420, 40, FS*2, 1, ray.SKYBLUE)
+        ray.text_ex(font, string.format("MATCH: %d%%", math.floor((m/500)*100)), 420, 40, FS*2, 1, ray.SKYBLUE)
         val mh = ray.texture_height(tmatch)
         ray.draw_texture_rec(tmatch, 0, if m > 250 => 0 => (mh//2), ray.texture_width(tmatch), mh//2,
             (W//2) - (ray.texture_width(tmatch)//2), 240, ray.WHITE)
