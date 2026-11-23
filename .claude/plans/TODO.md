@@ -10,7 +10,7 @@ Items are `#N` (a standing rule of the author, 2026-11-18): unique in this sessi
 
 Sessions (by the name of their repository): this one is `env-ray`; the compiler is `atmos-lang` (session_011eECogKVQ7ZzmWCoMST2wK); everything about `pin` goes to `atmos-pin` (session_011eECogSDhkVfyt7qme5DLh); the events across environments, `envs` (session_011eECofYWTNPACTtUjHN4p6); Lessmilk is `ray-lessmilk` (session_011eECohyasjWkvCHdxGxJ6D).
 
-Last update: 2026-11-22.
+Last update: 2026-11-23.
 
 ## A. Decisions waiting for an answer
 
@@ -18,7 +18,6 @@ Each has the option recommended by this session.
 
 | # | Decision | Recommended |
 |---|----------|-------------|
-| #44 | The build option `ATMOS_FLOAT=32` of the compiler (formerly `ATMOS_REAL=float`; in lang main since d19d40f; a real is a C float) against the rounding by hand with `ray.f32`. Tried on arkanoid (2026-11-20, lang c4e99c4, not merged): with float reals and its 13 calls of `ray.f32` removed, both runs are identical to the original (`lose`, 1517 frames, and `win`, 21460 frames; two screens checked); with the default doubles the same file diverges at line 7531 of `win`. The port as it is also stays identical with float reals. `ray.atm` was checked under the three options: the time is now emitted in the unit of the build (it was always microseconds), and `tst/env` passes under `ATMOS_FLOAT=32`, `ATMOS_INTEGER=32` and `ATMOS_CLOCK=ms` (formerly `ATMOS_REAL`, `ATMOS_INT`, `ATMOS_TIME`), trace and screen. To watch: a color (0xRRGGBBAA) computed as a real loses bits with float reals (drturtle adds a real to one); `sin` and `cos` where the C mixes doubles | Waiting for the author to decide which options each environment supports (atmos-float#14). Then: build the ports with float reals, and drop `ray.f32` game by game where the runs stay identical. Reported to atmos-float |
 
 ## B. Work known and not done
 
@@ -41,7 +40,7 @@ Each has the option recommended by this session.
 | # | Report |
 |---|--------|
 | #12 | The summary and conclusions of the port (all 23 games, identical on 55 runs; 96 of 134 control variables become structure, 38 stay; CPU 1.02 times the C; 1.4 against 0.75 µs per enemy in the stress) |
-| #13 | The last full regression: 57 checks, none failed (2026-11-22, compiler f416c03: `toggle` became `mute`; also on 98e4787, and under ASAN on f999c52); every run against its original (#8, 2026-11-20: 37 of 55 identical, the other 18 are the runs of the relaxed games, as listed in `doc/fidelity.md`) |
+| #13 | The last full regression: 57 checks, none failed (2026-11-23, compiler 656e7eb, after #44; also on 98e4787, and under ASAN on f999c52); every run against its original (#8, 2026-11-20, before #44: 37 of 55 identical) |
 | #14 | The logo of `games/screens.atm` showed "raylib" whole for 12 frames before its first letter; fixed (TextSubtext, as the C) |
 | #15 | `raylib.atm` (now `ray.atm`) grew: `rl.poly`, shaders, gestures, the touch position; `Screens` keeps its state in its `pub`. Lessmilk was told |
 | #16 | The original of transmission aborts (`free` of a static buffer of raylib 6.2) on a wrong word; no run can use one |
@@ -52,6 +51,7 @@ Each has the option recommended by this session.
 
 Closed as won't do: #1 (the remotes still name the old addresses, which redirect; the author, 2026-11-22).
 Done: #46 (`context <:draw>` in platformer and retro_maze_3d, in main since ba8a8b6, lang 656e7eb; runs identical, 1 enter per frame; misfits 1, 2, 4 reported to atmos-context).
+Done: #44 (the author, 2026-11-22: no fidelity to the floats of the C; the ports compute in the default doubles, with no `ray.f32` and no build option; 21 games relaxed, floppy and pang identical; the input of arkanoid `win` made again on doubles. `ATMOS_FLOAT=32` was measured first: 19 games identical, 4 not, since their C mixes doubles).
 Closed: #21 (Lessmilk moved on 2026-11-20: its env/ray.atm is a copy of env-ray 8350e6f, the new events, its own tools/atmos.sh; 33 tests pass on lang 98e4787, f416c03, and with ASAN; not blocked on env-ray. It asked for `ray.stop_sound`; it added RL_NODRAW to its patch, as ours has).
 Closed as decided: #5 (koala_seasons keeps the date fixed by the patch of the original in the test mode, as in `doc/fidelity.md`; the author, 2026-11-22).
 
