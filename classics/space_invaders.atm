@@ -11,7 +11,6 @@
 include "classic.atm"
 
 val W, H   = 800, 450
-val f32    = ray.f32
 
 ray.window [title="classic game: space invaders", width=W, height=H, fps=60]
 
@@ -127,12 +126,12 @@ task Play () {
             }
             par :any {
                 loop on :frame {
-                    set alpha = f32(alpha + f32(0.02))
+                    set alpha = alpha + 0.02
                     until alpha >= 1
                 }
-                set alpha = f32(alpha - f32(0.02))
+                set alpha = alpha - 0.02
                 loop on :frame {
-                    set alpha = f32(alpha - f32(0.02))
+                    set alpha = alpha - 0.02
                 }
             } with {
                 await :frame until kills >= n
