@@ -11,7 +11,6 @@
 include "classic.atm"
 
 val W, H   = 800, 450
-val f32    = ray.f32
 val GAP    = W // 10            ;; between launchers and buildings
 val EXPLOSION_COLOR = ray.color(125, 125, 125, 125)
 
@@ -19,8 +18,8 @@ ray.window [title="classic game: missile commander", width=W, height=H, fps=60]
 
 ;; The speed toward a target, as the C: a module on doubles, kept in a float.
 func toward (ox, oy, tx, ty, speed) {
-    val m = f32(math.sqrt(math.pow(f32(tx - ox), 2) + math.pow(f32(ty - oy), 2)))
-    return f32(f32(f32(tx - ox) * speed) / m), f32(f32(f32(ty - oy) * speed) / m)
+    val m = math.sqrt(math.pow(tx - ox, 2) + math.pow(ty - oy, 2))
+    return ((tx - ox) * speed) / m, ((ty - oy) * speed) / m
 }
 
 ;; An explosion: grows for 90 frames, shrinks until frame 210, and ends. It
@@ -30,7 +29,7 @@ task Explosion (x, y) {
     set pub = [x=x, y=y, mult=0]
     loop f in (1, 210) {
         await :grow
-        set pub.mult = if f <= 90 => f32(f/90) => f32(1 - f32(f32(f - 90)/210))
+        set pub.mult = if f <= 90 => (f/90) => (1 - ((f - 90)/210))
     }
     await :grow
 }
@@ -41,8 +40,8 @@ task Interceptor (g, booms, l, tx, ty) {
     var x, y = l.x, l.y
     par :any {
         loop on :frame {
-            set x, y = f32(x + sx), f32(y + sy)
-            until f32(math.sqrt(math.pow(f32(x - tx), 2) + math.pow(f32(y - ty), 2))) < 10
+            set x, y = x + sx, y + sy
+            until math.sqrt(math.pow(x - tx, 2) + math.pow(y - ty, 2)) < 10
         }
     } with {
         loop on :draw {
@@ -66,7 +65,7 @@ task Missile (g, booms) {
     var hit = false
     par :any {
         loop on :frame {
-            set x, y = f32(x + sx), f32(y + sy)
+            set x, y = x + sx, y + sy
             until y > H
             val l = loop _,l in g.launchers {
                 if l.on && ray.check_collision_point_rec(x, y, l.x - 40, l.y - 40, 80, 80) { break l }
@@ -75,7 +74,7 @@ task Missile (g, booms) {
                 if b.on && ray.check_collision_point_rec(x, y, b.x - 30, b.y - 30, 60, 60) { break b }
             }
             val e = loop _,e in booms {
-                if ray.check_collision_point_circle(x, y, e.pub.x, e.pub.y, f32(40*e.pub.mult)) { break e }
+                if ray.check_collision_point_circle(x, y, e.pub.x, e.pub.y, 40*e.pub.mult) { break e }
             }
             if l { set l.on, hit = false, true }
             if b { set b.on, hit = false, true }
@@ -139,7 +138,7 @@ task Play () {
     spawn {
         loop on :draw {
             loop _,e in booms {
-                ray.circle(e.pub.x, e.pub.y, f32(40*e.pub.mult), EXPLOSION_COLOR)
+                ray.circle(e.pub.x, e.pub.y, 40*e.pub.mult, EXPLOSION_COLOR)
             }
             loop _,l in g.launchers {
                 if l.on { ray.rectangle(l.x - 40, l.y - 40, 80, 80, ray.GRAY) }
