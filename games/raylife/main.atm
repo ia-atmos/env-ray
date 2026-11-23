@@ -71,7 +71,6 @@ static void life_draw (void) {
 
 val W, H    = 1000, 900
 val SPACING = 50
-val f32     = ray.f32
 val MAX     = do {
     pin args = [...]
     val n = tonumber(args@0)
@@ -80,9 +79,9 @@ val MAX     = do {
 
 ray.window [title="RayLife", width=W, height=H, fps=60]
 
-pin camera = [ox=f32(W/2), oy=f32(H/2), tx=f32((500*SPACING)/2), ty=f32((500*SPACING)/2), zoom=1]
+pin camera = [ox=W/2, oy=H/2, tx=(500*SPACING)/2, ty=(500*SPACING)/2, zoom=1]
 var alive, gens = 0, 0
-var interval = f32(0.2)
+var interval = 0.2
 var last = 0                    ;; the time of the last generation
 var mode = :draw                ;; (for the trace)
 
@@ -111,31 +110,31 @@ spawn {
 spawn {
     loop on :f2 {
         if ray.mouse_down(1) {
-            val s = f32(-1 / camera.zoom)
-            set camera.tx = f32(camera.tx + f32(ray.mouse_dx() * s))
-            set camera.ty = f32(camera.ty + f32(ray.mouse_dy() * s))
+            val s = -1 / camera.zoom
+            set camera.tx = camera.tx + (ray.mouse_dx() * s)
+            set camera.ty = camera.ty + (ray.mouse_dy() * s)
         }
         val wheel = ray.wheel()
         if wheel != 0 {
             val x, y = ray.screen_to_world2d(ray.mouse_x(), ray.mouse_y(), camera.ox, camera.oy, camera.tx, camera.ty, 0, camera.zoom)
             set camera.ox, camera.oy = ray.mouse_x(), ray.mouse_y()
             set camera.tx, camera.ty = x, y
-            var k = f32(1 + f32(0.25 * math.abs(wheel)))
+            var k = 1 + (0.25 * math.abs(wheel))
             if wheel < 0 {
-                set k = f32(1 / k)
+                set k = 1 / k
             }
-            set camera.zoom = math.max(0.125, math.min(f32(camera.zoom * k), 64))
+            set camera.zoom = math.max(0.125, math.min(camera.zoom * k, 64))
         }
         if ray.key_pressed('R') {
-            set gens, alive, interval = 0, 0, f32(0.2)
+            set gens, alive, interval = 0, 0, 0.2
             `life_clear();`
             emit @:global :to.draw
         }
         if ray.key_pressed('UP') {
-            set interval = math.min(f32(interval + f32(0.1)), MAX)
+            set interval = math.min(interval + 0.1, MAX)
         }
         if ray.key_pressed('DOWN') {
-            set interval = math.max(f32(interval - f32(0.1)), 0)
+            set interval = math.max(interval - 0.1, 0)
         }
     }
 }
