@@ -12,7 +12,6 @@
 
 val W, H = 1280, 720
 val N    = 10                           ;; MAX_ENEMIES
-val f32  = ray.f32
 
 ray.window [title="Dr. Turtle & Mr. GAMERA", width=W, height=H, fps=60]
 ray.audio_init()
@@ -129,7 +128,7 @@ task Gameplay () {
         loop on :frame {
             set back -= 1
             if back <= -W { set back = 0 }
-            set front = int(f32(front - f32(game.speed - 2)))
+            set front = int(front - (game.speed - 2))
             if front <= -W { set front = 0 }
 
             if ray.key_pressed('DOWN') {
@@ -142,10 +141,10 @@ task Gameplay () {
 
             loop i in N {
                 val e = es@i
-                if e.active { set e.x = f32(e.x - game.speed) }
+                if e.active { set e.x = e.x - game.speed }
                 if e.x <= -128 { reset(i, ray.random(0, 3)) }
             }
-            if !gameraMode { set game.speed = f32(game.speed + 0.005) }
+            if !gameraMode { set game.speed = game.speed + 0.005 }
 
             loop i in N {
                 val e = es@i
@@ -177,7 +176,7 @@ task Gameplay () {
                 set game.food -= 1
                 if game.food <= 0 {
                     set gameraMode = false
-                    set game.speed = math.max(10, f32(game.speed - 2))
+                    set game.speed = math.max(10, game.speed - 2)
                 }
             }
             set game.distance += 0.5
@@ -202,7 +201,7 @@ task Gameplay () {
             }
             loop _,e in es {
                 if e.active {
-                    ray.draw_texture(ENEMIES@(e.type), f32(e.x - 14), rail_y(e.rail) - 14, ray.WHITE)
+                    ray.draw_texture(ENEMIES@(e.type), e.x - 14, rail_y(e.rail) - 14, ray.WHITE)
                 }
             }
             ray.rectangle(20, 20, 400, 40, ray.fade(ray.GRAY, 0.4))
@@ -241,8 +240,8 @@ spawn {
     par {
         loop on :frame {
             ray.update_music(music)
-            set blue = math.floor(f32(210 + f32(25 * ray.sinf(time))))
-            set time = f32(time + 0.01)
+            set blue = math.floor(210 + (25 * ray.sinf(time)))
+            set time = time + 0.01
         }
     } with {
         loop on :draw {
