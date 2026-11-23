@@ -443,13 +443,6 @@ pin ray = [
     time       = func () { `:number GetTime()` },
     frame_time = func () { `:number GetFrameTime()` },
 
-    ;; ray.f32(x): x rounded to a float of 32 bits, as raylib keeps positions;
-    ;; to do the arithmetic of the C on floats, round the result of each
-    ;; operation that may be inexact
-    f32 = func (x) {
-        `:number.float (double)(float)a_dbl($x)`
-    },
-
     ;; the functions of C on floats, which may differ from the doubles of
     ;; math.sin and the like in the last bit
     sinf = func (x) { `:number.float (double)sinf((float)a_dbl($x))` },
