@@ -132,7 +132,6 @@ static void rm_gpi (bool on, int screenWidth, int screenHeight) {
 ```
 
 val W, H = 320, 240
-val f32  = ray.f32
 val GREEN1, GREEN2, GREEN3 = 0x9BBC0FFF, 0x6E961BFF, 0x306230FF
 
 `SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_TRANSPARENT);`
@@ -356,10 +355,10 @@ task Gameplay () {
                 if choice == 2 { set next = :exit }
             }
             if moving {
-                set stamina = f32(stamina - f32(0.01))
+                set stamina = stamina - 0.01
                 set steps += 1
                 if (steps % 20) == 0 {
-                    ray.sound_pitch(fx_step, f32(f32(ray.random(80, 120)) / f32(100)))
+                    ray.sound_pitch(fx_step, ray.random(80, 120) / 100)
                     ray.play_sound(fx_step)
                 }
             }
@@ -397,7 +396,7 @@ task Credits () {
     par :any {
         loop on :frame {
             ray.update_music(music_credits)
-            set credits_y = math.max(f32(credits_y - f32(0.6)), -H + 36)
+            set credits_y = math.max(credits_y - 0.6, -H + 36)
             until ray.key_pressed('ENTER')
         }
     } with {
