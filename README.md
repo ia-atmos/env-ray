@@ -76,10 +76,11 @@ needs the platform with no screen.
 
 All 23 games are ported. The branch `faithful` is the port with each game
 identical to its original on its scripted runs (55 runs: the same trace
-line per frame and the same screens). On `main`, 14 of the games were then
+line per frame and the same screens). On `main`, 21 of the games were then
 relaxed on purpose, where the exactness kept a slip of the C or made the
 port harder to read (state made anew in each game, counters reset, a line
-of tetris that clears): each deliberate difference is listed in "Relaxed
+of tetris that clears, doubles in place of the floats of the C, with no
+rounding by hand): each deliberate difference is listed in "Relaxed
 ports" of [doc/fidelity.md](doc/fidelity.md), and
 [doc/table.md](doc/table.md) says which games.
 

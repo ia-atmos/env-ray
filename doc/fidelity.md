@@ -158,7 +158,8 @@ lives, bricks left.
 
 ## asteroids_survival
 
-Same as the original on its runs `survive` (3031 frames, 15 screens: the
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
+`faithful`, on its runs `survive` (3031 frames, 15 screens: the
 ship avoids the meteors for 2500 frames with a pause, then a meteor hits it;
 an ENTER in the frame of the game over, a restart, a second game with no
 input) and `seed3` (1500 frames, 7 screens: other meteors).
@@ -168,8 +169,9 @@ rotation), time.
 
 - **Floats.** The ship mixes `sin` and `cos` on doubles with stores on
   floats, and draws with `sinf` and `cosf`; its height comes from `tanf`.
-  The port rounds as the C does (`ray.f32`) and calls the functions on
-  floats of C (`ray.sinf`, `ray.cosf`, `ray.tanf`). A first version used
+  Up to the branch `faithful` the port rounded as the C does (`ray.f32`);
+  it now computes in doubles (#44), and still calls the functions on floats
+  of C (`ray.sinf`, `ray.cosf`, `ray.tanf`). A first version used
   `H + shipHeight` as a double where the C adds them on floats: the ship
   crossed the border at frame 756 with a y that differed in the fifth
   decimal, and the trace showed it.
@@ -262,8 +264,9 @@ Trace: frame, phase, turn, ball, power and angle of each player.
 
 - **Floats and integers.** The power and the angle of the aim are
   integers, from `sqrt` and `asin` on doubles of differences on floats; the
-  ball flies on floats. The port does the same steps (`ray.f32`, `ray.asin`,
-  `math.floor`).
+  ball flies on floats. The port does the same steps (`ray.asin`,
+  `math.floor`), on doubles (up to the branch `faithful`, rounded with
+  `ray.f32`).
 - **The unused explosions.** The ball goes through the 200 slots of
   explosions, used or not; the unused ones are at (0,0) with their radius
   of 30, so there is a hole at the corner of the screen. The faithful port
@@ -282,7 +285,8 @@ Trace: frame, phase, turn, ball, power and angle of each player.
 
 ## asteroids
 
-Same as the original on its runs `win` (672 frames, 15 screens: the ship
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
+`faithful`, on its runs `win` (672 frames, 15 screens: the ship
 turns to the nearest meteor and fires, with a pause, until the 28 are
 destroyed and "VICTORY" shows) and `die` (577 frames, 10 screens, seed 2:
 nine kills, then a meteor; an ENTER in the frame of the game over, a
@@ -341,7 +345,8 @@ score.
   to start its test mode before `InitTimer` (see above).
 - **Floats and pixels.** Speeds are floats; the position moves by whole
   pixels, and the rest is kept for the next frame. The port does the same
-  steps (`ray.f32`, `math.floor` for the casts to `int` of positive values).
+  steps (`math.floor` for the casts to `int` of positive values), on
+  doubles (up to the branch `faithful`, rounded with `ray.f32`).
 - **The map.** The C reads a tile past the right edge (it checks `x > 20`,
   not `x >= 20`) from the next row; the port does the same.
 - **The jump** is a sequence that reacts to `:gravity`, which the physics
@@ -380,7 +385,8 @@ Trace: frame, phase, position of the piece, lines, full and moving cells.
 
 ## raylife
 
-Same as the original on its runs `play` (800 frames, 18 screens: a glider
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
+`faithful`, on its runs `play` (800 frames, 18 screens: a glider
 and a blinker drawn with clicks, Play until they die, the interval, a drag
 and the wheel, R, SPACE with no cells) and `blinker` (600 frames, 15
 screens: Play for a long while, R in Play with a click in the same frame,
@@ -496,7 +502,8 @@ Trace: frame; in the game also the player, its light, the level.
 
 ## transmission
 
-Same as the original on its runs `start` (1900 frames, 19 screens: the two
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
+`faithful`, on its runs `start` (1900 frames, 19 screens: the two
 logos, the title, a mission skipped, a word dragged and left) and `play`
 (the four missions, all right, and the title again).
 
@@ -544,7 +551,8 @@ and the best score and distance.
 
 ## just_do
 
-Same as the original on its runs `start` (1200 frames, 21 screens: the
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
+`faithful`, on its runs `start` (1200 frames, 21 screens: the
 logo; the keys 5, 5 again, 9, 1, 0) and `play` (3601 frames, 26
 screens: the ten levels solved, and level 00 again, done since the first
 visit). `play` is made by `tst/just_do/gen.py`, which runs the original
@@ -643,7 +651,8 @@ the map, the credits, the result, the GPi mode, the exit.
 
 ## koala_seasons
 
-Same as the original on its runs `title` (1000 frames: the logo, the title
+Relaxed (see "Relaxed ports" at the end): identical up to the branch
+`faithful`, on its runs `title` (1000 frames: the logo, the title
 and its blink), `summer`, `autumn`, `winter`, `winter_snow`, `spring` (700
 frames each: the title in each season and weather, chosen by the seed),
 `idle` (1600 frames: a game where the koala does nothing, slides down its
@@ -712,3 +721,19 @@ stored results replaced. The deliberate differences:
 | wave_collector | The title fades in on each visit (#35) | In the C it fades in only on the first visit. The traces are identical; the last 2 of the 14 screens of `lose` and of `win` (the title again) differ; `pause` is identical |
 | cat_vs_roomba | A draw of 100 for the dirt of a tile is the dirtiest level, as 90 to 99 (#36) | In the C no case takes it, and the tile keeps the level it had. One tile of the runs is dirtier: 14 of the 17 screens of `play` and 9 of the 14 of `start` differ by a few pixels; the trace of `play` differs from line 6430 (the score, 10900 at the end against 10600), that of `start` is identical |
 | arkanoid | Doubles: no `ray.f32` (#44) | The ball moves on doubles, where the C rounds to floats of 32 bits. `lose` is identical; `win` differs from line 7531 of 21460, so its input was made again by `gen.py` on doubles (won at frame 17956 against 21429, all lives) |
+| asteroids | Doubles: no `ray.f32` (#44) | The ship and the meteors move on doubles, where the C rounds to floats; the outcome of both runs is the same. The traces from line 1 (the last decimals), 2 of the 10 screens of `die` and 1 of the 15 of `win`, differ |
+| asteroids_survival | Doubles: no `ray.f32` (#44) | As in asteroids: the same outcome, the traces from line 1 (the last decimals); 3 of the 15 screens of `survive` differ, none of `seed3` |
+| space_invaders | Doubles: no `ray.f32` (#44) | The traces are identical; 1 of the 18 screens of `play` differs |
+| gorilas | Doubles: no `ray.f32` (#44) | The ball flies on doubles; the same outcome. The traces from line 43 of `play` and of `seed3`; no screen differs |
+| platformer | Doubles: no `ray.f32` (#44) | The player moves on doubles; the same outcome. The traces from line 2 of `moves` and `play` (the last decimals); no screen differs |
+| raylife | Doubles: no `ray.f32` (#44) | The time of a generation is compared on doubles: a generation can come one frame apart (the C mixes the double of `GetTime` with a float interval). The traces from line 42 of `blinker` and 72 of `play`; 1 of the 15 screens of `blinker` differs |
+| drturtle | Doubles: no `ray.f32` (#44) | The traces from line 102 of `play` and 142 of `start` (the last decimals); no screen differs |
+| retro_maze_3d | Doubles: no `ray.f32` (#44) | The camera, the time and the stamina on doubles; the same outcome. The traces from line 349 of `menus`, 482 of `play`, 483 of `start`; 1 of the 20 screens of `menus` differs |
+| transmission | Doubles: no `ray.f32` (#44) | The fades of `screens.atm` on doubles. The traces are identical; 7 of the 18 screens of `play` and 5 of the 19 of `start` differ |
+| cat_vs_roomba | Doubles: no `ray.f32` (#44) | The fades of `screens.atm` and the moves on doubles; the same outcome (10900 at the end of `play`). The traces from line 1506 of `play` and 1007 of `start`, with 2 of 17 and 3 of 14 screens |
+| just_do | Doubles: no `ray.f32` (#44) | The fades of `screens.atm` end a frame later (1 - 50 times 0.02 is just above 0 in doubles), so what follows comes a frame or two later; the same outcome. The traces from line 510 of `play` and 350 of `start`, with 9 of 26 and 11 of 21 screens |
+| koala_seasons | Doubles: no `ray.f32` (#44) | The fades of `screens.atm` end a frame earlier, and the koala and the enemies move on doubles; the same outcome on all runs. The traces from line 510 of every run; of the screens, 7 of 19 in `play`, 10 of 14 in `title`, 2 of 14 in `idle`, 2 of 3 in each season |
+| light_my_ritual | Doubles: no `ray.f32` (#44) | The fades and the light on doubles; the same outcome. The traces from line 706 of `start` and `timeover`, with 11 of 14 and 6 of 20 screens |
+| repair | Doubles: no `ray.f32` (#44) | The fades of `screens.atm`. The traces from line 531 of `keys` and `play`, with 1 screen each |
+| skully_escape | Doubles: no `ray.f32` (#44) | The fades of `screens.atm` and the fades of the rooms on doubles; the same outcome. The traces from line 722 of every run; 4 of 9 screens of `death`, 1 of 24 of `play`, 6 of 27 of `start` |
+| wave_collector | Doubles: no `ray.f32` (#44) | The fades and the waves on doubles; the same outcome. `lose` is identical; 3 of the 18 screens of `pause`; the trace of `win` from line 3963, with 1 of 14 screens |

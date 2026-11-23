@@ -295,7 +295,7 @@ and the next screen gets the events back:
 mute <!:draw> s(true)
 loop {
     await :frame
-    set alpha = ray.f32(alpha + f.inc)
+    set alpha = alpha + f.inc
     until f.into(alpha)
 }
 ... (the next screen, muted; the alpha goes back)
@@ -396,6 +396,7 @@ keep what the C does by accident:
 - the drawing changing the state (koala_seasons moves the fire's
   animation while drawing it);
 - floats of 32 bits, rounded where the C rounds (`ray.f32`), against the
-  doubles of Atmos; and the C's own `float`, `int` and `double` mixes.
+  doubles of Atmos; and the C's own `float`, `int` and `double` mixes (the
+  relaxed port drops `ray.f32` and computes in doubles, #44).
 
 Each one is listed with its game in [fidelity.md](fidelity.md).
