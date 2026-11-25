@@ -616,6 +616,7 @@ pin ray = [
         `:value rl_box(&rl_snd, sizeof(rl_snd), rl_snd_fin, RL_KIND_SND)`
     },
     play_sound   = func (s) { `if (rl_sound($s)) PlaySound(*rl_sound($s));` },
+    stop_sound   = func (s) { `if (rl_sound($s)) StopSound(*rl_sound($s));` },
     sound_volume = func (s, v) { `if (rl_sound($s)) SetSoundVolume(*rl_sound($s), RL_F($v));` },
     sound_pitch  = func (s, v) { `if (rl_sound($s)) SetSoundPitch(*rl_sound($s), RL_F($v));` },
     music = func (path) {
