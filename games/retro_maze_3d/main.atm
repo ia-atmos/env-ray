@@ -475,12 +475,9 @@ spawn {
 ;; [/trace]
 
 pin main = spawn {
-    context <:draw> ray.ctx.texture_mode(target) {
-        spawn {
-            loop on :draw {
-                ray.clear(GREEN1)
-            }
-        }
+    context <:draw> {
+        :enter { ray.begin_texture_mode(target) ; ray.clear(GREEN1) }
+        :leave { ray.end_texture_mode() }
         loop {
             pin s = spawn (SCREENS@screen)()
             set screen = await(s)
