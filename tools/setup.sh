@@ -17,7 +17,7 @@ mkdir -p ext
 
 RAYLIB_TAG=6.2
 GAMES_REV=318688c
-ATMOS_REV=656e7eb                       # main, 2026-11-22 (context <P>; the suite passes)
+ATMOS_REV=4c8e022                       # main, 2026-11-26 (string.join; the suite passes)
 
 if [ ! -d ext/raylib ]; then
     git clone -q --depth 1 --branch $RAYLIB_TAG https://github.com/raysan5/raylib ext/raylib
