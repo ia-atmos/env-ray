@@ -10,7 +10,9 @@ Items are `#N` (a standing rule of the author, 2026-11-18): unique in this sessi
 
 Sessions (by the name of their repository): this one is `env-ray`; the compiler is `atmos-lang` (session_011eECogKVQ7ZzmWCoMST2wK); everything about `pin` goes to `atmos-pin` (session_011eECogSDhkVfyt7qme5DLh); the events across environments, `envs` (session_011eECofYWTNPACTtUjHN4p6); Lessmilk is `ray-lessmilk` (session_011eECohyasjWkvCHdxGxJ6D).
 
-Last update: 2026-11-23.
+Last update: 2026-11-26.
+
+At each big step (a milestone, a change of what is on screen), the report to the author shows a few screenshots (the author, 2026-11-26, relayed by `atmos`).
 
 ## A. Decisions waiting for an answer
 
