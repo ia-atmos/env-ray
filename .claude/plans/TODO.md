@@ -6,7 +6,7 @@ acknowledged, or known and not done. Keep it current: remove an item when
 it is settled, add one whenever something is left open, in the same commit
 when possible.
 
-Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#50`. Nothing else is enumerated with bare numbers.
+Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#52`. Nothing else is enumerated with bare numbers.
 
 Sessions (by the name of their repository): this one is `env-ray`; the compiler is `atmos-lang` (session_011eECogKVQ7ZzmWCoMST2wK); everything about `pin` goes to `atmos-pin` (session_011eECogSDhkVfyt7qme5DLh); the events across environments, `envs` (session_011eECofYWTNPACTtUjHN4p6); Lessmilk is `ray-lessmilk` (session_011eECohyasjWkvCHdxGxJ6D).
 
@@ -68,3 +68,5 @@ Closed as decided: #5 (koala_seasons keeps the date fixed by the patch of the or
 |---|------|-------|------|
 | #47 | idiomatic | `games/retro_maze_3d/main.atm:477` | `context <:draw> ray.ctx.texture_mode(target) {...}` around the screens: the pair begin/end disappears from the code |
 | #48 | bad | `classics/platformer.atm:173-204` | `emit :taken; await false` inside the context, `await :taken` in Play: the inline block of `context` forces an invented event and a never-waking await so Play goes on while the world draws. Better: a `context` usable as a spawn target, or a way to await an inner phase (language; misfit 1, reported to atmos-context) |
+| #50 | idiomatic | `classics/platformer.atm:172-198` | `val world = ray.ctx.mode2d(...)`; `in <:draw> world` bound to the tiles, the pool of coins and the player; Play goes on with `await :all coins`: the mode is a value, and the pool lives where Play can await it (lang d0fe0ac) |
+| #51 | bad | `classics/platformer.atm:173, 183, 187` | `in <:draw> world,` written three times, once per thing that draws in the mode: the repetition is the price of keeping the pool outside. Better: a way to bind one value to a group of spawns (an `in X, do {...}` whose pools stay visible to the code after it), in the language |
