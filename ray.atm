@@ -494,15 +494,19 @@ pin ray = [
     end_mode2d = func () {
         `EndMode2D();`
     },
-    ;; the modes as contexts, [enter, leave]: context ray.ctx.mode2d(...) {...}
+    ;; the modes as contexts: in <:draw> ray.ctx.mode2d(...), do {...}
     ctx = [
         mode2d = func (ox, oy, tx, ty, rot, zoom) {
-            [\{ `BeginMode2D((Camera2D){ (Vector2){RL_F($ox),RL_F($oy)}, (Vector2){RL_F($tx),RL_F($ty)}, RL_F($rot), RL_F($zoom) });` },
-             \(_) { `EndMode2D();` }]
+            :Context [
+                enter = \{ `BeginMode2D((Camera2D){ (Vector2){RL_F($ox),RL_F($oy)}, (Vector2){RL_F($tx),RL_F($ty)}, RL_F($rot), RL_F($zoom) });` },
+                leave = \{ `EndMode2D();` },
+            ]
         },
         texture_mode = func (r) {
-            [\{ `if (a_nat_is($r, RL_KIND_RTX)) BeginTextureMode(*(RenderTexture2D*)a_nat_ptr($r));` },
-             \(_) { `EndTextureMode();` }]
+            :Context [
+                enter = \{ `if (a_nat_is($r, RL_KIND_RTX)) BeginTextureMode(*(RenderTexture2D*)a_nat_ptr($r));` },
+                leave = \{ `EndTextureMode();` },
+            ]
         },
     ],
     clear = func (c) {
