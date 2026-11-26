@@ -12,6 +12,8 @@ Sessions (by the name of their repository): this one is `env-ray`; the compiler 
 
 Last update: 2026-11-26.
 
+Before writing Atmos, read `.claude/plans/IDIOMS.md` of `ia-atmos/lang` (the author, 2026-11-26, `atmos#29`); a rule that comes out of his review of an excerpt here goes to `atmos`, with a before and an after (sent: #48, #49).
+
 At each big step (a milestone, a change of what is on screen), the report to the author shows a few screenshots (the author, 2026-11-26, relayed by `atmos`). Also, for each group of changes, one pair of short Atmos excerpts from that work, with file and line: one idiomatic, one bad (awkward, verbose, a workaround). Each excerpt takes a `#N` and is listed below (section E); each bad one says why, and what would make it better (the language, the environment, or the port).
 
 ## A. Decisions waiting for an answer

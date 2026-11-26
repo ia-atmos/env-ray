@@ -5,7 +5,7 @@ worked around in silence. The compiler is maintained by its own session.
 
 | # | Found in | Finding | What the port does |
 |---|----------|---------|--------------------|
-| 1 | snake | `val v = await t`, with `t` a task in a variable, followed by a statement on the next line, does not parse: `invalid await : unexpected expression`, near the next statement. | By design (as the reference Atmos): the bare form takes a tag, a clock, a table, or a call that spawns; a value goes in `await(t)`. The error now points at the expression. Whether to accept `await t` is with the author. The port uses `await(t)`. |
+| 1 | snake | `val v = await t`, with `t` a task in a variable, followed by a statement on the next line, does not parse: `invalid await : unexpected expression`, near the next statement. | By design (as the reference Atmos): the bare form takes a tag, a clock, a table, or a call that spawns; a value goes in `await(t)`. The error now points at the expression. Whether to accept `await t` is with the author. Fixed: on lang d0fe0ac `val v = await t` parses, with a statement after it; the ports write `await t` (2026-11-26). |
 | 2 | setup | The compiler keeps the path where it was built (`ATMOS_HOME`); if the checkout moves, it no longer finds `atmos.h`. | Fixed in `ceu-atmos`: it looks for the runtime in its own directory first. `tools/atmos.sh` still sets `ATMOS_HOME`. |
 
 Seen and expected, as the manual says, listed for whoever writes a port:
@@ -27,7 +27,7 @@ Seen and expected, as the manual says, listed for whoever writes a port:
 - A table literal cannot be indexed (`[1, 2]@i` does not parse): it goes in
   a constant first.
 - `await` takes a call that spawns; to await a task computed by an
-  expression, spawn it first (`pin s = spawn (f(x))()`), then `await(s)`.
+  expression, spawn it first (`pin s = spawn (f(x))()`), then `await s`.
 - The rules of `pin` (the compiler of `tools/setup.sh`, rules of
   2026-11-17): a `pin` owns its value, and a `pin var` may be assigned anew
   (the old value goes with its last reference); `val` and `var` hold a value
