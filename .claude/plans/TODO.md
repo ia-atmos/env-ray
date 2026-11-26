@@ -6,13 +6,13 @@ acknowledged, or known and not done. Keep it current: remove an item when
 it is settled, add one whenever something is left open, in the same commit
 when possible.
 
-Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#47`. Nothing else is enumerated with bare numbers.
+Items are `#N` (a standing rule of the author, 2026-11-18): unique in this session, in order, never reused or changed; from another session, `session#N` (`env-ray#24`, `atmos-lang#22`). An item that closes is removed from the tables below and keeps its number. The next number is `#49`. Nothing else is enumerated with bare numbers.
 
 Sessions (by the name of their repository): this one is `env-ray`; the compiler is `atmos-lang` (session_011eECogKVQ7ZzmWCoMST2wK); everything about `pin` goes to `atmos-pin` (session_011eECogSDhkVfyt7qme5DLh); the events across environments, `envs` (session_011eECofYWTNPACTtUjHN4p6); Lessmilk is `ray-lessmilk` (session_011eECohyasjWkvCHdxGxJ6D).
 
 Last update: 2026-11-26.
 
-At each big step (a milestone, a change of what is on screen), the report to the author shows a few screenshots (the author, 2026-11-26, relayed by `atmos`). Also, for each group of changes, one pair of short Atmos excerpts from that work, with file and line: one idiomatic, one bad (awkward, verbose, a workaround).
+At each big step (a milestone, a change of what is on screen), the report to the author shows a few screenshots (the author, 2026-11-26, relayed by `atmos`). Also, for each group of changes, one pair of short Atmos excerpts from that work, with file and line: one idiomatic, one bad (awkward, verbose, a workaround). Each excerpt takes a `#N` and is listed below (section E); each bad one says why, and what would make it better (the language, the environment, or the port).
 
 ## A. Decisions waiting for an answer
 
@@ -60,3 +60,10 @@ Closed as decided: #5 (koala_seasons keeps the date fixed by the patch of the or
 | # | Item |
 |---|------|
 | #19 | The plan said the assets would not be copied; the author chose to copy them into the repository (done). Their license is the one of each game's README (`README.original.md`); koala_seasons and others credit artists whose terms are not stated beyond the zlib license of the code |
+
+## E. Excerpts shown to the author
+
+| # | Kind | Where | Note |
+|---|------|-------|------|
+| #47 | idiomatic | `games/retro_maze_3d/main.atm:477` | `context <:draw> ray.ctx.texture_mode(target) {...}` around the screens: the pair begin/end disappears from the code |
+| #48 | bad | `classics/platformer.atm:173-204` | `emit :taken; await false` inside the context, `await :taken` in Play: the inline block of `context` forces an invented event and a never-waking await so Play goes on while the world draws. Better: a `context` usable as a spawn target, or a way to await an inner phase (language; misfit 1, reported to atmos-context) |
