@@ -480,7 +480,7 @@ pin main = spawn {
         :leave { ray.end_texture_mode() }
         loop {
             pin s = spawn (SCREENS@screen)()
-            set screen = await(s)
+            set screen = await s
             until screen == :exit
         }
     }
@@ -499,4 +499,4 @@ spawn {
         }
     }
 }
-await(main)
+await main

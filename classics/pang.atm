@@ -198,7 +198,7 @@ task Play () {
     }
     pin logic = spawn Logic(task, bigs, mediums, smalls)
     val r = par :any {
-        await(logic)
+        await logic
     } with {
         loop {
             await :key.dn [key='P']

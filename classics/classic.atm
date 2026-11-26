@@ -38,7 +38,7 @@ task Classic (Play) {
                     set phase = :play
                 }
             }
-            await(play)
+            await play
         }
         set phase = :over
         watching :key.dn [key='ENTER'] {

@@ -421,4 +421,4 @@ spawn {
 }
 ;; [/trace]
 
-await(screens)
+await screens

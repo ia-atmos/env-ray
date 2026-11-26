@@ -371,7 +371,7 @@ task Gameplay () {
             }
         }
     }
-    set over = await(play)
+    set over = await play
     await false
 }
 
@@ -403,4 +403,4 @@ spawn {
 }
 ;; [/trace]
 
-await(screens)
+await screens
