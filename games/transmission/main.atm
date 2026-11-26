@@ -570,7 +570,7 @@ spawn {
             loop j in 8 {
                 vector.insert(ids, `:number messageWords[RL_I($j)].id`)
             }
-            print(string.format("%d %d %s", ray.frame(), mission, vector.join(ids, " ")))
+            print(string.format("%d %d %s", ray.frame(), mission, string.join(ids, " ")))
         }
     }
 }
