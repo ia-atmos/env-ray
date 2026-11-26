@@ -12,7 +12,7 @@ Sessions (by the name of their repository): this one is `env-ray`; the compiler 
 
 Last update: 2026-11-26.
 
-At each big step (a milestone, a change of what is on screen), the report to the author shows a few screenshots (the author, 2026-11-26, relayed by `atmos`).
+At each big step (a milestone, a change of what is on screen), the report to the author shows a few screenshots (the author, 2026-11-26, relayed by `atmos`). Also, for each group of changes, one pair of short Atmos excerpts from that work, with file and line: one idiomatic, one bad (awkward, verbose, a workaround).
 
 ## A. Decisions waiting for an answer
 
